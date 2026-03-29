@@ -1,0 +1,49 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "A family member profile for personalized health analysis",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "emoji": { "type": "string" },
+        "age": { "type": "string" },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Kid"] },
+        "lifestyle": { "type": "string", "enum": ["Sedentary", "Moderate", "Very Active"] },
+        "conditions": { "type": "string" },
+        "isDefault": { "type": "boolean" },
+        "userId": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "emoji", "userId"]
+    },
+    "Scan": {
+      "title": "Scan",
+      "description": "A product scan result",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productName": { "type": "string" },
+        "brand": { "type": "string" },
+        "category": { "type": "string" },
+        "overallScore": { "type": "number" },
+        "summary": { "type": "string" },
+        "resultJson": { "type": "string", "description": "Full analysis result as JSON string" },
+        "userId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productName", "userId", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}/profiles/{profileId}": {
+      "schema": "Profile",
+      "description": "User family profiles"
+    },
+    "users/{userId}/scans/{scanId}": {
+      "schema": "Scan",
+      "description": "User product scan history"
+    }
+  }
+}

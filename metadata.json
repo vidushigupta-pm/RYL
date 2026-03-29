@@ -1,0 +1,7 @@
+{
+  "name": "ReadYourLabels",
+  "description": "India's honest ingredient truth-teller for packaged products. Scan labels to unmask marketing claims and get personalized safety verdicts for your family.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

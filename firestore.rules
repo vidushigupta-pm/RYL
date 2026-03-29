@@ -1,0 +1,109 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users/{userId}/profiles/{profileId}
+// Document ID: auto-generated or profile ID
+// Fields:
+//   - id: string (required)
+//   - name: string (required, 1-50 chars)
+//   - emoji: string (required)
+//   - age: string
+//   - gender: string (Male, Female, Kid)
+//   - lifestyle: string (Sedentary, Moderate, Very Active)
+//   - conditions: string
+//   - isDefault: boolean
+//   - userId: string (required, must match owner)
+//   - updatedAt: timestamp
+//
+// Collection: users/{userId}/scans/{scanId}
+// Document ID: auto-generated
+// Fields:
+//   - id: string
+//   - productName: string (required)
+//   - brand: string
+//   - category: string
+//   - overallScore: number
+//   - summary: string
+//   - resultJson: string (required)
+//   - userId: string (required, must match owner)
+//   - timestamp: timestamp (required)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function validString(field, min, max) {
+      return request.resource.data[field] is string && 
+             request.resource.data[field].size() >= min && 
+             request.resource.data[field].size() <= max;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidProfile(data) {
+      return data.keys().hasAll(['name', 'emoji', 'userId']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 50 &&
+             data.emoji is string &&
+             data.userId == request.auth.uid &&
+             (data.gender in ['Male', 'Female', 'Kid']) &&
+             (data.lifestyle in ['Sedentary', 'Moderate', 'Very Active']);
+    }
+
+    function isValidScan(data) {
+      return data.keys().hasAll(['productName', 'userId', 'timestamp', 'resultJson']) &&
+             data.productName is string && data.productName.size() > 0 &&
+             data.userId == request.auth.uid &&
+             data.timestamp is timestamp &&
+             data.resultJson is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User data scoping
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /profiles/{profileId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidProfile(request.resource.data);
+        allow update: if isOwner(userId) && isValidProfile(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      match /scans/{scanId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidScan(request.resource.data);
+        allow update: if isOwner(userId) && isValidScan(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}
