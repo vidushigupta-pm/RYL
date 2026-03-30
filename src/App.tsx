@@ -70,6 +70,7 @@ import {
   deleteDoc, 
   updateDoc, 
   onSnapshot, 
+  getDocs,
   query, 
   where, 
   orderBy,
@@ -296,6 +297,8 @@ const TierBadge = ({ tier }: { tier: string }) => {
 // --- Screens ---
 
 const Onboarding = ({ onComplete, onSignIn, onSignUp }: { onComplete: () => void, onSignIn: () => void, onSignUp: () => void }) => {
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -337,7 +340,7 @@ const Onboarding = ({ onComplete, onSignIn, onSignUp }: { onComplete: () => void
       
       <div className="mt-auto space-y-2 p-4">
         <div className="space-y-1">
-          <Button onClick={onComplete} className="w-full flex flex-col items-center justify-center py-3 h-auto bg-[#1B3D2F] text-white rounded-2xl shadow-lg active:scale-95 transition-all">
+          <Button onClick={() => setShowDisclaimer(true)} className="w-full flex flex-col items-center justify-center py-3 h-auto bg-[#1B3D2F] text-white rounded-2xl shadow-lg active:scale-95 transition-all">
             <div className="flex items-center gap-2">
               <Camera className="w-5 h-5" />
               <span className="text-lg font-bold uppercase">Scan as Guest</span>
@@ -372,6 +375,35 @@ const Onboarding = ({ onComplete, onSignIn, onSignUp }: { onComplete: () => void
           Sign in to save history and family profiles across devices
         </p>
       </div>
+
+      {/* Onboarding Disclaimer Modal */}
+      <AnimatePresence>
+        {showDisclaimer && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-[32px] p-8 max-w-sm shadow-2xl"
+            >
+              <div className="w-12 h-12 bg-[#FFF0E0] rounded-2xl flex items-center justify-center mb-6">
+                <ShieldAlert className="text-[#E07B2A] w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3D2F] mb-4">Important Notice</h3>
+              <p className="text-sm text-[#4A4A4A] leading-relaxed mb-8">
+                ReadYourLabels is an informational tool based on ICMR 2024 guidelines and is NOT a substitute for professional medical advice. Always consult a qualified doctor or nutritionist before making significant changes to your diet or health regimen. By continuing, you acknowledge that this app provides general guidance only.
+              </p>
+              <Button onClick={onComplete} className="w-full py-4">
+                I Understand & Accept
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
@@ -914,6 +946,10 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
   const [dietaryPreference, setDietaryPreference] = useState('NO_RESTRICTION');
   const [healthGoals, setHealthGoals] = useState<string[]>([]);
   const [activityLevel, setActivityLevel] = useState('MODERATELY_ACTIVE');
+  const [hasConsented, setHasConsented] = useState(false);
+  const [hasParentalConsent, setHasParentalConsent] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   const AVATAR_COLORS = ['#1B3D2F', '#D94F3D', '#F27D26', '#5A5A40', '#4A4A4A', '#8E9299', '#2E7D4F', '#B45309', '#065F46', '#1E40AF', '#7C3AED', '#BE185D'];
 
@@ -935,6 +971,8 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
     setDietaryPreference(p.dietary_preference || 'NO_RESTRICTION');
     setHealthGoals(p.health_goals || []);
     setActivityLevel(p.activity_level || 'MODERATELY_ACTIVE');
+    setHasConsented(true); // Already consented if editing
+    setHasParentalConsent(true);
     setStep(1);
     setIsAdding(false);
   };
@@ -951,6 +989,8 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
     setDietaryPreference('NO_RESTRICTION');
     setHealthGoals([]);
     setActivityLevel('MODERATELY_ACTIVE');
+    setHasConsented(false);
+    setHasParentalConsent(false);
     setStep(1);
   };
 
@@ -1021,6 +1061,33 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
     }
   };
 
+  const handleDeleteAllData = async () => {
+    if (!user) return;
+    setIsDeletingAll(true);
+    try {
+      // Delete all profiles
+      const profilesSnap = await getDocs(collection(db, `users/${user.uid}/profiles`));
+      const profileDeletes = profilesSnap.docs.map(d => deleteDoc(d.ref));
+      
+      // Delete all scans
+      const scansSnap = await getDocs(collection(db, `users/${user.uid}/scans`));
+      const scanDeletes = scansSnap.docs.map(d => deleteDoc(d.ref));
+      
+      await Promise.all([...profileDeletes, ...scanDeletes]);
+      
+      setToast("All data erased permanently ✓");
+      setTimeout(() => {
+        setShowDeleteConfirm(false);
+        setIsDeletingAll(false);
+        logout();
+      }, 2000);
+    } catch (error) {
+      console.error("Delete all failed:", error);
+      setIsDeletingAll(false);
+      alert("Failed to delete data. Please try again.");
+    }
+  };
+
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const toggleGroup = (group: string) => {
     setExpandedGroups(prev => 
@@ -1083,9 +1150,15 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
       </header>
 
       <div className="flex-1 px-6 overflow-y-auto no-scrollbar pb-10">
-        <p className="text-sm text-[#4A4A4A] mb-6 leading-relaxed">
-          Add family members to get personalized safety alerts based on their specific health conditions.
-        </p>
+        <div className="mb-6 p-4 bg-[#E6F4EC] border border-[#2E7D4F]/20 rounded-2xl">
+          <div className="flex gap-3 mb-2">
+            <ShieldCheck className="w-5 h-5 text-[#2E7D4F] flex-shrink-0" />
+            <h4 className="text-sm font-bold text-[#1B3D2F]">Consent & Privacy Notice</h4>
+          </div>
+          <p className="text-[11px] text-[#2E7D4F] leading-relaxed">
+            We collect data on age, gender, and health conditions to provide personalized nutritional safety alerts. This data is used solely for the 'Family Vault' multi-persona logic. You can withdraw consent at any time by deleting a profile or using the 'Delete My Data' button below.
+          </p>
+        </div>
 
         <div className="space-y-4">
           {profiles.map(p => (
@@ -1121,17 +1194,71 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
               <p className="text-center text-xs text-[#8E9299]">
                 Signed in as <span className="font-bold text-[#1B3D2F]">{user.email}</span>
               </p>
-              <button 
-                onClick={() => logout()}
-                className="w-full p-5 bg-white border border-[#FDECEA] rounded-[28px] flex items-center justify-center gap-3 text-[#D94F3D] font-bold active:scale-95 transition-all shadow-sm"
-              >
-                <LogOut className="w-5 h-5" />
-                Sign Out
-              </button>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={() => logout()}
+                  className="w-full p-5 bg-white border border-[#E8DDD0] rounded-[28px] flex items-center justify-center gap-3 text-[#1B3D2F] font-bold active:scale-95 transition-all shadow-sm"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+                <button 
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full p-5 bg-[#FFF5F5] border border-[#FEE2E2] rounded-[28px] flex items-center justify-center gap-3 text-[#D94F3D] font-bold active:scale-95 transition-all shadow-sm"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  Delete My Data
+                </button>
+              </div>
+              <p className="text-[10px] text-center text-[#8E9299] px-4 leading-relaxed">
+                As per India's DPDP Act 2023, you have the 'Right to be Forgotten'. Deleting your data will permanently erase all health records and scan history from our backend within 72 hours.
+              </p>
             </div>
           )}
         </div>
       </div>
+
+      {/* Delete All Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-[32px] p-8 max-w-sm shadow-2xl"
+            >
+              <div className="w-12 h-12 bg-[#FEE2E2] rounded-2xl flex items-center justify-center mb-6">
+                <Trash2 className="text-[#D94F3D] w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3D2F] mb-4">Erase All Data?</h3>
+              <p className="text-sm text-[#4A4A4A] leading-relaxed mb-8">
+                Are you sure you want to delete all your data? This will permanently erase all your health records and family profiles from our backend within 72 hours. This action cannot be undone.
+              </p>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  onClick={handleDeleteAllData} 
+                  disabled={isDeletingAll}
+                  variant="danger" 
+                  className="w-full py-4"
+                >
+                  {isDeletingAll ? 'Erasing...' : 'Yes, Delete Everything'}
+                </Button>
+                <button 
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="w-full py-4 text-sm font-bold text-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Bottom Sheet Overlay */}
       <AnimatePresence>
@@ -1159,7 +1286,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
               <div className="px-6 py-4 border-b border-[#FDF6EE]">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-[#1B3D2F]">
-                    {isAdding ? 'Add Family Member' : 'Edit Profile'} — Step {step} of 4
+                    {isAdding ? 'Add Family Member' : 'Edit Profile'} — Step {step} of 5
                   </h3>
                   {!isAdding && !editingProfile?.isDefault && step === 1 && (
                     <button 
@@ -1173,7 +1300,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                 
                 {/* Progress Bar */}
                 <div className="flex gap-1.5">
-                  {[1, 2, 3, 4].map(s => (
+                  {[1, 2, 3, 4, 5].map(s => (
                     <div 
                       key={s} 
                       className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
@@ -1222,6 +1349,27 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
 
                       <div>
                         <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Age Group</label>
+                        {(ageGroup === 'INFANT_0_2' || ageGroup === 'CHILD_3_7' || ageGroup === 'CHILD_8_12') && (
+                          <div className="mb-4 space-y-3">
+                            <div className="p-3 bg-[#FFF0E0] border border-[#E07B2A]/20 rounded-xl flex gap-2">
+                              <Info className="w-3 h-3 text-[#E07B2A] flex-shrink-0 mt-0.5" />
+                              <p className="text-[9px] text-[#E07B2A] font-medium leading-tight">
+                                Note: Nutritional needs for children change rapidly. These alerts are based on standard pediatric guidelines and may not reflect your child's specific requirements.
+                              </p>
+                            </div>
+                            <label className="flex items-start gap-3 p-3 bg-white border border-[#E8DDD0] rounded-xl cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={hasParentalConsent}
+                                onChange={(e) => setHasParentalConsent(e.target.checked)}
+                                className="mt-1 w-4 h-4 accent-[#1B3D2F]"
+                              />
+                              <span className="text-[10px] text-[#4A4A4A] leading-tight">
+                                I confirm that I am the parent/legal guardian of this child and provide verifiable consent for ReadYourLabels to process their health data as per Section 9 of the DPDP Act 2023.
+                              </span>
+                            </label>
+                          </div>
+                        )}
                         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                           {AGE_GROUPS.map(g => (
                             <button
@@ -1280,6 +1428,14 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                             
                             {isExpanded && (
                               <div className="p-4 grid grid-cols-1 gap-2 bg-[#FDF6EE]">
+                                {(group.group === 'Chronic Conditions' || group.group === 'Diabetes & Blood Sugar') && (
+                                  <div className="mb-2 p-3 bg-[#FFF0E0] border border-[#E07B2A]/20 rounded-xl flex gap-2">
+                                    <Info className="w-3 h-3 text-[#E07B2A] flex-shrink-0 mt-0.5" />
+                                    <p className="text-[9px] text-[#E07B2A] font-medium leading-tight">
+                                      Warning: Thresholds for chronic conditions are based on general population averages. Individual medical needs vary significantly; please use this as a general guide only.
+                                    </p>
+                                  </div>
+                                )}
                                 {group.conditions.map(c => (
                                   <button
                                     key={c.id}
@@ -1419,6 +1575,61 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                     </div>
                   </div>
                 )}
+
+                {step === 5 && (
+                  <div className="space-y-8">
+                    <div className="w-16 h-16 bg-[#E6F4EC] rounded-3xl flex items-center justify-center mb-2">
+                      <ShieldCheck className="text-[#2E7D4F] w-8 h-8" />
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-bold text-[#1B3D2F]">Consent Notice</h4>
+                      <p className="text-sm text-[#4A4A4A] leading-relaxed">
+                        To provide personalized safety alerts, we collect data including age, gender, and health conditions (like allergies or chronic illnesses). This data is used solely for our multi-persona logic to calculate safety scores specific to each family member.
+                      </p>
+                      <p className="text-sm text-[#4A4A4A] leading-relaxed">
+                        You can withdraw your consent at any time by deleting this profile or your entire account through the 'Delete My Data' option.
+                      </p>
+                      
+                      <div className="pt-4 space-y-4">
+                        <label className="flex items-start gap-3 p-4 bg-[#FDF6EE] border border-[#E8DDD0] rounded-2xl cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={hasConsented}
+                            onChange={e => setHasConsented(e.target.checked)}
+                            className="mt-1 w-5 h-5 rounded border-[#E8DDD0] text-[#1B3D2F] focus:ring-[#1B3D2F]"
+                          />
+                          <span className="text-xs font-medium text-[#1B3D2F] leading-relaxed">
+                            I consent to the processing of this personal data for the purpose of health safety analysis.
+                          </span>
+                        </label>
+
+                        {(ageGroup === 'INFANT_0_2' || ageGroup === 'CHILD_3_7' || ageGroup === 'CHILD_8_12' || ageGroup === 'TEEN_13_17') && (
+                          <div className="space-y-4">
+                            <div className="p-4 bg-[#FFF0E0] border border-[#E07B2A]/20 rounded-2xl">
+                              <h5 className="text-xs font-bold text-[#E07B2A] uppercase tracking-widest mb-2">Parental Consent Required</h5>
+                              <p className="text-[11px] text-[#E07B2A] font-medium leading-relaxed">
+                                As this profile is for a minor (under 18), India's DPDP Act 2023 requires verifiable consent from a parent or lawful guardian.
+                              </p>
+                            </div>
+                            
+                            <label className="flex items-start gap-3 p-4 bg-[#FDF6EE] border border-[#E8DDD0] rounded-2xl cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={hasParentalConsent}
+                                onChange={e => setHasParentalConsent(e.target.checked)}
+                                className="mt-1 w-5 h-5 rounded border-[#E8DDD0] text-[#1B3D2F] focus:ring-[#1B3D2F]"
+                              />
+                              <span className="text-xs font-medium text-[#1B3D2F] leading-relaxed">
+                                I confirm that I am the parent/lawful guardian of this individual and consent to the processing of their personal data.
+                              </span>
+                            </label>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Sticky Summary Bar (Step 2 & 3) */}
@@ -1456,7 +1667,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                   </button>
                 )}
 
-                {step < 4 ? (
+                {step < 5 ? (
                   <button 
                     onClick={() => setStep(step + 1)}
                     disabled={step === 1 && !name.trim()}
@@ -1467,7 +1678,8 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                 ) : (
                   <button 
                     onClick={handleSave}
-                    className="flex-1 py-4 bg-[#1B3D2F] text-white font-bold rounded-2xl shadow-lg shadow-[#1B3D2F]/20 active:scale-95 transition-all"
+                    disabled={!hasConsented || ((ageGroup === 'INFANT_0_2' || ageGroup === 'CHILD_3_7' || ageGroup === 'CHILD_8_12' || ageGroup === 'TEEN_13_17') && !hasParentalConsent)}
+                    className={`flex-1 py-4 bg-[#1B3D2F] text-white font-bold rounded-2xl shadow-lg shadow-[#1B3D2F]/20 active:scale-95 transition-all ${(!hasConsented || ((ageGroup === 'INFANT_0_2' || ageGroup === 'CHILD_3_7' || ageGroup === 'CHILD_8_12' || ageGroup === 'TEEN_13_17') && !hasParentalConsent)) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     Save Profile
                   </button>
@@ -1789,6 +2001,20 @@ const ResultScreen = ({
           <div className="flex-1">
             <h2 className="font-display text-2xl font-bold leading-tight mb-1">{result.product_name}</h2>
             <p className="text-white/60 text-sm font-medium">{result.brand}</p>
+            
+            {/* HFSS & UPF Badges */}
+            <div className="flex flex-wrap gap-2 mt-3">
+              {result.hfss_status === 'RED' && (
+                <span className="bg-[#D94F3D] text-white text-[9px] font-bold px-2 py-1 rounded-full border border-white/20 uppercase tracking-wider flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" /> HFSS (High Risk)
+                </span>
+              )}
+              {result.is_upf && (
+                <span className="bg-[#E07B2A] text-white text-[9px] font-bold px-2 py-1 rounded-full border border-white/20 uppercase tracking-wider flex items-center gap-1">
+                  <Zap className="w-3 h-3" /> Ultra-Processed (UPF)
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex flex-col items-center">
             <button 
@@ -1970,6 +2196,37 @@ const ResultScreen = ({
           </p>
         </div>
 
+        {/* Smarter Switch */}
+        {result.suggestions && result.suggestions.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 px-1">
+              <Sparkles className="w-4 h-4 text-[#D4871E]" />
+              <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Smarter Switch</h3>
+            </div>
+            <div className="bg-white rounded-[32px] border border-[#E8DDD0] overflow-hidden">
+              {result.suggestions.map((s: any, i: number) => (
+                <div key={i} className={`p-5 ${i > 0 ? 'border-t border-[#FDF6EE]' : ''}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                      s.type === 'GENERIC' ? 'bg-[#E6F4EC] text-[#2E7D4F]' : 'bg-[#FFF3DC] text-[#D4871E]'
+                    }`}>
+                      {s.type === 'GENERIC' ? 'Natural Alternative' : 'Better Choice'}
+                    </span>
+                    {s.type === 'BRANDED' && <CheckCircle2 className="w-4 h-4 text-[#2E7D4F]" />}
+                  </div>
+                  <h4 className="font-bold text-[#1B3D2F] mb-1">{s.name}</h4>
+                  <p className="text-xs text-gray-500 leading-relaxed">{s.reason}</p>
+                </div>
+              ))}
+              <div className="p-4 bg-gray-50 border-t border-[#FDF6EE]">
+                <p className="text-[9px] text-gray-400 text-center leading-relaxed italic">
+                  Suggestions are based solely on nutritional data and FSSAI standards. No brand has paid for this recommendation.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <AlsoScanned 
           currentProductId={normaliseProductId(result.product_name, result.brand)}
           category={result.category}
@@ -2010,7 +2267,7 @@ const ResultScreen = ({
           </div>
         )}
 
-        <div className="mt-4 mb-8 text-center px-6">
+        <div className="mt-4 mb-2 text-center px-6">
           <p className="text-[10px] text-gray-400 leading-relaxed">
             {result.category === 'FOOD' || result.category === 'SUPPLEMENT' ? 
               "Analysis based on FSSAI, ICMR-NIN 2024, and Codex Alimentarius standards." :
@@ -2024,6 +2281,17 @@ const ResultScreen = ({
             }
           </p>
         </div>
+
+        {currentVerdict.score < 70 && (
+          <div className="mb-4 px-6">
+            <div className="p-4 bg-white border border-[#E8DDD0] rounded-2xl flex gap-3">
+              <ShieldAlert className="w-4 h-4 text-[#D94F3D] flex-shrink-0 mt-0.5" />
+              <p className="text-[10px] text-gray-500 leading-relaxed italic">
+                <span className="font-bold text-[#D94F3D]">Disclaimer:</span> This score is for informational purposes only. It does not account for individual medical history or specific health needs. Always consult your doctor before consuming products flagged with concerns.
+              </p>
+            </div>
+          </div>
+        )}
 
         <Button onClick={onBack} className="w-full py-4">
           Scan Another Product

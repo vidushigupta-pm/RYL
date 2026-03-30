@@ -1009,12 +1009,15 @@ function getConsumptionNote(
   conditions: HealthCondition[],
   ageGroup: AgeGroup
 ): string | null {
+  const personaWarning = " Note: These thresholds are general population averages; individual medical needs vary.";
+  
   if (score >= 70) return null;
-  if (ageGroup === 'INFANT_0_2') return 'Not suitable for infants';
-  if (ageGroup === 'CHILD_3_7' && score < 50) return 'Occasional treat only — not for daily consumption';
+  if (ageGroup === 'INFANT_0_2') return 'Not suitable for infants.' + personaWarning;
+  if (['CHILD_3_7', 'CHILD_8_12'].includes(ageGroup) && score < 50) return 'Occasional treat only — not for daily consumption.' + personaWarning;
+  
   if ((has(conditions, 'DIABETES_T1') || has(conditions, 'DIABETES_T2'))) {
-    if (score < 40) return 'Avoid — significant blood sugar impact';
-    if (score < 60) return 'Consume occasionally in small portions only';
+    if (score < 40) return 'Avoid — significant blood sugar impact.' + personaWarning;
+    if (score < 60) return 'Consume occasionally in small portions only.' + personaWarning;
   }
   if (has(conditions, 'HYPERTENSION') && score < 45) return 'Limit — high sodium impact';
   if (has(conditions, 'PREGNANCY_T1') || has(conditions, 'PREGNANCY_T2') || has(conditions, 'PREGNANCY_T3')) {
