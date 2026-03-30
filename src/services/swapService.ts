@@ -93,14 +93,14 @@ export async function recordScanEvent(
   }
 }
 
-function normaliseProductId(name: string, brand: string): string {
+export function normaliseProductId(name: string, brand: string): string {
   return `${brand}_${name}`
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '_')
     .replace(/_+/g, '_');
 }
 
-function detectSubCategory(productName: string, category: string): string {
+export function detectSubCategory(productName: string, category: string): string {
   if (category !== 'FOOD') return category;
   const name = productName.toLowerCase();
 

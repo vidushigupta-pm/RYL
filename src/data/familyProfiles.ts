@@ -63,7 +63,7 @@ export type HealthCondition =
   // Child-specific
   | 'ADHD'                // artificial colours a high concern
   | 'AUTISM_SPECTRUM'
-  // Fitness goals
+  // Fitness goals (Legacy - moving to HealthGoal)
   | 'MUSCLE_GAIN'
   | 'WEIGHT_LOSS'
   | 'ENDURANCE_TRAINING'
@@ -71,6 +71,16 @@ export type HealthCondition =
   | 'URIC_ACID_GOUT'
   | 'ANEMIA'
   | 'OSTEOPOROSIS'
+  | 'NONE';
+
+export type HealthGoal =
+  | 'WEIGHT_LOSS'
+  | 'MUSCLE_GAIN'
+  | 'LOW_SUGAR'
+  | 'LOW_SODIUM'
+  | 'HIGH_FIBRE'
+  | 'HIGH_PROTEIN'
+  | 'ENDURANCE'
   | 'NONE';
 
 export type Allergen =
@@ -113,6 +123,7 @@ export interface FamilyProfile {
   health_conditions: HealthCondition[];
   allergens: Allergen[];          // HARD STOP — always RED regardless of score
   dietary_preference: DietaryPreference;
+  health_goals: HealthGoal[];
   is_default: boolean;            // the primary shopper's profile
   created_at: string;
 }
@@ -333,7 +344,6 @@ export const CONDITION_GROUPS: Array<{
     conditions: [
       { id: "ADHD", label: "ADHD", description: "Southampton Six artificial colours flagged HIGH" },
       { id: "ASTHMA", label: "Asthma", description: "Sulphites (INS 220-228) flagged — known triggers" },
-      { id: "ASTHMA", label: "Asthma", description: "Sulphites (INS 220-228) flagged — known triggers" },
       { id: "ECZEMA_SENSITIVE_SKIN", label: "Eczema / Sensitive Skin", description: "Artificial colours and preservatives flagged" },
     ]
   },
@@ -432,6 +442,25 @@ export const AGE_GROUPS: Array<{ id: AgeGroup; label: string; range: string }> =
   { id: 'SENIOR_61_PLUS',    label: 'Senior',        range: '61+ years' },
 ];
 
+export const DIETARY_PREFERENCES_UI: Array<{ id: DietaryPreference; label: string; emoji: string }> = [
+  { id: 'VEGETARIAN', label: 'Vegetarian', emoji: '🌱' },
+  { id: 'VEGAN', label: 'Vegan', emoji: '🥗' },
+  { id: 'JAIN', label: 'Jain', emoji: '🙏' },
+  { id: 'SATTVIC', label: 'Sattvic', emoji: '⚡' },
+  { id: 'NO_RESTRICTION', label: 'No restriction', emoji: '🍽️' },
+];
+
+export const HEALTH_GOALS_UI: Array<{ id: HealthGoal; label: string; emoji: string }> = [
+  { id: 'WEIGHT_LOSS', label: 'Lose weight', emoji: '🔥' },
+  { id: 'MUSCLE_GAIN', label: 'Build muscle', emoji: '💪' },
+  { id: 'LOW_SUGAR', label: 'Low sugar', emoji: '🩸' },
+  { id: 'LOW_SODIUM', label: 'Low sodium', emoji: '🧂' },
+  { id: 'HIGH_FIBRE', label: 'High fibre', emoji: '🌾' },
+  { id: 'HIGH_PROTEIN', label: 'High protein', emoji: '⚡' },
+  { id: 'ENDURANCE', label: 'Endurance', emoji: '🏃' },
+  { id: 'NONE', label: 'No specific goal', emoji: '—' },
+];
+
 // ── Default profiles (shown before user sets up their own) ───────────────────
 
 export const DEFAULT_PROFILES: FamilyProfile[] = [
@@ -445,6 +474,7 @@ export const DEFAULT_PROFILES: FamilyProfile[] = [
     health_conditions: ['NONE'],
     allergens: [],
     dietary_preference: 'NO_RESTRICTION',
+    health_goals: ['NONE'],
     is_default: true,
     created_at: new Date().toISOString()
   }

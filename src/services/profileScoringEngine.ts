@@ -8,9 +8,11 @@
 import {
   FamilyProfile,
   HealthCondition,
+  HealthGoal,
   AgeGroup,
   ActivityLevel,
-  Gender
+  Gender,
+  DietaryPreference
 } from '../data/familyProfiles';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -650,6 +652,145 @@ function applyConditionRules(
   return score;
 }
 
+function applyHealthGoalRules(
+  score: number,
+  goals: HealthGoal[],
+  ingredients: IngredientEntry[],
+  nutrition: NutritionData | null,
+  concerns: ProfileConcern[],
+  positives: string[]
+): number {
+  if (!goals || goals.length === 0) return score;
+
+  goals.forEach(goal => {
+    if (!goal || goal === 'NONE') return;
+
+    const sugar = nutrition?.sugar_g ?? 0;
+    const protein = nutrition?.protein_g ?? 0;
+    const sodium = nutrition?.sodium_mg ?? 0;
+    const energy = nutrition?.energy_kcal ?? 0;
+    const fibre = nutrition?.fibre_g ?? 0;
+    const transFat = nutrition?.trans_fat_g ?? 0;
+
+    switch (goal) {
+      case 'LOW_SUGAR':
+        if (sugar > 10) {
+          score -= 20; // Double penalty
+          concerns.push({
+            label: 'High Sugar — Goal Conflict',
+            detail: `${sugar}g sugar is very high for your Low Sugar goal.`,
+            severity: 'HIGH',
+            source: 'User Goal'
+          });
+        }
+        if (sugar < 5) {
+          score += 5;
+          positives.push('Low sugar content — matches your goal');
+        }
+        const hiddenGI = ingredients.filter(i =>
+          ['maltodextrin', 'corn syrup', 'glucose syrup', 'dextrose'].some(s => i.name.toLowerCase().includes(s))
+        );
+        if (hiddenGI.length > 0) {
+          score -= 10;
+          concerns.push({
+            label: 'High GI Additives',
+            detail: `Contains ${hiddenGI.map(i => i.name).join(', ')} which spike blood sugar rapidly.`,
+            severity: 'HIGH',
+            source: 'User Goal'
+          });
+        }
+        break;
+
+      case 'HIGH_PROTEIN':
+        if (protein > 25) {
+          score += 12;
+          positives.push(`Excellent protein source (${protein}g)`);
+        } else if (protein > 15) {
+          score += 8;
+          positives.push(`Good protein source (${protein}g)`);
+        }
+        break;
+
+      case 'WEIGHT_LOSS':
+        if (energy > 350) {
+          score -= 8;
+          concerns.push({
+            label: 'High Calorie Density',
+            detail: `${energy} kcal is high for weight loss goals.`,
+            severity: 'MODERATE',
+            source: 'User Goal'
+          });
+        }
+        if (fibre > 5) {
+          score += 8;
+          positives.push('High fibre content — aids satiety for weight loss');
+        }
+        break;
+
+      case 'MUSCLE_GAIN':
+        if (protein > 20) {
+          score += 10;
+          positives.push('High protein — ideal for muscle gain');
+        }
+        if (transFat > 0.5) {
+          score -= 12;
+          concerns.push({
+            label: 'Trans Fat — Muscle Gain Conflict',
+            detail: 'Trans fats increase inflammation and hinder muscle recovery.',
+            severity: 'HIGH',
+            source: 'User Goal'
+          });
+        }
+        break;
+
+      case 'LOW_SODIUM':
+        if (sodium > 400) {
+          score -= 10;
+          concerns.push({
+            label: 'High Sodium — Goal Conflict',
+            detail: `${sodium}mg sodium is high for your Low Sodium goal.`,
+            severity: 'HIGH',
+            source: 'User Goal'
+          });
+        }
+        break;
+
+      case 'HIGH_FIBRE':
+        if (fibre > 6) {
+          score += 10;
+          positives.push('Excellent fibre source — matches your goal');
+        } else if (fibre < 2) {
+          score -= 5;
+          concerns.push({
+            label: 'Low Fibre',
+            detail: 'This product is low in fibre.',
+            severity: 'LOW',
+            source: 'User Goal'
+          });
+        }
+        const maidaInTop = ingredients.slice(0, 3).some(i => i.name.toLowerCase().includes('maida') || i.name.toLowerCase().includes('refined wheat'));
+        if (maidaInTop) {
+          score -= 8;
+          concerns.push({
+            label: 'Refined Flour Base',
+            detail: 'Main ingredient is refined flour, which is low in natural fibre.',
+            severity: 'MODERATE',
+            source: 'User Goal'
+          });
+        }
+        break;
+
+      case 'ENDURANCE':
+        if (sodium > 200) {
+          positives.push('Contains electrolytes (sodium) — beneficial for endurance');
+        }
+        break;
+    }
+  });
+
+  return score;
+}
+
 // ── SECTION 4: Gender Rules ───────────────────────────────────────────────────
 // Gender + age + activity interact. All three considered together.
 
@@ -913,7 +1054,43 @@ export function calculateProfileVerdict(
   declaredAllergens: string[]
 ): ProfileVerdict {
 
-  const ingredientNames = ingredients.map(i => i.name);
+  // ── Step 0: Dietary Preference Flagging ──────────────────────
+  const dietaryPref = profile.dietary_preference;
+  const modifiedIngredients = ingredients.map(ing => {
+    const name = ing.name.toLowerCase();
+    const flags = [...(ing.flag_for || [])];
+    let tier = ing.safety_tier;
+
+    if (dietaryPref === 'VEGETARIAN') {
+      const nonVeg = ['chicken', 'meat', 'beef', 'pork', 'fish', 'shrimp', 'prawn', 'egg', 'gelatin', 'lard', 'tallow'];
+      if (nonVeg.some(kw => name.includes(kw))) {
+        flags.push('Non-Vegetarian');
+        tier = 'AVOID';
+      }
+    } else if (dietaryPref === 'VEGAN') {
+      const nonVegan = ['milk', 'dairy', 'cheese', 'butter', 'ghee', 'honey', 'egg', 'gelatin', 'meat', 'chicken', 'beef', 'pork', 'fish', 'whey', 'casein', 'lactose'];
+      if (nonVegan.some(kw => name.includes(kw))) {
+        flags.push('Non-Vegan');
+        tier = 'AVOID';
+      }
+    } else if (dietaryPref === 'JAIN') {
+      const jainAvoid = ['onion', 'garlic', 'potato', 'beetroot', 'carrot', 'radish', 'sweet potato', 'ginger', 'turmeric (fresh)', 'meat', 'egg'];
+      if (jainAvoid.some(kw => name.includes(kw))) {
+        flags.push('Not Jain-friendly');
+        tier = 'CAUTION';
+      }
+    } else if (dietaryPref === 'SATTVIC') {
+      const sattvicAvoid = ['onion', 'garlic', 'meat', 'egg', 'fish', 'alcohol', 'caffeine'];
+      if (sattvicAvoid.some(kw => name.includes(kw))) {
+        flags.push('Not Sattvic');
+        tier = 'AVOID';
+      }
+    }
+
+    return { ...ing, flag_for: flags, safety_tier: tier };
+  });
+
+  const ingredientNames = modifiedIngredients.map(i => i.name);
 
   // ── Step 1: Allergen check — always first, hard stop ─────────
   const allergenCheck = checkAllergens(profile, declaredAllergens, ingredientNames);
@@ -947,12 +1124,17 @@ export function calculateProfileVerdict(
 
   // ── Step 3: Apply age rules ───────────────────────────────────
   score = applyAgeRules(
-    score, profile.age_group, ingredients, nutrition, concerns, positives
+    score, profile.age_group, modifiedIngredients, nutrition, concerns, positives
   );
 
   // ── Step 4: Apply condition rules ────────────────────────────
   score = applyConditionRules(
-    score, profile.health_conditions, ingredients, nutrition, concerns, positives
+    score, profile.health_conditions, modifiedIngredients, nutrition, concerns, positives
+  );
+
+  // ── Step 4.5: Apply health goal rules ────────────────────────
+  score = applyHealthGoalRules(
+    score, profile.health_goals, modifiedIngredients, nutrition, concerns, positives
   );
 
   // ── Step 5: Apply gender rules (with ingredients passed in) ──
@@ -962,7 +1144,7 @@ export function calculateProfileVerdict(
     profile.age_group,
     profile.activity_level,
     profile.health_conditions,
-    ingredients,               // ← fixed: correctly passed here
+    modifiedIngredients,               // ← fixed: correctly passed here
     nutrition,
     concerns,
     positives

@@ -7,16 +7,21 @@
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
-        "emoji": { "type": "string" },
-        "age": { "type": "string" },
-        "gender": { "type": "string", "enum": ["Male", "Female", "Kid"] },
-        "lifestyle": { "type": "string", "enum": ["Sedentary", "Moderate", "Very Active"] },
-        "conditions": { "type": "string" },
+        "display_name": { "type": "string" },
+        "avatar_color": { "type": "string" },
+        "avatar_letter": { "type": "string" },
+        "age_group": { "type": "string" },
+        "gender": { "type": "string" },
+        "activity_level": { "type": "string" },
+        "conditions": { "type": "array", "items": { "type": "string" } },
+        "allergens": { "type": "array", "items": { "type": "string" } },
+        "dietary_preference": { "type": "string" },
+        "health_goals": { "type": "array", "items": { "type": "string" } },
         "isDefault": { "type": "boolean" },
         "userId": { "type": "string" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["name", "emoji", "userId"]
+      "required": ["name", "display_name", "avatar_color", "avatar_letter", "userId"]
     },
     "Scan": {
       "title": "Scan",
@@ -34,6 +39,23 @@
         "timestamp": { "type": "string", "format": "date-time" }
       },
       "required": ["productName", "userId", "timestamp"]
+    },
+    "ScanEvent": {
+      "title": "ScanEvent",
+      "description": "A global scan event for community insights",
+      "type": "object",
+      "properties": {
+        "product_id": { "type": "string" },
+        "product_name": { "type": "string" },
+        "brand": { "type": "string" },
+        "category": { "type": "string" },
+        "sub_category": { "type": "string" },
+        "overall_score": { "type": "number" },
+        "profile_type": { "type": "string" },
+        "user_id": { "type": "string" },
+        "scanned_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["product_id", "product_name", "sub_category", "overall_score", "user_id", "scanned_at"]
     }
   },
   "firestore": {
@@ -44,6 +66,10 @@
     "users/{userId}/scans/{scanId}": {
       "schema": "Scan",
       "description": "User product scan history"
+    },
+    "scan_events/{eventId}": {
+      "schema": "ScanEvent",
+      "description": "Community scan events"
     }
   }
 }

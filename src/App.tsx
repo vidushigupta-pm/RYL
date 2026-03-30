@@ -17,6 +17,7 @@ import {
   Settings, 
   ChevronRight,
   ShieldAlert,
+  ShieldCheck,
   Zap,
   ArrowRight,
   X,
@@ -26,14 +27,29 @@ import {
   Sparkles,
   Search,
   Tag,
+  Barcode,
   Image as ImageIcon,
   Home,
   Trash2,
   Edit2,
-  LogOut
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+  Check
 } from 'lucide-react';
 import { analyseLabel, chatAboutProduct, PRODUCT_CATEGORIES, searchProductByName } from './services/geminiService';
-import { recordScanEvent } from './services/swapService';
+import { recordScanEvent, normaliseProductId, detectSubCategory } from './services/swapService';
+import { calculateProfileVerdict } from './services/profileScoringEngine';
+import { 
+  DIETARY_PREFERENCES_UI, 
+  HEALTH_GOALS_UI,
+  CONDITION_GROUPS,
+  ALLERGEN_OPTIONS,
+  AGE_GROUPS,
+  ACTIVITY_LEVELS,
+  DietaryPreference,
+  HealthGoal
+} from './data/familyProfiles';
 import { AlsoScanned } from './components/AlsoScanned';
 
 import { 
@@ -125,21 +141,59 @@ type AppPhase = 'onboarding' | 'home' | 'processing' | 'result' | 'profiles' | '
 interface Profile {
   id: string;
   name: string;
-  emoji: string;
-  age: string;
-  gender: 'Male' | 'Female' | 'Kid';
-  lifestyle: 'Sedentary' | 'Moderate' | 'Very Active';
-  conditions: string;
+  display_name: string;
+  avatar_color: string;
+  avatar_letter: string;
+  age_group: string;
+  gender: string;
+  activity_level: string;
+  conditions: string[];
+  allergens: string[];
+  dietary_preference: string;
+  health_goals: string[];
   isDefault: boolean;
+  userId?: string;
+  updatedAt?: any;
 }
 
 const DEFAULT_PROFILES: Profile[] = [
-  { id: '1', name: 'Myself', emoji: '🧑', age: '28', gender: 'Male', lifestyle: 'Moderate', conditions: 'None', isDefault: true },
-  { id: '2', name: 'Dadi', emoji: '👵', age: '72', gender: 'Female', lifestyle: 'Sedentary', conditions: 'Diabetes, Hypertension', isDefault: false },
-  { id: '3', name: 'Rhea', emoji: '👧', age: '8', gender: 'Kid', lifestyle: 'Very Active', conditions: 'None', isDefault: false },
+  {
+    id: 'default_self',
+    name: 'Me',
+    display_name: 'Me',
+    avatar_color: '#1B3D2F',
+    avatar_letter: 'M',
+    age_group: 'ADULT_26_45',
+    gender: 'PREFER_NOT_TO_SAY',
+    activity_level: 'MODERATELY_ACTIVE',
+    conditions: ['NONE'],
+    allergens: [],
+    dietary_preference: 'NO_RESTRICTION',
+    health_goals: ['NONE'],
+    isDefault: true,
+    updatedAt: Timestamp.now()
+  }
 ];
 
 // --- Components ---
+
+const ProfileAvatar: React.FC<{ profile: Profile, size?: "xs" | "sm" | "md" | "lg", className?: string }> = ({ profile, size = "md", className = "" }) => {
+  const sizeClasses = {
+    xs: "w-6 h-6 text-[10px]",
+    sm: "w-8 h-8 text-xs",
+    md: "w-10 h-10 text-sm",
+    lg: "w-16 h-16 text-xl"
+  };
+
+  return (
+    <div 
+      className={`rounded-full flex items-center justify-center font-bold text-white shadow-sm ${sizeClasses[size]} ${className}`}
+      style={{ backgroundColor: profile.avatar_color || '#1B3D2F' }}
+    >
+      {profile.avatar_letter || (profile.name ? profile.name[0].toUpperCase() : '?')}
+    </div>
+  );
+};
 
 const Breadcrumbs = ({ phase }: { phase: AppPhase }) => {
   const steps: { id: AppPhase; label: string }[] = [
@@ -246,44 +300,76 @@ const Onboarding = ({ onComplete, onSignIn, onSignUp }: { onComplete: () => void
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col h-full"
+      className="flex flex-col h-screen overflow-hidden justify-between bg-white"
     >
       <Breadcrumbs phase="onboarding" />
-      <div className="flex-1 flex flex-col justify-center p-8">
-        <div className="w-20 h-20 bg-[#1B3D2F] rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-[#1B3D2F]/20">
-          <ShieldAlert className="text-white w-10 h-10" />
+      <div className="flex-1 flex flex-col p-4">
+        <div className="w-10 h-10 bg-[#1B3D2F] rounded-2xl flex items-center justify-center mb-3 shadow-xl shadow-[#1B3D2F]/20">
+          <ShieldCheck className="text-white w-5 h-5" />
         </div>
-        <h1 className="font-display text-4xl font-bold text-[#1B3D2F] mb-4 leading-tight">
+        <h1 className="font-display text-2xl font-bold text-[#1B3D2F] mb-1 leading-tight">
           Read Your Labels. <br />
           <span className="text-[#D4871E]">Know the Truth.</span>
         </h1>
-        <p className="text-[#4A4A4A] text-lg leading-relaxed mb-8">
-          India's first honest ingredient interpreter. Unmask misleading marketing and get personalized safety verdicts for your family.
+        <p className="text-[#4A4A4A] text-sm leading-relaxed mb-2 max-w-xs">
+          Scan any packaged product — food, cosmetics, personal care, pet food and more. Unmask misleading claims and get honest, plain-language verdicts for your whole family.
         </p>
         
-        <div className="space-y-4">
+        <div className="space-y-1 mb-2">
           {[
-            { icon: <Zap className="w-5 h-5" />, text: "Unmask 'No Added Sugar' & 'Natural' claims" },
-            { icon: <User className="w-5 h-5" />, text: "Personalized for Diabetes, Thyroid & Kids" },
-            { icon: <CheckCircle2 className="w-5 h-5" />, text: "FSSAI & ICMR-NIN 2024 Grounded" }
+            { icon: <Zap className="w-4 h-4" />, text: "Works on food, skincare, supplements & pet products" },
+            { icon: <User className="w-4 h-4" />, text: "Unmask 'Natural', 'No Added Sugar', 'Clinically Tested' claims" },
+            { icon: <CheckCircle2 className="w-4 h-4" />, text: "Personalised for your family — kids, seniors, health conditions" }
           ].map((item, i) => (
-            <div key={i} className="flex items-center gap-3 text-[#1B3D2F] font-medium">
-              <div className="text-[#D4871E]">{item.icon}</div>
+            <div key={i} className="flex items-center gap-2 text-[#1B3D2F] text-sm font-medium">
+              <div className="text-[#D4871E] flex-shrink-0">{item.icon}</div>
               <span>{item.text}</span>
             </div>
           ))}
         </div>
+        
+        <div className="mt-1">
+          <p className="text-[9px] text-gray-400 font-medium uppercase tracking-widest">
+            Grounded in FSSAI · ICMR-NIN · CDSCO · BIS · EWG
+          </p>
+        </div>
       </div>
       
-      <div className="space-y-3 p-8 pt-0">
-        <Button onClick={onComplete} className="w-full flex items-center justify-center gap-2">
-          Start Scanning <ArrowRight className="w-5 h-5" />
-        </Button>
-        <p className="text-center text-sm text-gray-400">
-          <button onClick={onSignIn} className="text-[#1B3D2F] font-semibold hover:underline">
-            Sign in
+      <div className="mt-auto space-y-2 p-4">
+        <div className="space-y-1">
+          <Button onClick={onComplete} className="w-full flex flex-col items-center justify-center py-3 h-auto bg-[#1B3D2F] text-white rounded-2xl shadow-lg active:scale-95 transition-all">
+            <div className="flex items-center gap-2">
+              <Camera className="w-5 h-5" />
+              <span className="text-lg font-bold uppercase">Scan as Guest</span>
+            </div>
+            <span className="text-[10px] font-medium opacity-60 uppercase tracking-widest mt-0.5">No account needed</span>
+          </Button>
+        </div>
+
+        <div className="relative flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#E8DDD0]"></div>
+          </div>
+          <div className="relative px-4 bg-white text-[10px] font-bold text-gray-400 uppercase tracking-widest">or</div>
+        </div>
+
+        <div className="flex gap-3">
+          <button 
+            onClick={onSignUp}
+            className="flex-1 py-2 bg-white border border-[#1B3D2F] text-[#1B3D2F] font-bold rounded-2xl active:scale-95 transition-all"
+          >
+            Sign Up
           </button>
-          {" "}to save your scan history
+          <button 
+            onClick={onSignIn}
+            className="flex-1 py-2 bg-white border border-[#1B3D2F] text-[#1B3D2F] font-bold rounded-2xl active:scale-95 transition-all"
+          >
+            Sign In
+          </button>
+        </div>
+
+        <p className="text-center text-[10px] text-gray-400 font-medium leading-relaxed">
+          Sign in to save history and family profiles across devices
         </p>
       </div>
     </motion.div>
@@ -482,7 +568,7 @@ const LoginScreen = ({ onBack, onLogin, onSignUp }: { onBack: () => void, onLogi
   );
 };
 
-const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profiles, onSearch, user, onLogout }: { onAnalyse: (files: { front: File | null, back: File }) => void, onProfileClick: () => void, onHistoryClick: () => void, onBack: () => void, profiles: Profile[], onSearch: (name: string) => void, user: any, onLogout: () => void }) => {
+const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profiles, onSearch, user, onLogout, cameFromOnboarding }: { onAnalyse: (files: { front: File | null, back: File }) => void, onProfileClick: () => void, onHistoryClick: () => void, onBack: () => void, profiles: Profile[], onSearch: (name: string) => void, user: any, onLogout: () => void, cameFromOnboarding: boolean }) => {
   const [backFile, setBackFile] = useState<File | null>(null);
   const [frontFile, setFrontFile] = useState<File | null>(null);
   const [showTips, setShowTips] = useState(false);
@@ -516,85 +602,83 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
   const isContinueEnabled = !!backFile || !!searchQuery.trim();
 
   return (
-    <div className="flex flex-col h-full bg-[#FDF6EE]">
+    <div className="flex flex-col h-screen overflow-hidden bg-[#FDF6EE]">
       <Breadcrumbs phase="home" />
       
-      <div className="flex-1 px-6 overflow-y-auto no-scrollbar pb-32">
+      <div className="flex-1 px-5 overflow-y-auto no-scrollbar pb-28">
         {/* Header matching screenshot */}
-        <header className="py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={onBack}
-              className="w-8 h-8 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center active:scale-95 transition-all"
-            >
-              <ChevronLeft className="w-4 h-4 text-[#1B3D2F]" />
-            </button>
-            {user && (
-              <button onClick={onLogout} className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#1B3D2F]/20">
-                <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}`} className="w-full h-full object-cover" />
+        <header className="py-1 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {cameFromOnboarding && (
+              <button 
+                onClick={onBack}
+                className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center active:scale-95 transition-all"
+              >
+                <ChevronLeft className="w-3.5 h-3.5 text-[#1B3D2F]" />
               </button>
             )}
             <div>
-              <h2 className="font-serif text-[28px] font-bold text-[#1B3D2F] leading-tight">ReadYourLabels</h2>
-              <p className="text-[#8E9299] text-xs font-medium">India's honest ingredient truth-teller</p>
+              <h2 className="font-serif text-[20px] font-bold text-[#1B3D2F] leading-none">ReadYourLabels</h2>
+              <p className="text-[#8E9299] text-[7px] font-medium mt-0.5">India's honest ingredient truth-teller</p>
             </div>
           </div>
           <button 
             onClick={onProfileClick}
-            className="flex flex-col items-center gap-1 p-2 rounded-2xl bg-white border border-[#E8DDD0] shadow-sm active:scale-95 transition-all"
+            className="flex flex-col items-center justify-center w-8 h-12 rounded-full bg-[#F3F4F6] border border-[#E8DDD0] shadow-sm active:scale-95 transition-all"
           >
-            <div className="flex -space-x-2">
-              {profiles.slice(0, 3).map(p => (
-                <span key={p.id} className="w-6 h-6 rounded-full bg-[#FDF6EE] border border-white flex items-center justify-center text-xs shadow-sm">
-                  {p.emoji}
-                </span>
-              ))}
+            <div className="relative mb-0.5">
+              <div className="w-5 h-5 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-[8px] font-bold border-2 border-white">
+                V
+              </div>
             </div>
-            <span className="text-[8px] font-bold text-[#1B3D2F] uppercase tracking-tighter">Family Profiles</span>
+            <div className="flex flex-col items-center leading-none">
+              <span className="text-[4px] font-black text-[#1B3D2F] uppercase">For</span>
+              <span className="text-[4px] font-black text-[#1B3D2F] uppercase">My</span>
+              <span className="text-[4px] font-black text-[#1B3D2F] uppercase">Family</span>
+            </div>
           </button>
         </header>
 
-        <div className="mb-6">
-          <h3 className="font-serif text-xl font-bold text-[#1B3D2F] mb-1">Photograph the product label</h3>
-          <p className="text-[#4A4A4A] text-xs leading-tight">
-            Back label is required for ingredient analysis.
+        <div className="mb-2">
+          <h3 className="font-serif text-[16px] font-bold text-[#1B3D2F] mb-0.5 leading-tight">What's really inside this product?</h3>
+          <p className="text-[#4A4A4A] text-[10px] leading-tight opacity-80">
+            Point at the back of any pack — food, skincare, supplements, pet food. We'll tell you what the brand isn't saying.
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-2.5">
           {/* Combined Upload Frame */}
-          <div className="bg-white rounded-[32px] border border-[#E8DDD0] p-5 shadow-sm space-y-6">
+          <div className="bg-[#E5E7EB]/50 rounded-[24px] p-2.5 space-y-2.5">
             {/* Back Label Section */}
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-start justify-between">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-[#1B3D2F] text-sm">Back of Pack</span>
-                    <span className="bg-[#1B3D2F] text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">Required</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="font-bold text-[#1B3D2F] text-xs">Back of Pack</span>
+                    <span className="bg-[#1B3D2F] text-white text-[6px] font-bold px-1 py-0.5 rounded uppercase">Required</span>
                   </div>
-                  <p className="text-[11px] text-[#8E9299]">Ingredients list & Nutritional table</p>
+                  <p className="text-[9px] text-[#8E9299] leading-tight max-w-[150px]">Ingredients, contents or nutritional label</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <button 
                     onClick={() => backInputRef.current?.click()}
-                    className="w-10 h-10 rounded-full bg-[#FDF6EE] border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all"
+                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
                   >
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-3.5 h-3.5" />
                   </button>
                   <button 
                     onClick={() => backInputRef.current?.click()}
-                    className="w-10 h-10 rounded-full bg-[#FDF6EE] border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all"
+                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
                   >
-                    <ImageIcon className="w-5 h-5" />
+                    <ImageIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-
               {backFile && (
-                <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#E8DDD0]">
+                <div className="relative aspect-video rounded-lg overflow-hidden border border-[#E8DDD0]">
                   <img src={URL.createObjectURL(backFile)} className="w-full h-full object-cover" />
-                  <button onClick={(e) => { e.stopPropagation(); setBackFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <X className="w-4 h-4" />
+                  <button onClick={(e) => { e.stopPropagation(); setBackFile(null); }} className="absolute top-1 right-1 w-5 h-5 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
               )}
@@ -602,76 +686,102 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
             </div>
 
             {/* Horizontal Divider */}
-            <div className="h-[1px] bg-[#FDF6EE] w-full"></div>
+            <div className="h-[1px] bg-white/60 w-full"></div>
 
             {/* Front Label Section */}
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-start justify-between">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-[#1B3D2F] text-sm">Front of Pack</span>
-                    <span className="bg-[#E8DDD0] text-[#8E9299] text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">Optional</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="font-bold text-[#1B3D2F] text-xs">Front of Pack</span>
+                    <span className="bg-[#D1D5DB] text-[#4B5563] text-[6px] font-bold px-1 py-0.5 rounded uppercase">Optional</span>
                   </div>
-                  <p className="text-[11px] text-[#8E9299]">Marketing claims & Brand name</p>
+                  <p className="text-[9px] text-[#8E9299] leading-tight max-w-[150px]">Front claims, certifications & brand name — unlocks Claim Unmasker</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <button 
                     onClick={() => frontInputRef.current?.click()}
-                    className="w-10 h-10 rounded-full bg-[#FDF6EE] border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all"
+                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
                   >
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-3.5 h-3.5" />
                   </button>
                   <button 
                     onClick={() => frontInputRef.current?.click()}
-                    className="w-10 h-10 rounded-full bg-[#FDF6EE] border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all"
+                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
                   >
-                    <ImageIcon className="w-5 h-5" />
+                    <ImageIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-
               {frontFile && (
-                <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#E8DDD0]">
+                <div className="relative aspect-video rounded-lg overflow-hidden border border-[#E8DDD0]">
                   <img src={URL.createObjectURL(frontFile)} className="w-full h-full object-cover" />
-                  <button onClick={(e) => { e.stopPropagation(); setFrontFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <X className="w-4 h-4" />
+                  <button onClick={(e) => { e.stopPropagation(); setFrontFile(null); }} className="absolute top-1 right-1 w-5 h-5 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
               )}
               <input ref={frontInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'front')} />
             </div>
+
+            {/* OR Separator */}
+            <div className="flex items-center gap-3 px-2 py-0.5">
+              <div className="h-[1px] bg-white/40 flex-1"></div>
+              <span className="text-[7px] font-bold text-[#8E9299] uppercase tracking-widest">OR</span>
+              <div className="h-[1px] bg-white/40 flex-1"></div>
+            </div>
+
+            {/* Barcode Scan Section */}
+            <button 
+              onClick={() => backInputRef.current?.click()}
+              className="w-full bg-[#1B3D2F] rounded-xl p-3 flex items-center justify-between group active:scale-[0.98] transition-all shadow-md"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                  <Barcode className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-white font-bold text-xs">Scan Barcode</h3>
+                  <p className="text-white/60 text-[8px] font-medium">Identify product instantly</p>
+                </div>
+              </div>
+              <div className="bg-white text-[#1B3D2F] px-2.5 py-1 rounded-full text-[9px] font-bold shadow-sm group-hover:bg-[#FDF6EE] transition-colors">
+                Scan →
+              </div>
+            </button>
           </div>
 
           {/* Tips Section */}
-          <div className="p-4 bg-[#E6F4EC] rounded-[24px] border border-[#2E7D4F]/10">
+          <div className="p-2 bg-[#E6F4EC] rounded-[16px] border border-[#2E7D4F]/10">
             <button 
               onClick={() => setShowTips(!showTips)}
               className="w-full flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
-                <Camera className="w-4 h-4 text-[#2E7D4F]" />
-                <h4 className="text-[9px] font-bold text-[#2E7D4F] uppercase tracking-widest">Scanning Tips</h4>
+                <Camera className="w-2.5 h-2.5 text-[#2E7D4F]" />
+                <h4 className="text-[7px] font-bold text-[#2E7D4F] uppercase tracking-widest">Scanning Tips</h4>
               </div>
-              <ChevronRight className={`w-3 h-3 text-[#2E7D4F] transition-transform ${showTips ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-2.5 h-2.5 text-[#2E7D4F] transition-transform ${showTips ? 'rotate-90' : ''}`} />
             </button>
             
             <AnimatePresence>
               {showTips && (
                 <motion.div 
                   initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                  animate={{ height: 'auto', opacity: 1, marginTop: 16 }}
+                  animate={{ height: 'auto', opacity: 1, marginTop: 6 }}
                   exit={{ height: 0, opacity: 0, marginTop: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-1">
                     {[
-                      { id: '01', text: "Capture the full back label — get close and hold steady" },
-                      { id: '02', text: "Include the nutritional table if visible in the same shot" },
-                      { id: '03', text: "No need to select a category — we detect it automatically from the label" }
+                      { id: '01', text: "Get close to the back of the pack and hold steady — good lighting helps" },
+                      { id: '02', text: "Include the full ingredients list and nutritional table if visible" },
+                      { id: '03', text: "Add the front photo to catch misleading health claims like 'Natural' or 'No Added Sugar'" },
+                      { id: '04', text: "Works on food, cosmetics, supplements, household products and pet food" }
                     ].map((tip) => (
-                      <div key={tip.id} className="flex gap-3 items-start">
-                        <span className="font-mono text-[11px] font-bold text-[#2E7D4F] mt-0.5">{tip.id}</span>
-                        <p className="text-sm text-[#1B3D2F] font-medium leading-tight">{tip.text}</p>
+                      <div key={tip.id} className="flex gap-2 items-start">
+                        <span className="font-mono text-[8px] font-bold text-[#2E7D4F] mt-0.5">{tip.id}</span>
+                        <p className="text-[10px] text-[#1B3D2F] font-medium leading-tight">{tip.text}</p>
                       </div>
                     ))}
                   </div>
@@ -681,21 +791,21 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
           </div>
 
           {/* Search Bar Section */}
-          <div className="pt-4 border-t border-[#E8DDD0]">
-            <div className="mb-4">
-              <h3 className="font-serif text-lg font-bold text-[#1B3D2F] mb-1">Don't have the product?</h3>
-              <p className="text-[#8E9299] text-[10px] font-medium">Search by name to see its analysis from our database.</p>
+          <div className="pt-2 border-t border-[#E8DDD0]">
+            <div className="mb-1">
+              <h3 className="font-serif text-[14px] font-bold text-[#1B3D2F] mb-0.5">Know the product name?</h3>
+              <p className="text-[#8E9299] text-[8px] font-medium">Search by name — we'll find the ingredients and give you an honest verdict.</p>
             </div>
-            <form onSubmit={handleSearchSubmit} className="mb-2">
+            <form onSubmit={handleSearchSubmit} className="mb-0.5">
               <div className="relative group">
                 <input 
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="e.g. Nutella, Maggi, Oreo" 
-                  className="w-full py-4 pl-12 pr-4 bg-white border border-[#E8DDD0] rounded-2xl text-sm font-medium text-[#1B3D2F] placeholder:text-[#8E9299] focus:outline-none focus:border-[#1B3D2F] focus:ring-1 focus:ring-[#1B3D2F] transition-all shadow-sm"
+                  placeholder="Search any product — food, cosmetics, supplements..." 
+                  className="w-full py-2 pl-9 pr-4 bg-white border border-[#E8DDD0] rounded-lg text-xs font-medium text-[#1B3D2F] placeholder:text-[#8E9299] focus:outline-none focus:border-[#1B3D2F] focus:ring-1 focus:ring-[#1B3D2F] transition-all shadow-sm"
                 />
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8E9299] group-focus-within:text-[#1B3D2F] transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-[#8E9299] group-focus-within:text-[#1B3D2F] transition-colors" />
               </div>
             </form>
           </div>
@@ -708,7 +818,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
           <button 
             disabled={!isContinueEnabled}
             onClick={handleContinue}
-            className={`w-full py-3.5 rounded-[20px] font-bold transition-all active:scale-95 text-sm ${
+            className={`w-full py-4 rounded-full font-bold transition-all active:scale-95 text-sm ${
               isContinueEnabled 
                 ? 'bg-[#1B3D2F] text-white shadow-lg shadow-[#1B3D2F]/20' 
                 : 'bg-[#E8DDD0] text-[#8E9299] cursor-not-allowed'
@@ -788,78 +898,116 @@ const HistoryScreen = ({ scans, onBack, onSelectScan }: { scans: any[], onBack: 
   );
 };
 
-const ProfilesScreen = ({ profiles, user, onBack }: { profiles: Profile[], user: any, onBack: () => void }) => {
+const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Profile[], setProfiles: React.Dispatch<React.SetStateAction<Profile[]>>, user: any, onBack: () => void }) => {
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newEmoji, setNewEmoji] = useState('🧑');
-  const [newAge, setNewAge] = useState('');
-  const [newGender, setNewGender] = useState<'Male' | 'Female' | 'Kid'>('Male');
-  const [newLifestyle, setNewLifestyle] = useState<'Sedentary' | 'Moderate' | 'Very Active'>('Moderate');
-  const [newConditions, setNewConditions] = useState('None');
+  const [step, setStep] = useState(1);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const EMOJIS = ['🧑', '👧', '👦', '👵', '👴', '👶', '👨‍🦱', '👩‍🦱', '🧔'];
-  const GENDERS: ('Male' | 'Female' | 'Kid')[] = ['Male', 'Female', 'Kid'];
-  const LIFESTYLES: ('Sedentary' | 'Moderate' | 'Very Active')[] = ['Sedentary', 'Moderate', 'Very Active'];
+  // Form State
+  const [name, setName] = useState('');
+  const [avatarColor, setAvatarColor] = useState('#1B3D2F');
+  const [ageGroup, setAgeGroup] = useState('ADULT_26_45');
+  const [gender, setGender] = useState('MALE');
+  const [conditions, setConditions] = useState<string[]>([]);
+  const [allergens, setAllergens] = useState<string[]>([]);
+  const [dietaryPreference, setDietaryPreference] = useState('NO_RESTRICTION');
+  const [healthGoals, setHealthGoals] = useState<string[]>([]);
+  const [activityLevel, setActivityLevel] = useState('MODERATELY_ACTIVE');
+
+  const AVATAR_COLORS = ['#1B3D2F', '#D94F3D', '#F27D26', '#5A5A40', '#4A4A4A', '#8E9299', '#2E7D4F', '#B45309', '#065F46', '#1E40AF', '#7C3AED', '#BE185D'];
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const handleStartEdit = (p: Profile) => {
     setEditingProfile(p);
-    setNewName(p.name);
-    setNewEmoji(p.emoji);
-    setNewAge(p.age);
-    setNewGender(p.gender);
-    setNewLifestyle(p.lifestyle);
-    setNewConditions(p.conditions);
+    setName(p.name);
+    setAvatarColor(p.avatar_color || '#1B3D2F');
+    setAgeGroup(p.age_group || 'ADULT_26_45');
+    setGender(p.gender || 'MALE');
+    setConditions(p.conditions || []);
+    setAllergens(p.allergens || []);
+    setDietaryPreference(p.dietary_preference || 'NO_RESTRICTION');
+    setHealthGoals(p.health_goals || []);
+    setActivityLevel(p.activity_level || 'MODERATELY_ACTIVE');
+    setStep(1);
     setIsAdding(false);
   };
 
   const handleStartAdd = () => {
     setIsAdding(true);
     setEditingProfile(null);
-    setNewName('');
-    setNewEmoji('🧑');
-    setNewAge('');
-    setNewGender('Male');
-    setNewLifestyle('Moderate');
-    setNewConditions('None');
+    setName('');
+    setAvatarColor(AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]);
+    setAgeGroup('ADULT_26_45');
+    setGender('MALE');
+    setConditions([]);
+    setAllergens([]);
+    setDietaryPreference('NO_RESTRICTION');
+    setHealthGoals([]);
+    setActivityLevel('MODERATELY_ACTIVE');
+    setStep(1);
   };
 
   const handleSave = async () => {
-    if (!newName.trim()) return;
-    if (!user) {
-      alert("Please sign in to save profiles.");
-      return;
-    }
+    const profileData = {
+      name,
+      display_name: name,
+      avatar_color: avatarColor,
+      avatar_letter: name ? name[0].toUpperCase() : '?',
+      age_group: ageGroup,
+      gender,
+      activity_level: activityLevel,
+      conditions,
+      allergens,
+      dietary_preference: dietaryPreference,
+      health_goals: healthGoals,
+      updatedAt: Timestamp.now()
+    };
 
     try {
-      if (isAdding) {
-        await addDoc(collection(db, `users/${user.uid}/profiles`), {
-          name: newName,
-          emoji: newEmoji,
-          age: newAge,
-          gender: newGender,
-          lifestyle: newLifestyle,
-          conditions: newConditions || 'None',
-          isDefault: false,
-          userId: user.uid,
-          updatedAt: Timestamp.now()
-        });
-      } else if (editingProfile) {
-        await updateDoc(doc(db, `users/${user.uid}/profiles`, editingProfile.id), {
-          name: newName,
-          emoji: newEmoji,
-          age: newAge,
-          gender: newGender,
-          lifestyle: newLifestyle,
-          conditions: newConditions || 'None',
-          updatedAt: Timestamp.now()
-        });
+      if (user) {
+        if (isAdding) {
+          await addDoc(collection(db, `users/${user.uid}/profiles`), {
+            ...profileData,
+            isDefault: false,
+            userId: user.uid
+          });
+        } else if (editingProfile) {
+          await updateDoc(doc(db, `users/${user.uid}/profiles`, editingProfile.id), profileData);
+        }
+      } else {
+        let updatedProfiles: Profile[];
+        if (isAdding) {
+          const newProfile: Profile = {
+            ...profileData,
+            id: Math.random().toString(36).substr(2, 9),
+            isDefault: false,
+            userId: 'guest'
+          } as Profile;
+          updatedProfiles = [...profiles, newProfile];
+        } else {
+          updatedProfiles = profiles.map(p => 
+            p.id === editingProfile?.id ? { ...p, ...profileData } : p
+          );
+        }
+        localStorage.setItem('guest_profiles', JSON.stringify(updatedProfiles));
+        setProfiles(updatedProfiles);
       }
       
-      setIsAdding(false);
-      setEditingProfile(null);
+      setToast("Profile saved ✓");
+      setTimeout(() => {
+        setIsAdding(false);
+        setEditingProfile(null);
+      }, 500);
     } catch (error) {
-      handleFirestoreError(error, isAdding ? OperationType.CREATE : OperationType.UPDATE, `users/${user.uid}/profiles`);
+      console.error("Save failed:", error);
+      handleFirestoreError(error, isAdding ? OperationType.CREATE : OperationType.UPDATE, user ? `users/${user.uid}/profiles` : 'local');
     }
   };
 
@@ -871,6 +1019,58 @@ const ProfilesScreen = ({ profiles, user, onBack }: { profiles: Profile[], user:
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `users/${user.uid}/profiles/${id}`);
     }
+  };
+
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
+  const toggleGroup = (group: string) => {
+    setExpandedGroups(prev => 
+      prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]
+    );
+  };
+
+  const toggleCondition = (id: string) => {
+    if (id === 'NONE') {
+      setConditions(['NONE']);
+      return;
+    }
+    setConditions(prev => {
+      const filtered = prev.filter(c => c !== 'NONE');
+      if (filtered.includes(id)) {
+        return filtered.filter(c => c !== id);
+      } else {
+        return [...filtered, id];
+      }
+    });
+  };
+
+  const toggleAllergen = (id: string) => {
+    if (id === 'NONE') {
+      setAllergens(['NONE']);
+      return;
+    }
+    setAllergens(prev => {
+      const filtered = prev.filter(c => c !== 'NONE');
+      if (filtered.includes(id)) {
+        return filtered.filter(c => c !== id);
+      } else {
+        return [...filtered, id];
+      }
+    });
+  };
+
+  const toggleHealthGoal = (id: string) => {
+    if (id === 'NONE') {
+      setHealthGoals(['NONE']);
+      return;
+    }
+    setHealthGoals(prev => {
+      const filtered = prev.filter(c => c !== 'NONE');
+      if (filtered.includes(id)) {
+        return filtered.filter(c => c !== id);
+      } else {
+        return [...filtered, id];
+      }
+    });
   };
 
   return (
@@ -891,13 +1091,11 @@ const ProfilesScreen = ({ profiles, user, onBack }: { profiles: Profile[], user:
           {profiles.map(p => (
             <div key={p.id} className="p-5 bg-white rounded-[28px] border border-[#E8DDD0] flex items-center justify-between group">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#FDF6EE] rounded-2xl flex items-center justify-center text-2xl shadow-sm">
-                  {p.emoji}
-                </div>
+                <ProfileAvatar profile={p} size="md" />
                 <div>
                   <h4 className="font-bold text-[#1B3D2F]">{p.name} {p.isDefault && <span className="text-[10px] bg-[#E6F4EC] text-[#2E7D4F] px-1.5 py-0.5 rounded ml-1 uppercase">You</span>}</h4>
                   <p className="text-[10px] text-[#8E9299] font-medium uppercase tracking-widest mt-0.5">
-                    {p.gender} · {p.age} yrs · {p.lifestyle} · {p.conditions === 'None' ? 'No conditions' : p.conditions}
+                    {p.gender} · {AGE_GROUPS.find(g => g.id === p.age_group)?.label || p.age_group} · {p.activity_level}
                   </p>
                 </div>
               </div>
@@ -935,130 +1133,360 @@ const ProfilesScreen = ({ profiles, user, onBack }: { profiles: Profile[], user:
         </div>
       </div>
 
-      {/* Edit/Add Modal Overlay */}
+      {/* Bottom Sheet Overlay */}
       <AnimatePresence>
         {(editingProfile || isAdding) && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end justify-center"
             onClick={() => { setEditingProfile(null); setIsAdding(false); }}
           >
             <motion.div 
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="w-full max-w-md bg-white rounded-t-[40px] p-8 space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar"
+              className="w-full max-w-md bg-white rounded-t-[32px] h-[92vh] flex flex-col relative"
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold text-[#1B3D2F]">{isAdding ? 'Add Family Member' : 'Edit Profile'}</h3>
-                {!isAdding && !editingProfile?.isDefault && (
+              {/* Drag Handle */}
+              <div className="w-full flex justify-center pt-3 pb-2">
+                <div className="w-12 h-1.5 bg-[#E8DDD0] rounded-full" />
+              </div>
+
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-[#FDF6EE]">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-[#1B3D2F]">
+                    {isAdding ? 'Add Family Member' : 'Edit Profile'} — Step {step} of 4
+                  </h3>
+                  {!isAdding && !editingProfile?.isDefault && step === 1 && (
+                    <button 
+                      onClick={() => handleDelete(editingProfile!.id)}
+                      className="p-2 text-[#D94F3D]"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4].map(s => (
+                    <div 
+                      key={s} 
+                      className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                        s < step ? 'bg-[#1B3D2F]' : s === step ? 'bg-[#1B3D2F]' : 'bg-[#E8DDD0]'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto no-scrollbar px-6 py-6 pb-32">
+                {step === 1 && (
+                  <div className="space-y-8">
+                    {/* Avatar Preview */}
+                    <div className="flex flex-col items-center gap-4">
+                      <div 
+                        className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg"
+                        style={{ backgroundColor: avatarColor }}
+                      >
+                        {name ? name[0].toUpperCase() : '?'}
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {AVATAR_COLORS.map(c => (
+                          <button
+                            key={c}
+                            onClick={() => setAvatarColor(c)}
+                            className={`w-8 h-8 rounded-full border-2 transition-all ${avatarColor === c ? 'border-[#1B3D2F] scale-110' : 'border-transparent'}`}
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div>
+                        <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Name</label>
+                        <input 
+                          type="text" 
+                          value={name}
+                          onChange={e => setName(e.target.value)}
+                          placeholder="e.g. Dadi, Rahul, Myself"
+                          className="w-full p-4 bg-[#FDF6EE] border border-[#E8DDD0] rounded-2xl focus:outline-none focus:border-[#1B3D2F] font-bold text-[#1B3D2F]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Age Group</label>
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                          {AGE_GROUPS.map(g => (
+                            <button
+                              key={g.id}
+                              onClick={() => setAgeGroup(g.id)}
+                              className={`flex-shrink-0 px-4 py-2 rounded-full border text-xs font-bold transition-all ${ageGroup === g.id ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white' : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'}`}
+                            >
+                              {g.label} ({g.range})
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Gender</label>
+                        <div className="flex gap-2">
+                          {['MALE', 'FEMALE', 'PREFER_NOT_TO_SAY'].map(g => (
+                            <button
+                              key={g}
+                              onClick={() => setGender(g)}
+                              className={`flex-1 py-3 rounded-xl font-bold text-xs transition-all ${gender === g ? 'bg-[#1B3D2F] text-white' : 'bg-[#FDF6EE] border border-[#E8DDD0] text-[#8E9299]'}`}
+                            >
+                              {g === 'MALE' ? 'Male' : g === 'FEMALE' ? 'Female' : 'Other'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {step === 2 && (
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      {CONDITION_GROUPS.filter(g => g.group !== 'Fitness Goals' && g.group !== 'Nutritional').map(group => {
+                        const selectedInGroup = group.conditions.filter(c => conditions.includes(c.id));
+                        const isExpanded = expandedGroups.includes(group.group);
+                        
+                        return (
+                          <div key={group.group} className="border border-[#E8DDD0] rounded-2xl overflow-hidden bg-[#FDF6EE]">
+                            <button 
+                              onClick={() => toggleGroup(group.group)}
+                              className="w-full p-4 flex items-center justify-between bg-white"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">{group.emoji}</span>
+                                <span className="text-xs font-bold text-[#1B3D2F] uppercase tracking-wider">{group.group}</span>
+                                {selectedInGroup.length > 0 && (
+                                  <span className="bg-[#1B3D2F] text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                                    {selectedInGroup.length}
+                                  </span>
+                                )}
+                              </div>
+                              {isExpanded ? <ChevronUp className="w-4 h-4 text-[#8E9299]" /> : <ChevronDown className="w-4 h-4 text-[#8E9299]" />}
+                            </button>
+                            
+                            {isExpanded && (
+                              <div className="p-4 grid grid-cols-1 gap-2 bg-[#FDF6EE]">
+                                {group.conditions.map(c => (
+                                  <button
+                                    key={c.id}
+                                    onClick={() => toggleCondition(c.id)}
+                                    className={`flex items-center justify-between p-3 rounded-xl border transition-all text-left ${
+                                      conditions.includes(c.id)
+                                        ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white'
+                                        : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                                    }`}
+                                  >
+                                    <span className="text-xs font-bold">{c.label}</span>
+                                    {conditions.includes(c.id) && <Check className="w-4 h-4" />}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                      
+                      <button
+                        onClick={() => toggleCondition('NONE')}
+                        className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${
+                          conditions.includes('NONE')
+                            ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white'
+                            : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                        }`}
+                      >
+                        <span className="text-xs font-bold uppercase tracking-wider">None of the above</span>
+                        {conditions.includes('NONE') && <Check className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <div className="space-y-6">
+                    <div className="p-4 bg-[#FFF0E0] rounded-2xl flex gap-3 border border-[#E07B2A]/20">
+                      <AlertCircle className="w-5 h-5 text-[#E07B2A] flex-shrink-0" />
+                      <p className="text-xs text-[#E07B2A] font-medium leading-relaxed">
+                        We'll flag any product containing these allergens as <span className="font-bold">UNSAFE</span> regardless of other health benefits.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {ALLERGEN_OPTIONS.map(allergen => (
+                        <button
+                          key={allergen.id}
+                          onClick={() => toggleAllergen(allergen.id)}
+                          className={`flex items-center gap-2 p-3 rounded-xl border transition-all text-left ${
+                            allergens.includes(allergen.id)
+                              ? 'bg-[#D94F3D] border-[#D94F3D] text-white'
+                              : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                          }`}
+                        >
+                          <span className="text-lg">{allergen.emoji}</span>
+                          <span className="text-xs font-bold">{allergen.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <button
+                      onClick={() => toggleAllergen('NONE')}
+                      className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all ${
+                        allergens.includes('NONE')
+                          ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white'
+                          : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                      }`}
+                    >
+                      <span className="text-xs font-bold uppercase tracking-wider">No known allergies</span>
+                      {allergens.includes('NONE') && <Check className="w-4 h-4" />}
+                    </button>
+                  </div>
+                )}
+
+                {step === 4 && (
+                  <div className="space-y-8">
+                    <div>
+                      <h4 className="text-sm font-bold text-[#1B3D2F] mb-4 uppercase tracking-widest">Activity Level</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        {ACTIVITY_LEVELS.map(level => (
+                          <button
+                            key={level.id}
+                            onClick={() => setActivityLevel(level.id)}
+                            className={`p-4 rounded-2xl border transition-all text-left flex flex-col gap-2 ${
+                              activityLevel === level.id
+                                ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white'
+                                : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                            }`}
+                          >
+                            <span className="text-2xl">{level.emoji}</span>
+                            <div>
+                              <p className="text-xs font-bold">{level.label}</p>
+                              <p className={`text-[9px] mt-1 leading-tight ${activityLevel === level.id ? 'text-white/70' : 'text-[#8E9299]'}`}>{level.description}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-bold text-[#1B3D2F] mb-4 uppercase tracking-widest">Dietary Preference</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {DIETARY_PREFERENCES_UI.map(pref => (
+                          <button
+                            key={pref.id}
+                            onClick={() => setDietaryPreference(pref.id)}
+                            className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${
+                              dietaryPreference === pref.id
+                                ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white'
+                                : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                            }`}
+                          >
+                            {pref.emoji} {pref.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-bold text-[#1B3D2F] mb-4 uppercase tracking-widest">Health Goals</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {HEALTH_GOALS_UI.map(goal => (
+                          <button
+                            key={goal.id}
+                            onClick={() => toggleHealthGoal(goal.id)}
+                            className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${
+                              healthGoals.includes(goal.id)
+                                ? 'bg-[#1B3D2F] border-[#1B3D2F] text-white'
+                                : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                            }`}
+                          >
+                            {goal.emoji} {goal.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sticky Summary Bar (Step 2 & 3) */}
+              {(step === 2 || step === 3) && (
+                <div className="absolute bottom-24 left-0 right-0 px-6 py-3 bg-white/80 backdrop-blur-md border-t border-[#FDF6EE] flex justify-between items-center z-10">
+                  <span className="text-xs font-bold text-[#1B3D2F]">
+                    {step === 2 ? `${conditions.length} conditions selected` : `${allergens.length} allergens selected`}
+                  </span>
+                  {((step === 2 && conditions.length === 0) || (step === 3 && allergens.length === 0)) && (
+                    <button 
+                      onClick={() => setStep(step + 1)}
+                      className="text-xs font-bold text-[#1B3D2F] underline"
+                    >
+                      Skip this step
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Navigation Footer */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-[#FDF6EE] flex gap-3">
+                {step > 1 ? (
                   <button 
-                    onClick={() => handleDelete(editingProfile!.id)}
-                    className="p-2 text-[#D94F3D] active:scale-90 transition-all"
+                    onClick={() => setStep(step - 1)}
+                    className="flex-1 py-4 bg-white border border-[#E8DDD0] text-[#1B3D2F] font-bold rounded-2xl active:scale-95 transition-all"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    Back
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => { setEditingProfile(null); setIsAdding(false); }}
+                    className="flex-1 py-4 bg-white border border-[#E8DDD0] text-[#1B3D2F] font-bold rounded-2xl active:scale-95 transition-all"
+                  >
+                    Cancel
+                  </button>
+                )}
+
+                {step < 4 ? (
+                  <button 
+                    onClick={() => setStep(step + 1)}
+                    disabled={step === 1 && !name.trim()}
+                    className={`flex-1 py-4 bg-[#1B3D2F] text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-all ${step === 1 && !name.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleSave}
+                    className="flex-1 py-4 bg-[#1B3D2F] text-white font-bold rounded-2xl shadow-lg shadow-[#1B3D2F]/20 active:scale-95 transition-all"
+                  >
+                    Save Profile
                   </button>
                 )}
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Name</label>
-                    <input 
-                      type="text" 
-                      value={newName}
-                      onChange={e => setNewName(e.target.value)}
-                      placeholder="e.g. Dadi"
-                      className="w-full p-4 bg-[#FDF6EE] border border-[#E8DDD0] rounded-2xl focus:outline-none focus:border-[#1B3D2F]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Age</label>
-                    <input 
-                      type="number" 
-                      value={newAge}
-                      onChange={e => setNewAge(e.target.value)}
-                      placeholder="Age"
-                      className="w-full p-4 bg-[#FDF6EE] border border-[#E8DDD0] rounded-2xl focus:outline-none focus:border-[#1B3D2F]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Gender</label>
-                  <div className="flex gap-2">
-                    {GENDERS.map(g => (
-                      <button 
-                        key={g}
-                        onClick={() => setNewGender(g)}
-                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${newGender === g ? 'bg-[#1B3D2F] text-white' : 'bg-[#FDF6EE] border border-[#E8DDD0] text-[#8E9299]'}`}
-                      >
-                        {g}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Lifestyle</label>
-                  <div className="flex gap-2">
-                    {LIFESTYLES.map(l => (
-                      <button 
-                        key={l}
-                        onClick={() => setNewLifestyle(l)}
-                        className={`flex-1 py-3 rounded-xl font-bold text-[10px] transition-all ${newLifestyle === l ? 'bg-[#1B3D2F] text-white' : 'bg-[#FDF6EE] border border-[#E8DDD0] text-[#8E9299]'}`}
-                      >
-                        {l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Avatar</label>
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                    {EMOJIS.map(e => (
-                      <button 
-                        key={e}
-                        onClick={() => setNewEmoji(e)}
-                        className={`w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center text-xl transition-all ${newEmoji === e ? 'bg-[#1B3D2F] text-white' : 'bg-[#FDF6EE] border border-[#E8DDD0]'}`}
-                      >
-                        {e}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest block mb-2">Health Conditions</label>
-                  <textarea 
-                    value={newConditions}
-                    onChange={e => setNewConditions(e.target.value)}
-                    placeholder="Enter any specific health conditions (e.g. Nut Allergy, Diabetes)"
-                    className="w-full p-4 bg-[#FDF6EE] border border-[#E8DDD0] rounded-2xl focus:outline-none focus:border-[#1B3D2F] min-h-[100px] resize-none"
-                  />
-                  <p className="text-[10px] text-[#8E9299] mt-1 italic">Type "None" if no conditions apply.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button 
-                  onClick={() => { setEditingProfile(null); setIsAdding(false); }}
-                  className="flex-1 py-4 bg-white border border-[#E8DDD0] text-[#1B3D2F] font-bold rounded-2xl active:scale-95 transition-all"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleSave}
-                  className="flex-1 py-4 bg-[#1B3D2F] text-white font-bold rounded-2xl shadow-lg shadow-[#1B3D2F]/20 active:scale-95 transition-all"
-                >
-                  Save Profile
-                </button>
-              </div>
+              {/* Toast */}
+              <AnimatePresence>
+                {toast && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="fixed bottom-32 left-1/2 -translate-x-1/2 bg-[#1B3D2F] text-white px-6 py-3 rounded-full font-bold shadow-xl z-[100]"
+                  >
+                    {toast}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </motion.div>
         )}
@@ -1067,7 +1495,7 @@ const ProfilesScreen = ({ profiles, user, onBack }: { profiles: Profile[], user:
   );
 };
 
-const Processing = ({ isSearch = false }: { isSearch?: boolean }) => {
+const Processing = ({ isSearch = false, onBack }: { isSearch?: boolean, onBack: () => void }) => {
   const [step, setStep] = useState(0);
   const scanSteps = [
     "Reading label with OCR...",
@@ -1096,6 +1524,15 @@ const Processing = ({ isSearch = false }: { isSearch?: boolean }) => {
 
   return (
     <div className="flex flex-col h-full">
+      <div className="absolute top-6 left-6 z-10">
+        <button 
+          onClick={onBack}
+          className="flex items-center gap-2 h-10 pl-3 pr-5 rounded-full bg-white border border-[#E8DDD0] text-[#1B3D2F] active:scale-95 transition-all"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span className="text-sm font-bold">Cancel</span>
+        </button>
+      </div>
       <Breadcrumbs phase="processing" />
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
         <div className="relative w-24 h-24 mb-12">
@@ -1196,14 +1633,52 @@ const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakd
   );
 };
 
-const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick }: { result: any, profiles: Profile[], onBack: () => void, user: any, onSearch: (name: string) => void, onProfileClick: () => void }) => {
-  const [activeProfile, setActiveProfile] = useState(profiles[0]);
+const ResultScreen = ({ 
+  result, 
+  profiles, 
+  onBack, 
+  user, 
+  onSearch, 
+  onProfileClick,
+  onSignUp,
+  onSignIn,
+  hasDismissedNudge,
+  onDismissNudge
+}: { 
+  result: any, 
+  profiles: Profile[], 
+  onBack: () => void, 
+  user: any, 
+  onSearch: (name: string) => void, 
+  onProfileClick: () => void,
+  onSignUp: () => void,
+  onSignIn: () => void,
+  hasDismissedNudge: boolean,
+  onDismissNudge: () => void
+}) => {
+  const [activeProfile, setActiveProfile] = useState<Profile>(profiles[0] || { 
+    id: 'guest', 
+    name: 'Guest', 
+    display_name: 'Guest',
+    avatar_color: '#1B3D2F',
+    avatar_letter: 'G',
+    age_group: 'ADULT_26_45',
+    gender: 'MALE',
+    activity_level: 'MODERATELY_ACTIVE',
+    conditions: ['NONE'],
+    allergens: [],
+    dietary_preference: 'NO_RESTRICTION',
+    health_goals: ['NONE'],
+    isDefault: false 
+  });
   const [showFamilyNudge, setShowFamilyNudge] = useState(
-    profiles.length <= 1  // show nudge if user has only default profile
+    profiles.length === 0  // show nudge if user has no profiles
   );
   const [expandedIng, setExpandedIng] = useState<number | null>(null);
   const [showChat, setShowChat] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showSignUpNudge, setShowSignUpNudge] = useState(false);
+  const [showFamilyBanner, setShowFamilyBanner] = useState(profiles.length === 0);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -1214,6 +1689,15 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
       recordScanEvent(result, user.uid, 'GENERAL');
     }
   }, [result, user]);
+
+  useEffect(() => {
+    if (!user && !hasDismissedNudge && result) {
+      const timer = setTimeout(() => {
+        setShowSignUpNudge(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [user, hasDismissedNudge, result]);
 
   // Update active profile if it was changed/deleted (fallback to first)
   useEffect(() => {
@@ -1250,48 +1734,32 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
   };
 
   const getProfileVerdict = (profile: Profile) => {
-    let score = result.overall_score;
-    const concerns: any[] = [];
+    // Map local Profile to FamilyProfile for the engine
+    const familyProfile: any = {
+      ...profile,
+      display_name: profile.name,
+      avatar_emoji: '👤',
+      age_group: profile.age_group,
+      activity_level: profile.activity_level,
+      health_conditions: profile.conditions || [],
+      allergens: profile.allergens || [],
+      dietary_preference: profile.dietary_preference || 'NO_RESTRICTION',
+      health_goals: profile.health_goals || []
+    };
 
-    const conditionsLower = profile.conditions.toLowerCase();
+    const verdict = calculateProfileVerdict(
+      familyProfile,
+      result.overall_score,
+      result.ingredients || [],
+      result.nutrition || null,
+      result.allergens || []
+    );
 
-    if (conditionsLower.includes('diabetes')) {
-      if (result.nutrition?.sugar_g > 10) {
-        const impact = -10; 
-        score += impact;
-        concerns.push({ label: 'Diabetes Warning', detail: `${result.nutrition.sugar_g}g sugar is specifically dangerous for your condition.`, impact });
-      }
-    }
-
-    if (profile.gender === 'Kid' || parseInt(profile.age) < 13) {
-      const cautionIngs = (result.ingredients || []).filter((i: any) => i.safety_tier === 'CAUTION' || i.safety_tier === 'AVOID');
-      if (cautionIngs.length > 0) {
-        const impact = -10;
-        score += impact;
-        concerns.push({ label: 'Additives', detail: 'Contains ingredients flagged for child sensitivity.', impact });
-      }
-    }
-
-    if (profile.lifestyle === 'Sedentary') {
-      if (result.nutrition?.calories > 300) {
-        const impact = -5;
-        score += impact;
-        concerns.push({ label: 'High Calorie', detail: 'High calorie density may not suit a sedentary lifestyle.', impact });
-      }
-      if (result.nutrition?.saturated_fat_g > 5) {
-        const impact = -5;
-        score += impact;
-        concerns.push({ label: 'High Saturated Fat', detail: 'Saturated fat intake should be limited for sedentary individuals.', impact });
-      }
-    } else if (profile.lifestyle === 'Very Active') {
-      if (result.nutrition?.protein_g > 10) {
-        const impact = 5;
-        score += impact;
-        concerns.push({ label: 'High Protein Bonus', detail: 'Extra protein is beneficial for your active lifestyle.', impact });
-      }
-    }
-
-    return { score: Math.max(0, Math.min(100, score)), concerns, baseScore: result.overall_score };
+    return { 
+      score: verdict.profile_score, 
+      concerns: verdict.concerns.map(c => ({ ...c, impact: c.severity === 'HIGH' ? -15 : c.severity === 'MODERATE' ? -8 : -3 })), 
+      baseScore: result.overall_score 
+    };
   };
 
   const currentVerdict = getProfileVerdict(activeProfile);
@@ -1305,13 +1773,13 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div className="flex gap-2">
-            {profiles.map(p => (
+            {profiles.length > 0 && profiles.map(p => (
               <button 
                 key={p.id}
                 onClick={() => setActiveProfile(p)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all ${activeProfile.id === p.id ? 'bg-white scale-110 shadow-lg' : 'bg-white/10 opacity-50'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${activeProfile.id === p.id ? 'bg-white scale-110 shadow-lg' : 'bg-white/10 opacity-50'}`}
               >
-                {p.emoji}
+                <ProfileAvatar profile={p} size="md" />
               </button>
             ))}
           </div>
@@ -1354,6 +1822,39 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
       </header>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+        {/* Family Banner */}
+        {profiles.length === 0 && showFamilyBanner && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#FFF3DC] border border-[#E07B2A]/30 p-5 rounded-[32px] relative overflow-hidden"
+          >
+            <div className="flex items-start gap-4">
+              <div className="text-2xl">👨‍👩‍👧</div>
+              <div className="flex-1">
+                <h4 className="font-bold text-[#1B3D2F] text-sm mb-1">Is this safe for your family too?</h4>
+                <p className="text-xs text-[#1B3D2F]/70 leading-relaxed mb-4">
+                  Add family members to see personalised scores for Dadi, kids, or anyone with health conditions.
+                </p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={onProfileClick}
+                    className="px-4 py-2 bg-[#1B3D2F] text-white text-[11px] font-bold rounded-xl active:scale-95 transition-all"
+                  >
+                    + Add Family Members
+                  </button>
+                  <button 
+                    onClick={() => setShowFamilyBanner(false)}
+                    className="px-4 py-2 bg-white/50 text-[#1B3D2F] text-[11px] font-bold rounded-xl active:scale-95 transition-all"
+                  >
+                    Not now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Summary */}
         <div className="bg-[#E8DDD0]/30 p-6 rounded-[32px] border border-[#E8DDD0] shadow-sm">
           <p className="text-[#1B3D2F] font-medium leading-relaxed italic">
@@ -1470,15 +1971,15 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
         </div>
 
         <AlsoScanned 
-          currentProductId={`${result.brand}_${result.product_name}`.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_')}
+          currentProductId={normaliseProductId(result.product_name, result.brand)}
           category={result.category}
-          subCategory={result.sub_category || 'FOOD'}
+          subCategory={detectSubCategory(result.product_name, result.category)}
           profileType="GENERAL"
           currentScore={result.overall_score}
           onScanSuggested={(name) => onSearch(name)}
         />
 
-        {showFamilyNudge && (
+        {showFamilyNudge && profiles.length === 0 && (
           <div className="bg-[#FFF3DC] rounded-[28px] border border-[#D4871E]/30 p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
@@ -1508,6 +2009,21 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
             </div>
           </div>
         )}
+
+        <div className="mt-4 mb-8 text-center px-6">
+          <p className="text-[10px] text-gray-400 leading-relaxed">
+            {result.category === 'FOOD' || result.category === 'SUPPLEMENT' ? 
+              "Analysis based on FSSAI, ICMR-NIN 2024, and Codex Alimentarius standards." :
+              result.category === 'COSMETIC' || result.category === 'PERSONAL_CARE' ?
+              "Analysis based on CDSCO, BIS, and EU Cosmetics Regulation standards." :
+              result.category === 'PET_FOOD' ?
+              "Analysis based on BIS and AAFCO (Global) pet food standards." :
+              result.category === 'HOUSEHOLD' ?
+              "Analysis based on BIS and EPA safety standards." :
+              "Analysis based on FSSAI, CDSCO, and global safety standards."
+            }
+          </p>
+        </div>
 
         <Button onClick={onBack} className="w-full py-4">
           Scan Another Product
@@ -1665,6 +2181,92 @@ const ResultScreen = ({ result, profiles, onBack, user, onSearch, onProfileClick
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Sign Up Nudge Bottom Sheet */}
+      <AnimatePresence>
+        {showSignUpNudge && (
+          <>
+            {/* Overlay */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-[2px]"
+              onClick={() => {
+                setShowSignUpNudge(false);
+                onDismissNudge();
+              }}
+            />
+            
+            {/* Bottom Sheet */}
+            <motion.div 
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 z-[80] bg-white rounded-t-[32px] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] p-8 pt-4 max-w-md mx-auto"
+            >
+              {/* Drag Handle */}
+              <div className="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6" />
+              
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-2xl font-bold text-[#1B3D2F]">Save this result?</h3>
+                <button 
+                  onClick={() => {
+                    setShowSignUpNudge(false);
+                    onDismissNudge();
+                  }}
+                  className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 active:scale-90 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="space-y-4 mb-8">
+                <p className="text-[#4A4A4A] leading-relaxed">
+                  You're scanning as a guest. Sign up free to:
+                </p>
+                <ul className="space-y-3">
+                  {[
+                    "Save your scan history",
+                    "Add family profiles for personalised scores",
+                    "Access results anytime across devices"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm font-medium text-[#1B3D2F]">
+                      <div className="text-[#2E7D4F] mt-0.5">✓</div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="space-y-4">
+                <Button 
+                  onClick={() => {
+                    setShowSignUpNudge(false);
+                    onDismissNudge();
+                    onSignUp();
+                  }} 
+                  className="w-full py-4 bg-[#1B3D2F] text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-all"
+                >
+                  Create Free Account
+                </Button>
+                
+                <button 
+                  onClick={() => {
+                    setShowSignUpNudge(false);
+                    onDismissNudge();
+                    onSignIn();
+                  }}
+                  className="w-full text-center text-xs font-bold text-gray-400 hover:text-[#1B3D2F] transition-colors"
+                >
+                  Already have an account? Sign in
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -1723,6 +2325,8 @@ export default function App() {
 
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasDismissedNudge, setHasDismissedNudge] = useState(false);
+  const [cameFromOnboarding, setCameFromOnboarding] = useState(false);
 
   // --- Auth & Data Listeners ---
 
@@ -1741,22 +2345,27 @@ export default function App() {
 
   // Profiles Listener
   useEffect(() => {
-    if (!user || !isAuthReady) {
-      setProfiles(DEFAULT_PROFILES);
+    if (!isAuthReady) return;
+
+    if (!user) {
+      const localProfiles = localStorage.getItem('guest_profiles');
+      if (localProfiles) {
+        try {
+          setProfiles(JSON.parse(localProfiles));
+        } catch (e) {
+          console.error("Failed to parse local profiles", e);
+          setProfiles([]);
+        }
+      } else {
+        setProfiles([]);
+      }
       return;
     }
 
     const q = query(collection(db, `users/${user.uid}/profiles`));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const pList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Profile));
-      if (pList.length === 0) {
-        DEFAULT_PROFILES.forEach(async (p) => {
-          const { id, ...rest } = p;
-          await addDoc(collection(db, `users/${user.uid}/profiles`), { ...rest, userId: user.uid });
-        });
-      } else {
-        setProfiles(pList);
-      }
+      setProfiles(pList);
     }, (error) => {
       handleFirestoreError(error, OperationType.LIST, `users/${user.uid}/profiles`);
     });
@@ -1881,7 +2490,7 @@ export default function App() {
           {phase === 'onboarding' && (
             <motion.div key="onboarding" className="h-full">
               <Onboarding 
-                onComplete={() => setPhase('home')} 
+                onComplete={() => { setPhase('home'); setCameFromOnboarding(true); }} 
                 onSignIn={() => setPhase('auth')} 
                 onSignUp={() => setPhase('signup')}
               />
@@ -1911,11 +2520,12 @@ export default function App() {
                 onAnalyse={handleAnalyse} 
                 onProfileClick={() => setPhase('profiles')} 
                 onHistoryClick={() => setPhase('history')}
-                onBack={() => setPhase('onboarding')} 
+                onBack={() => { setPhase('onboarding'); setCameFromOnboarding(false); }} 
                 profiles={profiles}
                 onSearch={handleSearch}
                 user={user}
                 onLogout={logout}
+                cameFromOnboarding={cameFromOnboarding}
               />
             </motion.div>
           )}
@@ -1933,6 +2543,7 @@ export default function App() {
             <motion.div key="profiles" className="h-full">
               <ProfilesScreen 
                 profiles={profiles} 
+                setProfiles={setProfiles}
                 user={user}
                 onBack={() => setPhase('home')} 
               />
@@ -1954,7 +2565,10 @@ export default function App() {
 
           {phase === 'processing' && (
             <motion.div key="processing" className="h-full">
-              <Processing isSearch={isSearch} />
+              <Processing 
+                isSearch={isSearch} 
+                onBack={() => setPhase('home')} 
+              />
             </motion.div>
           )}
 
@@ -1967,6 +2581,10 @@ export default function App() {
                 user={user}
                 onSearch={handleSearch}
                 onProfileClick={() => setPhase('profiles')}
+                onSignUp={() => setPhase('signup')}
+                onSignIn={() => setPhase('auth')}
+                hasDismissedNudge={hasDismissedNudge}
+                onDismissNudge={() => setHasDismissedNudge(true)}
               />
             </motion.div>
           )}

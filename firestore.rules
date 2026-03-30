@@ -7,11 +7,16 @@
 // Fields:
 //   - id: string (required)
 //   - name: string (required, 1-50 chars)
-//   - emoji: string (required)
-//   - age: string
-//   - gender: string (Male, Female, Kid)
-//   - lifestyle: string (Sedentary, Moderate, Very Active)
-//   - conditions: string
+//   - display_name: string (required)
+//   - avatar_color: string (required)
+//   - avatar_letter: string (required)
+//   - age_group: string
+//   - gender: string
+//   - activity_level: string
+//   - conditions: list
+//   - allergens: list
+//   - dietary_preference: string
+//   - health_goals: list
 //   - isDefault: boolean
 //   - userId: string (required, must match owner)
 //   - updatedAt: timestamp
@@ -62,12 +67,12 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidProfile(data) {
-      return data.keys().hasAll(['name', 'emoji', 'userId']) &&
+      return data.keys().hasAll(['name', 'display_name', 'avatar_color', 'avatar_letter', 'userId']) &&
              data.name is string && data.name.size() > 0 && data.name.size() <= 50 &&
-             data.emoji is string &&
-             data.userId == request.auth.uid &&
-             (data.gender in ['Male', 'Female', 'Kid']) &&
-             (data.lifestyle in ['Sedentary', 'Moderate', 'Very Active']);
+             data.display_name is string &&
+             data.avatar_color is string &&
+             data.avatar_letter is string &&
+             data.userId == request.auth.uid;
     }
 
     function isValidScan(data) {
@@ -76,6 +81,16 @@ service cloud.firestore {
              data.userId == request.auth.uid &&
              data.timestamp is timestamp &&
              data.resultJson is string;
+    }
+
+    function isValidScanEvent(data) {
+      return data.keys().hasAll(['product_id', 'product_name', 'sub_category', 'overall_score', 'user_id', 'scanned_at']) &&
+             data.product_id is string &&
+             data.product_name is string &&
+             data.sub_category is string &&
+             data.overall_score is number &&
+             data.user_id == request.auth.uid &&
+             data.scanned_at is timestamp;
     }
 
     // ===============================================================
@@ -104,6 +119,13 @@ service cloud.firestore {
         allow update: if isOwner(userId) && isValidScan(request.resource.data);
         allow delete: if isOwner(userId);
       }
+    }
+
+    // Community scan events
+    match /scan_events/{eventId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidScanEvent(request.resource.data);
+      allow update, delete: if false;
     }
   }
 }
