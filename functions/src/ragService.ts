@@ -71,10 +71,12 @@ export async function saveProductToCache(
 ): Promise<void> {
   try {
     const normName = normaliseIngredientName(analysisResult.product_name || '');
-    const aliases = [
-      normName,
-      ...(analysisResult.brand ? [normaliseIngredientName(analysisResult.brand + ' ' + analysisResult.product_name)] : [])
-    ].filter(Boolean);
+    const normBrand = analysisResult.brand ? normaliseIngredientName(analysisResult.brand) : '';
+    const normFull = (analysisResult.brand && analysisResult.product_name) 
+      ? normaliseIngredientName(analysisResult.brand + ' ' + analysisResult.product_name)
+      : '';
+
+    const aliases = Array.from(new Set([normName, normBrand, normFull])).filter(Boolean);
 
     await db.collection('products').add({
       barcode: barcode || null,

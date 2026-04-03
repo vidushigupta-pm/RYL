@@ -7,7 +7,7 @@
 // Layer 4: Unknown product → full LLM, save to DB after
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import {
   collection, doc, getDoc, getDocs, setDoc, addDoc,
   query, where, orderBy, limit, Timestamp
@@ -93,14 +93,27 @@ export async function saveProductToCache(
   analysisResult: any,
   barcode?: string
 ): Promise<void> {
+  if (!auth.currentUser) {
+    console.log(`[RAG] Skipping product cache: user not authenticated.`);
+    return;
+  }
   try {
     const normName = normaliseIngredientName(analysisResult.product_name || '');
+    const normBrand = normaliseIngredientName(analysisResult.brand || '');
+    
+    // Create a deterministic ID: brand-productname or just productname
+    const docId = normBrand 
+      ? `${normBrand}-${normName}`.replace(/\s+/g, '-').toLowerCase()
+      : normName.replace(/\s+/g, '-').toLowerCase();
+
+    if (!docId) return;
+
     const aliases = [
       normName,
       ...(analysisResult.brand ? [normaliseIngredientName(analysisResult.brand + ' ' + analysisResult.product_name)] : [])
     ].filter(Boolean);
 
-    await addDoc(collection(db, 'products'), {
+    await setDoc(doc(db, 'products', docId), {
       barcode: barcode || null,
       product_name: analysisResult.product_name,
       brand: analysisResult.brand,
@@ -112,7 +125,9 @@ export async function saveProductToCache(
       cached_verdict: analysisResult,
       verdict_computed_at: Timestamp.now(),
       data_source: 'LLM_GENERATED'
-    });
+    }, { merge: true }); // Use merge to preserve any manually verified fields if they exist
+    
+    console.log(`[RAG] Product cached successfully: ${docId}`);
   } catch (error) {
     console.error('Failed to save product to cache:', error);
     // Non-critical — don't throw

@@ -45,7 +45,8 @@ export interface IngredientEntry {
 export interface ProfileConcern {
   label: string;
   detail: string;
-  severity: 'HIGH' | 'MODERATE' | 'LOW';
+  severity: 'HIGH' | 'MODERATE' | 'LOW' | 'BENEFICIAL';
+  impact: number;
   source: string;
 }
 
@@ -146,6 +147,7 @@ function applyAgeRules(
         label: 'Salt Unsafe for Infants',
         detail: `${sodium}mg sodium per 100g. WHO recommends under 100mg for infants. Underdeveloped kidneys cannot process excess sodium.`,
         severity: 'HIGH',
+        impact: -25,
         source: 'WHO Infant Feeding Guidelines 2023'
       });
     }
@@ -157,6 +159,7 @@ function applyAgeRules(
         label: 'Added Sugar Unsafe for Infants',
         detail: `${sugar}g sugar per 100g. WHO recommends zero added sugar for children under 2 years.`,
         severity: 'HIGH',
+        impact: -25,
         source: 'WHO 2015 / ICMR-NIN 2024'
       });
     }
@@ -171,6 +174,7 @@ function applyAgeRules(
         label: 'Additives Unsafe for Infants',
         detail: `Contains ${unsafeForInfants.map(i => i.name).join(', ')}. Infants should not consume any artificial additives.`,
         severity: 'HIGH',
+        impact: -20,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -190,6 +194,7 @@ function applyAgeRules(
         label: '"Southampton Six" Colours Found',
         detail: `${found.map(i => i.name).join(', ')} — EU/UK mandate warning labels for these colours in children's products. Linked to hyperactivity.`,
         severity: 'HIGH',
+        impact: -18,
         source: 'EFSA 2009 / UK FSA Southampton Study'
       });
     }
@@ -201,6 +206,7 @@ function applyAgeRules(
         label: 'Very High Sugar for Young Child',
         detail: `${sugar}g per 100g is very high for ages 3–7. WHO recommends children's sugar intake stay under 10% of daily calories.`,
         severity: 'HIGH',
+        impact: -15,
         source: 'WHO 2015'
       });
     }
@@ -217,6 +223,7 @@ function applyAgeRules(
         label: 'Artificial Colours — Child Caution',
         detail: `${artificialColours.map(i => i.name).join(', ')} flagged for child consumption. European regulators require warning labels.`,
         severity: 'MODERATE',
+        impact: -10,
         source: 'EFSA 2009'
       });
     }
@@ -230,6 +237,7 @@ function applyAgeRules(
         label: 'Caffeine Not Recommended for Children',
         detail: 'Caffeine is not recommended for children under 12. Affects sleep and developing nervous system.',
         severity: 'HIGH',
+        impact: -15,
         source: 'FSSAI / WHO'
       });
     }
@@ -245,6 +253,7 @@ function applyAgeRules(
         label: 'High Sugar — Teen Health',
         detail: `${sugar}g sugar per 100g. High sugar intake in teens is linked to early onset insulin resistance in India.`,
         severity: 'MODERATE',
+        impact: -8,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -276,9 +285,19 @@ function applyConditionRules(
         label: 'High Sugar — Diabetes Risk',
         detail: `${sugar}g sugar per 100g (${(sugar / 4).toFixed(1)} teaspoons). ICMR-NIN recommends under 10g per 100g for diabetic-friendly products.`,
         severity: sugar > 20 ? 'HIGH' : 'MODERATE',
+        impact: d,
         source: 'ICMR-NIN 2024'
       });
     } else if (sugar <= 5) {
+      const d = 5;
+      score += d;
+      concerns.push({
+        label: 'Low Sugar — Diabetes Match',
+        detail: `Low sugar (${sugar}g/100g) — suitable for blood sugar management.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`Low sugar (${sugar}g/100g) — suitable for blood sugar management`);
     }
 
@@ -293,6 +312,7 @@ function applyConditionRules(
         label: 'Hidden High-GI Sweeteners',
         detail: `${hiddenGI.map(i => i.name).join(', ')} spike blood sugar as fast as regular sugar — common in products labelled "diabetic-friendly".`,
         severity: 'HIGH',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -300,7 +320,15 @@ function applyConditionRules(
     // Fibre is a positive for diabetics
     const fibre = nutrition?.fibre_g ?? 0;
     if (fibre > 5) {
-      score += 5;
+      const d = 5;
+      score += d;
+      concerns.push({
+        label: 'High Fibre — Diabetes Benefit',
+        detail: `High fibre (${fibre}g/100g) — slows glucose absorption, beneficial for blood sugar management.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`High fibre (${fibre}g/100g) — slows glucose absorption, beneficial for blood sugar management`);
     }
   }
@@ -320,17 +348,31 @@ function applyConditionRules(
         label: 'High Sodium — Blood Pressure Risk',
         detail: `${sodium}mg sodium per 100g. ICMR-NIN recommends hypertensive patients limit total daily sodium to 1500mg. This product alone uses ${Math.round((sodium / 1500) * 100)}% of that.`,
         severity: sodium > 800 ? 'HIGH' : 'MODERATE',
+        impact: d,
         source: 'ICMR-NIN 2024 / WHO'
       });
+    } else if (sodium < 100) {
+      const d = 6;
+      score += d;
+      concerns.push({
+        label: 'Low Sodium — Heart Friendly',
+        detail: `Low sodium (${sodium}mg) is excellent for managing blood pressure.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
+      positives.push(`Low sodium (${sodium}mg) — excellent for managing blood pressure`);
     }
 
     const transFat = nutrition?.trans_fat_g ?? 0;
     if (transFat > 0.2) {
-      score -= has(conditions, 'HEART_DISEASE') || has(conditions, 'HEART_ATTACK_HISTORY') ? 20 : 12;
+      const d = has(conditions, 'HEART_DISEASE') || has(conditions, 'HEART_ATTACK_HISTORY') ? -20 : -12;
+      score += d;
       concerns.push({
         label: 'Trans Fat — Heart Risk',
         detail: `${transFat}g trans fat. WHO recommends zero trans fat. Raises bad cholesterol (LDL) and lowers good cholesterol (HDL).`,
         severity: 'HIGH',
+        impact: d,
         source: 'WHO REPLACE Initiative / ICMR-NIN 2024'
       });
     }
@@ -343,6 +385,7 @@ function applyConditionRules(
         label: 'High Saturated Fat — Heart Concern',
         detail: `${saturatedFat}g saturated fat per 100g. Increases LDL cholesterol — particularly risky with heart disease history.`,
         severity: 'HIGH',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -360,6 +403,7 @@ function applyConditionRules(
         label: 'Soy — Thyroid Medication Interaction',
         detail: 'Soy can interfere with thyroid medication (levothyroxine) absorption. Take medication at least 4 hours away from soy-containing foods.',
         severity: 'MODERATE',
+        impact: -8,
         source: 'ICMR-NIN 2024 / Endocrine Society'
       });
     }
@@ -374,6 +418,7 @@ function applyConditionRules(
         label: 'High Sugar — PCOS Concern',
         detail: 'High sugar worsens insulin resistance in PCOS, amplifying hormonal imbalance. Low-glycaemic diet strongly recommended.',
         severity: 'HIGH',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -387,6 +432,7 @@ function applyConditionRules(
         label: 'Refined Carbs — PCOS Note',
         detail: 'Refined carbs spike insulin rapidly — key driver of PCOS symptoms. Whole grain alternatives are preferable.',
         severity: 'LOW',
+        impact: -6,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -408,6 +454,7 @@ function applyConditionRules(
         label: '⚠ Aspartame — Pregnancy Caution',
         detail: 'WHO IARC classified aspartame as "possibly carcinogenic" in 2023. Precautionary avoidance during pregnancy is advised.',
         severity: 'HIGH',
+        impact: -20,
         source: 'IARC/WHO 2023'
       });
     }
@@ -422,6 +469,7 @@ function applyConditionRules(
         label: '⚠ Nitrites — Pregnancy Danger',
         detail: 'Sodium nitrite forms nitrosamines (known carcinogens) and can cross the placenta. Avoid processed meats during pregnancy.',
         severity: 'HIGH',
+        impact: -30,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -434,6 +482,7 @@ function applyConditionRules(
           label: 'High Sodium — Third Trimester',
           detail: 'High sodium in third trimester can worsen pregnancy-induced hypertension and swelling.',
           severity: 'MODERATE',
+          impact: -10,
           source: 'ICMR-NIN 2024'
         });
       }
@@ -444,11 +493,13 @@ function applyConditionRules(
   if (has(conditions, 'KIDNEY_DISEASE_CKD')) {
     const sodium = nutrition?.sodium_mg ?? 0;
     if (sodium > 300) {
-      score -= Math.min(25, Math.round((sodium - 300) / 40));
+      const d = -Math.min(25, Math.round((sodium - 300) / 40));
+      score += d;
       concerns.push({
         label: 'Sodium — Kidney Disease Risk',
         detail: `${sodium}mg sodium per 100g. Damaged kidneys cannot efficiently excrete sodium. Strict restriction required.`,
         severity: 'HIGH',
+        impact: d,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -463,6 +514,7 @@ function applyConditionRules(
         label: 'Phosphate Additives — Kidney Danger',
         detail: 'Phosphates are poorly filtered by damaged kidneys and cause bone disease in CKD patients.',
         severity: 'HIGH',
+        impact: -15,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -474,6 +526,7 @@ function applyConditionRules(
         label: 'High Protein — Kidney Strain',
         detail: `${protein}g protein per 100g increases kidney workload. CKD patients typically need protein restriction.`,
         severity: 'MODERATE',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -491,6 +544,7 @@ function applyConditionRules(
         label: '⚠ Sulphites — Asthma Trigger',
         detail: 'Sulphites are known asthma triggers. FSSAI mandates declaration on labels. Avoid if asthmatic.',
         severity: 'HIGH',
+        impact: -20,
         source: 'FSSAI Food Safety Regulations 2011'
       });
     }
@@ -505,6 +559,7 @@ function applyConditionRules(
         label: 'Benzoate — Asthma Note',
         detail: 'Sodium benzoate may trigger or worsen asthma and urticaria in sensitive individuals.',
         severity: 'MODERATE',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -522,6 +577,7 @@ function applyConditionRules(
         label: 'Purines — Gout Risk',
         detail: 'INS 627 and 631 are purine-based flavour enhancers that can trigger gout attacks. Hidden in most Indian chips and instant snacks.',
         severity: 'HIGH',
+        impact: -15,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -541,6 +597,7 @@ function applyConditionRules(
         label: '⚠ ADHD — Hyperactivity Colours Found',
         detail: `${found.map(i => i.name).join(', ')} — directly linked to worsening ADHD symptoms. EU mandates warning labels. Strictly avoid.`,
         severity: 'HIGH',
+        impact: -20,
         source: 'EFSA 2009 / Lancet 2007 Southampton Study'
       });
     }
@@ -557,6 +614,7 @@ function applyConditionRules(
         label: 'Carrageenan — IBS Concern',
         detail: 'Animal studies link carrageenan to intestinal inflammation. People with IBS should be cautious.',
         severity: 'MODERATE',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -575,6 +633,7 @@ function applyConditionRules(
         label: 'High Fructose — Fatty Liver Risk',
         detail: 'High fructose corn syrup goes directly to the liver for processing and is a leading driver of fatty liver disease.',
         severity: 'HIGH',
+        impact: -15,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -584,6 +643,7 @@ function applyConditionRules(
         label: 'High Sugar — Fatty Liver Concern',
         detail: `${sugar}g sugar per 100g. Excess sugar consumption is a primary cause of non-alcoholic fatty liver disease.`,
         severity: 'MODERATE',
+        impact: -8,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -593,10 +653,24 @@ function applyConditionRules(
   if (has(conditions, 'MUSCLE_GAIN')) {
     const protein = nutrition?.protein_g ?? 0;
     if (protein >= 20) {
-      score += 10;
+      const d = 10; score += d;
+      concerns.push({
+        label: 'High Protein — Muscle Gain',
+        detail: `Excellent protein source (${protein}g/100g) for your muscle building goal.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`High protein (${protein}g/100g) — excellent for muscle building`);
     } else if (protein >= 12) {
-      score += 5;
+      const d = 5; score += d;
+      concerns.push({
+        label: 'Good Protein — Muscle Gain',
+        detail: `Good protein content (${protein}g/100g) supporting muscle maintenance.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`Good protein content (${protein}g/100g)`);
     } else if (protein < 5) {
       score -= 5;
@@ -604,6 +678,7 @@ function applyConditionRules(
         label: 'Low Protein',
         detail: `Only ${protein}g protein per 100g. Low for muscle building goals.`,
         severity: 'LOW',
+        impact: -5,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -614,6 +689,7 @@ function applyConditionRules(
         label: 'Trans Fat — Fitness Concern',
         detail: 'Trans fat interferes with muscle recovery and increases systemic inflammation.',
         severity: 'HIGH',
+        impact: -10,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -631,6 +707,7 @@ function applyConditionRules(
         label: 'High Calorie Density',
         detail: `${energy} kcal per 100g — calorie-dense products make portion control harder.`,
         severity: 'MODERATE',
+        impact: -6,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -640,11 +717,19 @@ function applyConditionRules(
         label: 'High Sugar — Weight Loss Note',
         detail: `${sugar}g sugar spikes insulin, promotes fat storage, and increases hunger soon after.`,
         severity: 'MODERATE',
+        impact: -8,
         source: 'ICMR-NIN 2024'
       });
     }
     if (fibre > 5) {
-      score += 5;
+      const d = 5; score += d;
+      concerns.push({
+        label: 'High Fibre — Weight Loss',
+        detail: `High fibre (${fibre}g/100g) promotes satiety and helps with weight management.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`High fibre (${fibre}g/100g) — promotes satiety, helps weight management`);
     }
   }
@@ -680,11 +765,19 @@ function applyHealthGoalRules(
             label: 'High Sugar — Goal Conflict',
             detail: `${sugar}g sugar is very high for your Low Sugar goal.`,
             severity: 'HIGH',
+            impact: -20,
             source: 'User Goal'
           });
-        }
-        if (sugar < 5) {
-          score += 5;
+        } else if (sugar <= 5) {
+          const d = 5;
+          score += d;
+          concerns.push({
+            label: 'Low Sugar — Goal Match',
+            detail: 'Low sugar content aligns perfectly with your health goal.',
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push('Low sugar content — matches your goal');
         }
         const hiddenGI = ingredients.filter(i =>
@@ -696,6 +789,7 @@ function applyHealthGoalRules(
             label: 'High GI Additives',
             detail: `Contains ${hiddenGI.map(i => i.name).join(', ')} which spike blood sugar rapidly.`,
             severity: 'HIGH',
+            impact: -10,
             source: 'User Goal'
           });
         }
@@ -703,10 +797,24 @@ function applyHealthGoalRules(
 
       case 'HIGH_PROTEIN':
         if (protein > 25) {
-          score += 12;
+          const d = 12; score += d;
+          concerns.push({
+            label: 'Excellent Protein — Goal Match',
+            detail: `Excellent protein source (${protein}g) for your high protein goal.`,
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push(`Excellent protein source (${protein}g)`);
         } else if (protein > 15) {
-          score += 8;
+          const d = 8; score += d;
+          concerns.push({
+            label: 'Good Protein — Goal Match',
+            detail: `Good protein source (${protein}g) for your high protein goal.`,
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push(`Good protein source (${protein}g)`);
         }
         break;
@@ -718,18 +826,33 @@ function applyHealthGoalRules(
             label: 'High Calorie Density',
             detail: `${energy} kcal is high for weight loss goals.`,
             severity: 'MODERATE',
+            impact: -8,
             source: 'User Goal'
           });
         }
         if (fibre > 5) {
-          score += 8;
+          const d = 8; score += d;
+          concerns.push({
+            label: 'High Fibre — Goal Match',
+            detail: 'High fibre content aids satiety, supporting your weight loss goal.',
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push('High fibre content — aids satiety for weight loss');
         }
         break;
 
       case 'MUSCLE_GAIN':
         if (protein > 20) {
-          score += 10;
+          const d = 10; score += d;
+          concerns.push({
+            label: 'High Protein — Goal Match',
+            detail: 'High protein content is ideal for your muscle gain goal.',
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push('High protein — ideal for muscle gain');
         }
         if (transFat > 0.5) {
@@ -738,6 +861,7 @@ function applyHealthGoalRules(
             label: 'Trans Fat — Muscle Gain Conflict',
             detail: 'Trans fats increase inflammation and hinder muscle recovery.',
             severity: 'HIGH',
+            impact: -12,
             source: 'User Goal'
           });
         }
@@ -750,6 +874,7 @@ function applyHealthGoalRules(
             label: 'High Sodium — Goal Conflict',
             detail: `${sodium}mg sodium is high for your Low Sodium goal.`,
             severity: 'HIGH',
+            impact: -10,
             source: 'User Goal'
           });
         }
@@ -757,7 +882,15 @@ function applyHealthGoalRules(
 
       case 'HIGH_FIBRE':
         if (fibre > 6) {
-          score += 10;
+          const d = 10;
+          score += d;
+          concerns.push({
+            label: 'Excellent Fibre — Goal Match',
+            detail: `Excellent fibre source (${fibre}g) matches your high fibre goal.`,
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push('Excellent fibre source — matches your goal');
         } else if (fibre < 2) {
           score -= 5;
@@ -765,6 +898,7 @@ function applyHealthGoalRules(
             label: 'Low Fibre',
             detail: 'This product is low in fibre.',
             severity: 'LOW',
+            impact: -5,
             source: 'User Goal'
           });
         }
@@ -775,6 +909,7 @@ function applyHealthGoalRules(
             label: 'Refined Flour Base',
             detail: 'Main ingredient is refined flour, which is low in natural fibre.',
             severity: 'MODERATE',
+            impact: -8,
             source: 'User Goal'
           });
         }
@@ -782,6 +917,15 @@ function applyHealthGoalRules(
 
       case 'ENDURANCE':
         if (sodium > 200) {
+          const d = 3;
+          score += d;
+          concerns.push({
+            label: 'Electrolytes — Endurance Match',
+            detail: 'Contains electrolytes (sodium) — beneficial for endurance.',
+            severity: 'BENEFICIAL',
+            impact: d,
+            source: 'User Goal'
+          });
           positives.push('Contains electrolytes (sodium) — beneficial for endurance');
         }
         break;
@@ -830,12 +974,21 @@ function applyGenderRules(
           label: 'Iron Absorption — Active Women',
           detail: `${ironInhibitors.map(i => i.name).join(', ')} can reduce iron absorption. Active women aged 13–45 have higher iron needs due to menstruation.`,
           severity: 'LOW',
+          impact: 0,
           source: 'ICMR-NIN 2024'
         });
       }
       // High protein is more impactful for active females
       if (protein > 15) {
-        score += 3;
+        const d = 3;
+        score += d;
+        concerns.push({
+          label: 'High Protein — Active Female',
+          detail: `High protein (${protein}g/100g) — supports muscle recovery for active women.`,
+          severity: 'BENEFICIAL',
+          impact: d,
+          source: 'ICMR-NIN 2024'
+        });
         positives.push(
           `High protein (${protein}g/100g) — supports muscle recovery for active women`
         );
@@ -844,7 +997,15 @@ function applyGenderRules(
 
     // PCOD + active = protein is a bigger positive
     if (has(conditions, 'PCOD_PCOS') && isVeryActive && protein > 12) {
-      score += 4;
+      const d = 4;
+      score += d;
+      concerns.push({
+        label: 'Protein — PCOD Management',
+        detail: 'Protein supports muscle building — beneficial for PCOD management with active lifestyle.',
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(
         `Protein supports muscle building — beneficial for PCOD management with active lifestyle`
       );
@@ -859,7 +1020,15 @@ function applyGenderRules(
           .some(s => i.name.toLowerCase().includes(s))
       );
       if (hasCalcium) {
-        score += 3;
+        const d = 3;
+        score += d;
+        concerns.push({
+          label: 'Calcium — Bone Health',
+          detail: 'Contains calcium — important for bone health in women 50+.',
+          severity: 'BENEFICIAL',
+          impact: d,
+          source: 'ICMR-NIN 2024'
+        });
         positives.push('Contains calcium — important for bone health in women 50+');
       }
     }
@@ -872,6 +1041,7 @@ function applyGenderRules(
           label: 'Calorie Density — Senior Women Note',
           detail: `${energy} kcal/100g is high for a sedentary senior woman. Metabolic rate decreases significantly after 60.`,
           severity: 'LOW',
+          impact: -5,
           source: 'ICMR-NIN 2024'
         });
       }
@@ -884,18 +1054,42 @@ function applyGenderRules(
     // Young active male — higher calorie and protein tolerance
     if (isYoungActive) {
       if (energy > 400) {
-        score += 4; // offset sedentary penalty — active males need calories
+        const d = 4;
+        score += d; // offset sedentary penalty — active males need calories
+        concerns.push({
+          label: 'Energy Density — Active Male',
+          detail: `High energy density (${energy} kcal/100g) — suits your active lifestyle.`,
+          severity: 'BENEFICIAL',
+          impact: d,
+          source: 'ICMR-NIN 2024'
+        });
         positives.push(
           `High energy density (${energy} kcal/100g) — suits your active lifestyle`
         );
       }
       if (protein > 20) {
-        score += 8;
+        const d = 8;
+        score += d;
+        concerns.push({
+          label: 'High Protein — Active Male',
+          detail: `High protein (${protein}g/100g) — excellent for muscle building.`,
+          severity: 'BENEFICIAL',
+          impact: d,
+          source: 'ICMR-NIN 2024'
+        });
         positives.push(
           `High protein (${protein}g/100g) — excellent for muscle building`
         );
       } else if (protein > 15) {
-        score += 4;
+        const d = 4;
+        score += d;
+        concerns.push({
+          label: 'Good Protein — Active Male',
+          detail: `Good protein (${protein}g/100g) for your activity level.`,
+          severity: 'BENEFICIAL',
+          impact: d,
+          source: 'ICMR-NIN 2024'
+        });
         positives.push(`Good protein (${protein}g/100g) for your activity level`);
       }
     }
@@ -908,6 +1102,7 @@ function applyGenderRules(
           label: 'Saturated Fat — High Risk Profile',
           detail: `Sedentary men aged 46–60 are the highest risk group for cardiovascular disease in India. ${saturatedFat}g saturated fat per 100g warrants caution.`,
           severity: 'HIGH',
+          impact: -8,
           source: 'ICMR-NIN 2024'
         });
       }
@@ -917,6 +1112,7 @@ function applyGenderRules(
           label: 'High Sugar — Metabolic Syndrome Risk',
           detail: `High sugar + sedentary lifestyle + middle age is the primary pattern for Type 2 diabetes onset in Indian men.`,
           severity: 'MODERATE',
+          impact: -6,
           source: 'ICMR-NIN 2024'
         });
       }
@@ -931,6 +1127,7 @@ function applyGenderRules(
           label: 'Sodium — Senior Male Concern',
           detail: `${sodium}mg sodium. Senior men are at higher risk for hypertension and kidney strain from high sodium intake.`,
           severity: 'MODERATE',
+          impact: -6,
           source: 'ICMR-NIN 2024'
         });
       }
@@ -956,12 +1153,13 @@ function applyActivityRules(
   const protein = nutrition?.protein_g ?? 0;
 
   if (activityLevel === 'SEDENTARY') {
-    if (energy > 400) {
-      score -= 5;
+    if (energy > 300) {
+      score -= 8;
       concerns.push({
         label: 'Calorie Density — Sedentary Note',
         detail: `${energy} kcal/100g is high for a sedentary lifestyle. Excess calories with low activity leads to fat accumulation.`,
         severity: 'LOW',
+        impact: -8,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -971,6 +1169,7 @@ function applyActivityRules(
         label: 'High Sugar + Sedentary Lifestyle',
         detail: 'High sugar with low activity significantly elevates risk of insulin resistance over time.',
         severity: 'MODERATE',
+        impact: -5,
         source: 'ICMR-NIN 2024'
       });
     }
@@ -978,23 +1177,57 @@ function applyActivityRules(
 
   if (activityLevel === 'VERY_ACTIVE' || activityLevel === 'ATHLETE') {
     if (protein > 15) {
-      score += 4;
+      const d = 4;
+      score += d;
+      concerns.push({
+        label: 'Good Protein — Active Lifestyle',
+        detail: `Good protein (${protein}g/100g) supports your active lifestyle.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`Good protein (${protein}g/100g) supports your active lifestyle`);
     }
     // Moderate sugar is a positive for athletes (energy)
     if (sugar >= 8 && sugar <= 20) {
+      const d = 3;
+      score += d;
+      concerns.push({
+        label: 'Moderate Carbs — Energy Support',
+        detail: 'Moderate carbs can support pre/post-workout energy.',
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`Moderate carbs can support pre/post-workout energy`);
     }
   }
 
   if (activityLevel === 'ATHLETE') {
     if (protein > 25) {
-      score += 5;
+      const d = 5;
+      score += d;
+      concerns.push({
+        label: 'Very High Protein — Athlete',
+        detail: `Very high protein (${protein}g/100g) — excellent for high-performance training.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push(`Very high protein (${protein}g/100g) — excellent for high-performance training`);
     }
     // Electrolytes matter for athletes
     const hasSodium = (nutrition?.sodium_mg ?? 0) > 200;
     if (hasSodium) {
+      const d = 2;
+      score += d;
+      concerns.push({
+        label: 'Electrolytes — Athlete Support',
+        detail: 'Contains sodium — useful for electrolyte replenishment post-training.',
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'ICMR-NIN 2024'
+      });
       positives.push('Contains sodium — useful for electrolyte replenishment post-training');
     }
   }
@@ -1113,6 +1346,7 @@ export function calculateProfileVerdict(
         label: `Contains ${found}`,
         detail: `This product contains ${found} — listed as an allergen for ${profile.display_name}. Do not consume without medical advice.`,
         severity: 'HIGH',
+        impact: -100,
         source: 'FSSAI Allergen Declaration Rules'
       }],
       positives: [],
@@ -1121,28 +1355,27 @@ export function calculateProfileVerdict(
   }
 
   // ── Step 2: Start from base score ────────────────────────────
-  let score = baseProductScore;
   const concerns: ProfileConcern[] = [];
   const positives: string[] = [];
 
   // ── Step 3: Apply age rules ───────────────────────────────────
-  score = applyAgeRules(
-    score, profile.age_group, modifiedIngredients, nutrition, concerns, positives
+  applyAgeRules(
+    baseProductScore, profile.age_group, modifiedIngredients, nutrition, concerns, positives
   );
 
   // ── Step 4: Apply condition rules ────────────────────────────
-  score = applyConditionRules(
-    score, profile.health_conditions, modifiedIngredients, nutrition, concerns, positives
+  applyConditionRules(
+    baseProductScore, profile.health_conditions, modifiedIngredients, nutrition, concerns, positives
   );
 
   // ── Step 4.5: Apply health goal rules ────────────────────────
-  score = applyHealthGoalRules(
-    score, profile.health_goals, modifiedIngredients, nutrition, concerns, positives
+  applyHealthGoalRules(
+    baseProductScore, profile.health_goals, modifiedIngredients, nutrition, concerns, positives
   );
 
   // ── Step 5: Apply gender rules (with ingredients passed in) ──
-  score = applyGenderRules(
-    score,
+  applyGenderRules(
+    baseProductScore,
     profile.gender,
     profile.age_group,
     profile.activity_level,
@@ -1154,18 +1387,20 @@ export function calculateProfileVerdict(
   );
 
   // ── Step 6: Apply activity rules ─────────────────────────────
-  score = applyActivityRules(
-    score, profile.activity_level, profile.gender, nutrition, concerns, positives
+  applyActivityRules(
+    baseProductScore, profile.activity_level, profile.gender, nutrition, concerns, positives
   );
 
   // ── Step 7: Sort concerns by severity ────────────────────────
-  const order = { HIGH: 0, MODERATE: 1, LOW: 2 };
+  const order = { HIGH: 0, MODERATE: 1, LOW: 2, BENEFICIAL: 3 };
   concerns.sort((a, b) => order[a.severity] - order[b.severity]);
 
   // ── Step 8: Remove duplicate positives ───────────────────────
   const uniquePositives = [...new Set(positives)];
 
-  const finalScore = cap(score);
+  // Calculate final score from impacts
+  const totalImpact = concerns.reduce((acc, c) => acc + c.impact, 0);
+  const finalScore = cap(baseProductScore + totalImpact);
 
   return {
     profile,

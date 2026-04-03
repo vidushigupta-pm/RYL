@@ -1835,10 +1835,16 @@ const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakd
         )}
       </div>
 
-      <div className="pt-6 border-t border-gray-100 flex justify-between items-center sticky bottom-0 bg-white">
-        <span className="text-xs font-bold text-[#1B3D2F] uppercase tracking-tight">Final Verdict</span>
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold text-lg ${score >= 70 ? 'bg-[#E6F4EC] text-[#2E7D4F]' : score >= 40 ? 'bg-[#FFF0E0] text-[#E07B2A]' : 'bg-[#FDECEA] text-[#D94F3D]'}`}>
-          {score}
+      <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm mt-4 sticky bottom-0">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-bold text-[#1B3D2F] uppercase tracking-tight">Final Verdict</span>
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-mono font-bold text-xl ${
+            score >= 70 ? 'bg-[#E6F4EC] text-[#2E7D4F]' : 
+            score >= 40 ? 'bg-[#FFF3DC] text-[#D4871E]' : 
+            'bg-[#FDECEA] text-[#D94F3D]'
+          }`}>
+            {score}
+          </div>
         </div>
       </div>
     </div>
@@ -1969,7 +1975,10 @@ const ResultScreen = ({
 
     return { 
       score: verdict.profile_score, 
-      concerns: verdict.concerns.map(c => ({ ...c, impact: c.severity === 'HIGH' ? -15 : c.severity === 'MODERATE' ? -8 : -3 })), 
+      concerns: verdict.concerns.map(c => ({ 
+        ...c, 
+        impact: typeof c.impact === 'number' ? c.impact : (c.severity === 'HIGH' ? -15 : c.severity === 'MODERATE' ? -8 : -3) 
+      })), 
       baseScore: result.overall_score 
     };
   };
@@ -2204,20 +2213,21 @@ const ResultScreen = ({
               <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Smarter Switch</h3>
             </div>
             <div className="bg-white rounded-[32px] border border-[#E8DDD0] overflow-hidden">
-              {result.suggestions.map((s: any, i: number) => (
-                <div key={i} className={`p-5 ${i > 0 ? 'border-t border-[#FDF6EE]' : ''}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
-                      s.type === 'GENERIC' ? 'bg-[#E6F4EC] text-[#2E7D4F]' : 'bg-[#FFF3DC] text-[#D4871E]'
-                    }`}>
-                      {s.type === 'GENERIC' ? 'Natural Alternative' : 'Better Choice'}
-                    </span>
-                    {s.type === 'BRANDED' && <CheckCircle2 className="w-4 h-4 text-[#2E7D4F]" />}
+              {result.suggestions.map((s: any, i: number) => {
+                const suggestion = typeof s === 'string' ? { name: s, reason: 'A healthier alternative.', type: 'GENERIC' } : s;
+                if (!suggestion.name) return null;
+                return (
+                  <div key={i} className={`p-5 ${i > 0 ? 'border-t border-[#FDF6EE]' : ''}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-[#E6F4EC] text-[#2E7D4F]">
+                        Natural Alternative
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-[#1B3D2F] mb-1">{suggestion.name}</h4>
+                    <p className="text-xs text-gray-500 leading-relaxed">{suggestion.reason}</p>
                   </div>
-                  <h4 className="font-bold text-[#1B3D2F] mb-1">{s.name}</h4>
-                  <p className="text-xs text-gray-500 leading-relaxed">{s.reason}</p>
-                </div>
-              ))}
+                );
+              })}
               <div className="p-4 bg-gray-50 border-t border-[#FDF6EE]">
                 <p className="text-[9px] text-gray-400 text-center leading-relaxed italic">
                   Suggestions are based solely on nutritional data and FSSAI standards. No brand has paid for this recommendation.
@@ -2544,38 +2554,38 @@ const ResultScreen = ({
 const NoResults = ({ query, onRetry, onScan }: { query: string, onRetry: () => void, onScan: () => void }) => {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full">
-      <div className="w-20 h-20 bg-[#FDF6EE] rounded-full flex items-center justify-center mb-6">
+      <div className="w-20 h-20 bg-[#FFF9F2] rounded-full flex items-center justify-center mb-6">
         <Search className="w-10 h-10 text-[#D4871E]" />
       </div>
       <h2 className="text-2xl font-bold text-[#1B3D2F] mb-3">Product Not Found</h2>
-      <p className="text-[#8E9299] mb-8 leading-relaxed">
+      <p className="text-[#8E9299] mb-8 leading-relaxed max-w-[280px]">
         We couldn't find reliable ingredient data for <span className="font-bold text-[#1B3D2F]">"{query}"</span> in our search.
       </p>
       
-      <div className="w-full space-y-4">
-        <div className="p-4 bg-[#FDF6EE] rounded-2xl text-left border border-[#E8DDD0]">
-          <h4 className="font-bold text-[#1B3D2F] text-sm mb-2">Try these instead:</h4>
-          <ul className="text-xs text-[#8E9299] space-y-2">
-            <li className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#D4871E] mt-1" />
+      <div className="w-full space-y-4 max-w-[320px]">
+        <div className="p-5 bg-[#FFF9F2] rounded-2xl text-left border border-[#FDF6EE]">
+          <h4 className="font-bold text-[#1B3D2F] text-sm mb-3">Try these instead:</h4>
+          <ul className="text-xs text-[#8E9299] space-y-3">
+            <li className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#D4871E] shrink-0" />
               Check for spelling errors.
             </li>
-            <li className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#D4871E] mt-1" />
+            <li className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#D4871E] shrink-0" />
               Add the brand name (e.g., "Parle-G Biscuits").
             </li>
-            <li className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#D4871E] mt-1" />
+            <li className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#D4871E] shrink-0" />
               Scan the product label for 100% accuracy.
             </li>
           </ul>
         </div>
 
-        <Button onClick={onScan} className="w-full flex items-center justify-center gap-2">
+        <Button onClick={onScan} className="w-full flex items-center justify-center gap-2 py-4">
           <Camera className="w-5 h-5" /> Scan Product Label
         </Button>
         
-        <Button onClick={onRetry} variant="secondary" className="w-full">
+        <Button onClick={onRetry} variant="secondary" className="w-full py-4 border-[#E8DDD0]">
           Try Another Search
         </Button>
       </div>

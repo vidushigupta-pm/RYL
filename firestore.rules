@@ -1,44 +1,40 @@
-// ===============================================================
-// Assumed Data Model
-// ===============================================================
-//
-// Collection: users/{userId}/profiles/{profileId}
-// Document ID: auto-generated or profile ID
-// Fields:
-//   - id: string (required)
-//   - name: string (required, 1-50 chars)
-//   - display_name: string (required)
-//   - avatar_color: string (required)
-//   - avatar_letter: string (required)
-//   - age_group: string
-//   - gender: string
-//   - activity_level: string
-//   - conditions: list
-//   - allergens: list
-//   - dietary_preference: string
-//   - health_goals: list
-//   - isDefault: boolean
-//   - userId: string (required, must match owner)
-//   - updatedAt: timestamp
-//
-// Collection: users/{userId}/scans/{scanId}
-// Document ID: auto-generated
-// Fields:
-//   - id: string
-//   - productName: string (required)
-//   - brand: string
-//   - category: string
-//   - overallScore: number
-//   - summary: string
-//   - resultJson: string (required)
-//   - userId: string (required, must match owner)
-//   - timestamp: timestamp (required)
-//
-// ===============================================================
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: /products/{productId}
+    // Fields:
+    //   - product_name: string (required)
+    //   - brand: string (optional)
+    //   - category: string (required)
+    //   - ingredients: list (required)
+    //   - nutrition: map (optional)
+    //   - overall_score: number (required)
+    //   - score_breakdown: map (required)
+    //   - summary: string (required)
+    //   - india_context: string (required)
+    //   - is_upf: bool (required)
+    //   - hfss_status: string (required)
+    //   - suggestions: list (required)
+    //   - last_updated: timestamp (required)
+    //
+    // Collection: /ingredients/{ingredientId}
+    // Fields:
+    //   - name: string (required)
+    //   - common_names: list (required)
+    //   - function: string (required)
+    //   - safety_tier: string (required, GREEN/YELLOW/ORANGE/RED)
+    //   - plain_explanation: string (required)
+    //   - condition_flags: list (required)
+    //   - india_specific_note: string (optional)
+    //   - score_impact: number (required)
+    //   - data_quality: string (required, VERIFIED/LLM_GENERATED)
+    //
+    // ===============================================================
 
     // ===============================================================
     // Helper Functions
@@ -48,84 +44,69 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "vidushi2904@gmail.com" && request.auth.token.email_verified == true));
     }
 
-    function isValidEmail(email) {
-      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
     }
 
-    function validString(field, min, max) {
-      return request.resource.data[field] is string && 
-             request.resource.data[field].size() >= min && 
-             request.resource.data[field].size() <= max;
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
     }
 
-    // ===============================================================
-    // Domain Validators
-    // ===============================================================
-
-    function isValidProfile(data) {
-      return data.keys().hasAll(['name', 'display_name', 'avatar_color', 'avatar_letter', 'userId']) &&
-             data.name is string && data.name.size() > 0 && data.name.size() <= 50 &&
-             data.display_name is string &&
-             data.avatar_color is string &&
-             data.avatar_letter is string &&
-             data.userId == request.auth.uid;
-    }
-
-    function isValidScan(data) {
-      return data.keys().hasAll(['productName', 'userId', 'timestamp', 'resultJson']) &&
-             data.productName is string && data.productName.size() > 0 &&
-             data.userId == request.auth.uid &&
-             data.timestamp is timestamp &&
-             data.resultJson is string;
-    }
-
-    function isValidScanEvent(data) {
-      return data.keys().hasAll(['product_id', 'product_name', 'sub_category', 'overall_score', 'user_id', 'scanned_at']) &&
-             data.product_id is string &&
-             data.product_name is string &&
-             data.sub_category is string &&
+    function isValidProduct(data) {
+      return hasRequiredFields(['product_name', 'category', 'ingredients', 'overall_score', 'summary', 'last_updated']) &&
+             data.product_name is string && data.product_name.size() < 200 &&
+             data.category is string &&
+             data.ingredients is list && data.ingredients.size() < 100 &&
              data.overall_score is number &&
-             data.user_id == request.auth.uid &&
-             data.scanned_at is timestamp;
+             data.summary is string && data.summary.size() < 2000 &&
+             data.last_updated is timestamp;
+    }
+
+    function isValidIngredient(data) {
+      return hasRequiredFields(['name', 'safety_tier', 'function', 'plain_explanation', 'score_impact', 'data_quality']) &&
+             data.name is string && data.name.size() < 100 &&
+             data.safety_tier in ['GREEN', 'YELLOW', 'ORANGE', 'RED'] &&
+             data.function is string && data.function.size() < 500 &&
+             data.plain_explanation is string && data.plain_explanation.size() < 1000 &&
+             data.score_impact is number &&
+             data.data_quality in ['VERIFIED', 'LLM_GENERATED'];
     }
 
     // ===============================================================
-    // Rules
+    // Collection Rules
     // ===============================================================
 
-    // Default deny
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // User data scoping
-    match /users/{userId} {
-      allow read, write: if isOwner(userId);
-
-      match /profiles/{profileId} {
-        allow read: if isOwner(userId);
-        allow create: if isOwner(userId) && isValidProfile(request.resource.data);
-        allow update: if isOwner(userId) && isValidProfile(request.resource.data);
-        allow delete: if isOwner(userId);
-      }
-
-      match /scans/{scanId} {
-        allow read: if isOwner(userId);
-        allow create: if isOwner(userId) && isValidScan(request.resource.data);
-        allow update: if isOwner(userId) && isValidScan(request.resource.data);
-        allow delete: if isOwner(userId);
-      }
-    }
-
-    // Community scan events
-    match /scan_events/{eventId} {
+    match /products/{productId} {
+      // Allow anyone to read products (publicly available info)
       allow read: if true;
-      allow create: if isAuthenticated() && isValidScanEvent(request.resource.data);
-      allow update, delete: if false;
+      // Only authenticated users can contribute new products
+      allow create: if isAuthenticated() && isValidProduct(request.resource.data);
+      // Only admins can update or delete products
+      allow update, delete: if isAdmin();
+    }
+
+    match /ingredients/{ingredientId} {
+      // Allow anyone to read ingredient details
+      allow read: if true;
+      // Only authenticated users can contribute new ingredient data (LLM_GENERATED)
+      allow create: if isAuthenticated() && isValidIngredient(request.resource.data);
+      // Only admins can update or delete ingredients (to verify LLM data)
+      allow update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow create: if isAuthenticated() && request.auth.uid == userId && 
+                    hasOnlyAllowedFields(['role', 'email', 'name']) &&
+                    request.resource.data.role == 'user';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
   }
 }

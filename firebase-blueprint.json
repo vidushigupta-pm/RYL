@@ -1,75 +1,52 @@
 {
   "entities": {
-    "Profile": {
-      "title": "Profile",
-      "description": "A family member profile for personalized health analysis",
+    "Product": {
+      "title": "Product",
+      "description": "A scanned or searched product with its analysis.",
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "display_name": { "type": "string" },
-        "avatar_color": { "type": "string" },
-        "avatar_letter": { "type": "string" },
-        "age_group": { "type": "string" },
-        "gender": { "type": "string" },
-        "activity_level": { "type": "string" },
-        "conditions": { "type": "array", "items": { "type": "string" } },
-        "allergens": { "type": "array", "items": { "type": "string" } },
-        "dietary_preference": { "type": "string" },
-        "health_goals": { "type": "array", "items": { "type": "string" } },
-        "isDefault": { "type": "boolean" },
-        "userId": { "type": "string" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["name", "display_name", "avatar_color", "avatar_letter", "userId"]
-    },
-    "Scan": {
-      "title": "Scan",
-      "description": "A product scan result",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "productName": { "type": "string" },
-        "brand": { "type": "string" },
-        "category": { "type": "string" },
-        "overallScore": { "type": "number" },
-        "summary": { "type": "string" },
-        "resultJson": { "type": "string", "description": "Full analysis result as JSON string" },
-        "userId": { "type": "string" },
-        "timestamp": { "type": "string", "format": "date-time" }
-      },
-      "required": ["productName", "userId", "timestamp"]
-    },
-    "ScanEvent": {
-      "title": "ScanEvent",
-      "description": "A global scan event for community insights",
-      "type": "object",
-      "properties": {
-        "product_id": { "type": "string" },
         "product_name": { "type": "string" },
         "brand": { "type": "string" },
         "category": { "type": "string" },
-        "sub_category": { "type": "string" },
+        "ingredients": { "type": "array", "items": { "type": "string" } },
+        "nutrition": { "type": "object" },
         "overall_score": { "type": "number" },
-        "profile_type": { "type": "string" },
-        "user_id": { "type": "string" },
-        "scanned_at": { "type": "string", "format": "date-time" }
+        "score_breakdown": { "type": "object" },
+        "summary": { "type": "string" },
+        "india_context": { "type": "string" },
+        "is_upf": { "type": "boolean" },
+        "hfss_status": { "type": "string" },
+        "suggestions": { "type": "array", "items": { "type": "string" } },
+        "last_updated": { "type": "string", "format": "date-time" }
       },
-      "required": ["product_id", "product_name", "sub_category", "overall_score", "user_id", "scanned_at"]
+      "required": ["product_name", "category", "ingredients"]
+    },
+    "Ingredient": {
+      "title": "Ingredient",
+      "description": "A verified ingredient with its safety and function details.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "common_names": { "type": "array", "items": { "type": "string" } },
+        "function": { "type": "string" },
+        "safety_tier": { "type": "string", "enum": ["GREEN", "YELLOW", "ORANGE", "RED"] },
+        "plain_explanation": { "type": "string" },
+        "condition_flags": { "type": "array", "items": { "type": "object" } },
+        "india_specific_note": { "type": "string" },
+        "score_impact": { "type": "number" },
+        "data_quality": { "type": "string", "enum": ["VERIFIED", "LLM_GENERATED"] }
+      },
+      "required": ["name", "safety_tier", "function"]
     }
   },
   "firestore": {
-    "users/{userId}/profiles/{profileId}": {
-      "schema": "Profile",
-      "description": "User family profiles"
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of analyzed products."
     },
-    "users/{userId}/scans/{scanId}": {
-      "schema": "Scan",
-      "description": "User product scan history"
-    },
-    "scan_events/{eventId}": {
-      "schema": "ScanEvent",
-      "description": "Community scan events"
+    "/ingredients/{ingredientId}": {
+      "schema": "Ingredient",
+      "description": "Global registry of ingredients and their safety details."
     }
   }
 }

@@ -1,24 +1,43 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, onSnapshot, addDoc, deleteDoc, updateDoc, getDocFromServer, Timestamp } from 'firebase/firestore';
-import { getFunctions } from 'firebase/functions';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, getDocFromServer, Timestamp } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
-// Initialize Firebase
+// Initialize Firebase SDK
 const app = initializeApp(firebaseConfig);
-
-// Initialize Services
-// Note: We use the specific firestoreDatabaseId from the config
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
-export const auth = getAuth(app);
-export const functions = getFunctions(app);
-export const googleProvider = new GoogleAuthProvider();
+export const auth = getAuth();
 
-// Auth Helpers
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
-export const logout = () => signOut(auth);
+export { onAuthStateChanged, Timestamp };
 
-// Firestore Error Handling
+/**
+ * Sign in with Google
+ */
+export async function signInWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  try {
+    return await signInWithPopup(auth, provider);
+  } catch (error) {
+    console.error("Error signing in with Google", error);
+    throw error;
+  }
+}
+
+/**
+ * Logout
+ */
+export async function logout() {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Error signing out", error);
+    throw error;
+  }
+}
+
+/**
+ * Error Handling Spec for Firestore Operations
+ */
 export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
@@ -70,16 +89,16 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   throw new Error(JSON.stringify(errInfo));
 }
 
-// Connection Test
+/**
+ * Test Connection to Firestore
+ */
 async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error) {
     if(error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration. The client is offline.");
+      console.error("Please check your Firebase configuration. ");
     }
   }
 }
 testConnection();
-
-export { onAuthStateChanged, Timestamp };

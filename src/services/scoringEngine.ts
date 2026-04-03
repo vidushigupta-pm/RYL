@@ -33,10 +33,12 @@ export interface ScoreResult {
 export function calculateScore(
   ingredientLookup: BatchLookupResult,
   nutrition: NutritionData | null,
-  productCategory: string
+  productCategory: string,
+  isUpf: boolean = false,
+  hfssStatus: string = 'NONE'
 ): ScoreResult {
   const breakdown: ScoreBreakdownItem[] = [];
-  let score = 70; // baseline
+  let score = 100; // Starting from 100 as per screenshot
 
   // ── SUPPRESS if too many unknowns ──────────────────────────────────────────
   if (ingredientLookup.coveragePercent < 70) {
@@ -46,6 +48,18 @@ export function calculateScore(
       is_suppressed: true,
       suppression_reason: `Only ${ingredientLookup.coveragePercent}% of ingredients could be verified. Score suppressed to prevent misleading results.`
     };
+  }
+
+  // ── UPF PENALTY ──────────────────────────────────────────────────────────
+  if (isUpf) {
+    const d = -25; score += d;
+    breakdown.push({ label: 'Ultra-Processed Food', impact: d, explanation: 'This product is classified as UPF, containing industrial additives and minimal whole food ingredients.' });
+  }
+
+  // ── HFSS PENALTY ──────────────────────────────────────────────────────────
+  if (hfssStatus === 'HFSS' || hfssStatus === 'HIGH_FAT_SALT_SUGAR') {
+    const d = -15; score += d;
+    breakdown.push({ label: 'HFSS Product', impact: d, explanation: 'High in Fat, Salt, or Sugar. Consuming this regularly is linked to lifestyle diseases.' });
   }
 
   // ── FOOD NUTRITION SCORING ─────────────────────────────────────────────────
@@ -233,6 +247,15 @@ export function applyProfileAdjustment(
     if (pregnancyConcerns.length > 0) {
       score -= 30;
       concerns.push({ label: '⚠ Pregnancy — High Concern Ingredients', detail: `${pregnancyConcerns.map(v => v.rawName).join(', ')} are flagged HIGH concern during pregnancy.`, impact: -30 });
+    }
+  }
+
+  // Activity Level - Sedentary
+  if (profile.lifestyle === 'SEDENTARY') {
+    const energy = nutrition?.energy_kcal ?? 0;
+    if (energy > 300) {
+      const d = -8; score += d;
+      concerns.push({ label: 'Calorie Density — Sedentary Note', detail: `High calorie density (${energy} kcal/100g) is less ideal for a sedentary lifestyle.`, impact: d });
     }
   }
 
