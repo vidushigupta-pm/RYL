@@ -1,7 +1,9 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { defineSecret } from "firebase-functions/params";
 import { GoogleGenAI, Type } from "@google/genai";
 import { initializeApp } from "firebase-admin/app";
+import { getFirestore } from 'firebase-admin/firestore';
 import { ragLookup, saveProductToCache } from "./ragService";
 import { batchLookupIngredients, IngredientEntry, BatchLookupResult } from "./data";
 import { calculateScore, NutritionData } from "./scoringEngine";
@@ -11,6 +13,27 @@ initializeApp();
 
 // Define the secret for the Gemini API Key
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
+
+function withTimeout<T>(promise: Promise<T>, ms = 45_000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Gemini call timed out after ${ms}ms`)), ms)
+    )
+  ]);
+}
+
+const userCallLog = new Map<string, number[]>();
+const RATE_LIMIT_PER_MIN = 10;
+
+function checkRateLimit(uid: string): void {
+  const now = Date.now();
+  const calls = (userCallLog.get(uid) || []).filter(t => now - t < 60_000);
+  if (calls.length >= RATE_LIMIT_PER_MIN) {
+    throw new HttpsError('resource-exhausted', 'Too many requests. Please wait a moment and try again.');
+  }
+  userCallLog.set(uid, [...calls, now]);
+}
 
 interface AnalysisResult {
   product_name: string;
@@ -48,7 +71,7 @@ async function getIngredientDetails(
   const model = "gemini-3.1-pro-preview";
   const prompt = `Provide safety analysis for these Indian food/cosmetic ingredients: ${unknownIngredients.join(", ")}.
   Category: ${category}
-  
+
   Return a JSON object where keys are the ingredient names and values match this structure:
   {
     "ins_number": string | null,
@@ -62,7 +85,7 @@ async function getIngredientDetails(
     "score_impact": number,
     "data_quality": "LLM_GENERATED"
   }
-  
+
   Focus on Indian standards (FSSAI/CDSCO). Be objective.`;
 
   const result = await ai.models.generateContent({
@@ -86,6 +109,7 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
   }
+  checkRateLimit(request.auth.uid);
 
   const { backImageBase64, backMimeType, frontImageBase64, frontMimeType } = request.data;
 
@@ -96,7 +120,7 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
   try {
     const apiKey = GEMINI_API_KEY.value();
     const ai = new GoogleGenAI({ apiKey });
-    
+
     // STEP 1: Extraction Pass
     const extractionModel = "gemini-3.1-pro-preview";
     const extractionPrompt = `Extract the following from this product label:
@@ -104,7 +128,7 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
     2. Category (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
     3. Full Ingredients List (as an array of strings).
     4. Nutritional Information (Energy, Sugar, Sodium, Protein, Fat, Saturated Fat, Trans Fat, Fibre).
-    
+
     Return ONLY JSON.`;
 
     const extractionParts = [
@@ -114,11 +138,11 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
       extractionParts.push({ inlineData: { data: frontImageBase64, mimeType: frontMimeType } });
     }
 
-    const extractionResult = await ai.models.generateContent({
+    const extractionResult = await withTimeout(ai.models.generateContent({
       model: extractionModel,
       contents: [{ parts: [...extractionParts, { text: extractionPrompt }] }],
       config: { responseMimeType: "application/json" },
-    });
+    }));
 
     if (!extractionResult.text) {
       console.error("Gemini extractionResult.text is empty:", JSON.stringify(extractionResult));
@@ -148,10 +172,70 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
       return ragResult.cached_verdict;
     }
 
+    // Layer 2: DB coverage ≥ 80% — score computed, only need summary
+    if (ragResult.layer === 2 && ragResult.partial_result) {
+      console.log('[analyseLabel] Layer 2 hit — requesting summary only');
+      const partial = ragResult.partial_result;
+      const summaryPrompt = `You are a food and cosmetic safety expert in India.
+The ingredients have already been verified and scored from our database.
+Your ONLY task is to write the narrative fields.
+
+PRODUCT: ${product_name} (${brand})
+CATEGORY: ${category}
+NUTRITION: ${JSON.stringify(nutrition)}
+VERIFIED INGREDIENTS: ${JSON.stringify(partial.ingredients)}
+
+Return ONLY JSON with exactly these fields:
+{
+  "summary": "2-3 sentence plain English verdict for an Indian consumer",
+  "india_context": "Any India-specific note (FSSAI, common usage, regional relevance)",
+  "is_upf": boolean,
+  "hfss_status": "GREEN | HFSS",
+  "suggestions": [{ "type": "GENERIC", "name": "...", "reason": "..." }]
+}`;
+
+      const summaryResult = await withTimeout(ai.models.generateContent({
+        model: 'gemini-2.0-flash-exp',
+        contents: [{ parts: [{ text: summaryPrompt }] }],
+        config: { responseMimeType: 'application/json' },
+      }));
+
+      let summaryData: any = {};
+      try {
+        const clean = (summaryResult.text || '').replace(/```json/g, '').replace(/```/g, '').trim();
+        summaryData = JSON.parse(clean);
+      } catch (e) {
+        console.error('[analyseLabel] Layer 2 summary parse failed:', e);
+      }
+
+      const result = {
+        product_name,
+        brand,
+        category,
+        nutrition,
+        ingredients: partial.ingredients || [],
+        overall_score: partial.overall_score ?? 0,
+        score_breakdown: partial.score_breakdown ?? [],
+        summary: summaryData.summary || 'Analysis complete.',
+        india_context: summaryData.india_context || '',
+        is_upf: summaryData.is_upf ?? false,
+        hfss_status: summaryData.hfss_status || 'GREEN',
+        suggestions: summaryData.suggestions || [],
+      };
+      await saveProductToCache(result);
+      return result;
+    }
+
+    let groundTruthBundle: string | undefined;
+    if (ragResult.layer === 3 && ragResult.ground_truth_bundle) {
+      console.log('[analyseLabel] Layer 3 hit — injecting ground truth into prompt');
+      groundTruthBundle = ragResult.ground_truth_bundle;
+    }
+
     // STEP 3: Enrich Unknowns (if needed)
     const lookup = batchLookupIngredients(rawIngredients);
     const enrichedDetails = await getIngredientDetails(ai, lookup.unverified, category);
-    
+
     // Combine RAG + Gemini enriched data
     const finalVerified = [...lookup.verified];
     for (const [name, entry] of Object.entries(enrichedDetails)) {
@@ -170,14 +254,15 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
     // STEP 5: Final Summary & Context (Pass 2)
     const summaryPrompt = `Based on this data, provide a summary, india_context, is_upf, hfss_status, and suggestions.
     DATA: ${JSON.stringify({ product_name, brand, category, nutrition, scoreResult, finalLookupResult })}
-    
+    ${groundTruthBundle ? `\nVERIFIED INGREDIENT CONTEXT (USE AS GROUND TRUTH):\n${groundTruthBundle}` : ''}
+
     Return ONLY JSON matching the AnalysisResult structure.`;
 
-    const summaryResult = await ai.models.generateContent({
+    const summaryResult = await withTimeout(ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
-    });
+    }));
 
     if (!summaryResult.text) {
       console.error("Gemini summaryResult.text is empty:", JSON.stringify(summaryResult));
@@ -227,6 +312,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
   }
+  checkRateLimit(request.auth.uid);
 
   const { productName } = request.data;
 
@@ -237,7 +323,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
   try {
     const apiKey = GEMINI_API_KEY.value();
     const ai = new GoogleGenAI({ apiKey });
-    
+
     // STEP 1: RAG Lookup (Layer 1: Cache)
     const ragCacheResult = await ragLookup({ productName });
     if (ragCacheResult.layer === 1) {
@@ -246,19 +332,19 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
 
     // STEP 2: Search & Extraction Pass
     const searchModel = "gemini-3.1-pro-preview";
-    const searchPrompt = `Search for the product "${productName}" in India. 
+    const searchPrompt = `Search for the product "${productName}" in India.
     If "${productName}" is a brand name (like Maggi, Parle, etc.), find the most popular product of that brand (e.g., Maggi 2-Minute Noodles).
-    
+
     Find the exact ingredients list and nutritional information for this product.
     Look for data on official brand websites or major Indian grocery platforms like BigBasket, Blinkit, or Zepto.
-    
+
     You MUST return a valid JSON object with these fields:
     - product_name: Full name of the specific product found.
     - brand: Brand name.
     - category: One of (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
     - ingredients: Array of strings (the full ingredients list).
     - nutrition: Object with keys (energy, sugar, sodium, protein, fat, saturated_fat, trans_fat, fibre).
-    
+
     Use the googleSearch tool to find the most recent and accurate data.`;
 
     const searchSchema = {
@@ -285,16 +371,16 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
       required: ["product_name", "brand", "category", "ingredients"]
     };
 
-    const searchResult = await ai.models.generateContent({
+    const searchResult = await withTimeout(ai.models.generateContent({
       model: searchModel,
       contents: [{ parts: [{ text: searchPrompt }] }],
-      config: { 
+      config: {
         responseMimeType: "application/json",
         responseSchema: searchSchema,
         tools: [{ googleSearch: {} }],
         toolConfig: { includeServerSideToolInvocations: true }
       },
-    });
+    }));
 
     if (!searchResult.text) {
       const grounding = searchResult.candidates?.[0]?.groundingMetadata;
@@ -319,7 +405,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     }
     const lookup = batchLookupIngredients(rawIngredients || []);
     const enrichedDetails = await getIngredientDetails(ai, lookup.unverified, category);
-    
+
     // Combine RAG + Gemini enriched data
     const finalVerified = [...lookup.verified];
     for (const [name, entry] of Object.entries(enrichedDetails)) {
@@ -329,7 +415,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     const finalLookupResult: BatchLookupResult = {
       verified: finalVerified,
       unverified: lookup.unverified.filter(u => !enrichedDetails[u]),
-      coveragePercent: rawIngredients?.length > 0 
+      coveragePercent: rawIngredients?.length > 0
         ? Math.round((finalVerified.length / rawIngredients.length) * 100)
         : 0
     };
@@ -340,14 +426,14 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     // STEP 5: Final Summary & Context
     const summaryPrompt = `Based on this data, provide a summary, india_context, is_upf, hfss_status, and suggestions.
     DATA: ${JSON.stringify({ product_name, brand, category, nutrition, scoreResult, finalLookupResult })}
-    
+
     Return ONLY JSON matching the AnalysisResult structure.`;
 
-    const summaryResult = await ai.models.generateContent({
+    const summaryResult = await withTimeout(ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
-    });
+    }));
 
     if (!summaryResult.text) {
       console.error("Gemini summaryResult.text is empty:", JSON.stringify(summaryResult));
@@ -387,7 +473,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     console.error("Error in searchProductByName function:", error);
     // If it's already an HttpsError, rethrow it
     if (error instanceof HttpsError) throw error;
-    
+
     // Otherwise throw a generic internal error with more context if possible
     const errorDetails = error.stack || error.message || 'Unknown error';
     throw new HttpsError("internal", `Failed to search product "${productName}": ${errorDetails}`);
@@ -448,13 +534,13 @@ CONVERSATION_HISTORY: ${JSON.stringify(history)}
 
 USER QUESTION: ${userMessage}`;
 
-    const result = await ai.models.generateContent({
+    const result = await withTimeout(ai.models.generateContent({
       model,
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         systemInstruction,
       },
-    });
+    }));
 
     return result.text;
   } catch (error) {
@@ -462,3 +548,46 @@ USER QUESTION: ${userMessage}`;
     throw new HttpsError("internal", "Failed to chat about product.");
   }
 });
+
+/**
+ * Quarterly review: flags products older than 90 days for re-verification.
+ * Runs on the 1st of January, April, July, and October at midnight UTC.
+ */
+export const quarterlyProductReview = onSchedule(
+  { schedule: '0 0 1 1,4,7,10 *', timeZone: 'Asia/Kolkata' },
+  async () => {
+    const db = getFirestore();
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 90);
+
+    console.log(`[QuarterlyReview] Flagging products older than ${cutoff.toISOString()}`);
+
+    const staleSnap = await db.collection('products')
+      .where('verdict_computed_at', '<', cutoff)
+      .where('needs_reverification', '==', false)
+      .get();
+
+    if (staleSnap.empty) {
+      console.log('[QuarterlyReview] No stale products found.');
+      return;
+    }
+
+    // Firestore batch limit is 500
+    const batches = [];
+    let batch = db.batch();
+    let count = 0;
+
+    for (const docSnap of staleSnap.docs) {
+      batch.update(docSnap.ref, { needs_reverification: true });
+      count++;
+      if (count % 500 === 0) {
+        batches.push(batch.commit());
+        batch = db.batch();
+      }
+    }
+    batches.push(batch.commit());
+    await Promise.all(batches);
+
+    console.log(`[QuarterlyReview] Flagged ${staleSnap.size} products for re-verification.`);
+  }
+);

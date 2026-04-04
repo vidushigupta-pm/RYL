@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ragLookup, saveProductToCache } from "./ragService";
 import { batchLookupIngredients, IngredientEntry, BatchLookupResult } from "../data/ingredientIntelligence";
 import { calculateScore, NutritionData } from "./scoringEngine";
-import { getProductFromDB, saveProductToDB, getIngredientsFromDB, saveIngredientToDB } from "./firestoreService";
+import { getIngredientsFromDB, saveIngredientToDB } from "./firestoreService";
 
 // Helper to get a fresh Gemini instance
 const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
@@ -24,6 +24,15 @@ async function callGemini(fn: () => Promise<any>, retries = 3, delay = 2000): Pr
     }
     throw error;
   }
+}
+
+function withTimeout<T>(promise: Promise<T>, ms = 45_000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Gemini call timed out after ${ms}ms`)), ms)
+    )
+  ]);
 }
 
 export const PRODUCT_CATEGORIES = [
@@ -62,60 +71,77 @@ const DEFAULT_RESULT = {
   suggestions: []
 };
 
-/**
- * Helper to get ingredient details from Gemini for unknown ingredients
- */
-async function getIngredientDetails(
-  unknownIngredients: string[],
+function buildMasterPrompt(
+  product_name: string,
+  brand: string,
   category: string,
+  nutrition: any,
+  rawIngredients: string[],
+  stillUnknown: string[],
   groundTruthBundle?: string
-): Promise<Record<string, IngredientEntry>> {
-  if (unknownIngredients.length === 0) return {};
+): string {
+  return `You are a food and cosmetic safety expert in India.
+    Analyze this product data and provide a complete health verdict.
 
-  const ai = getAI();
-  const model = "gemini-3.1-pro-preview";
-  const prompt = `Provide safety analysis for these Indian food/cosmetic ingredients: ${unknownIngredients.join(", ")}.
-  Category: ${category}
-  
-  ${groundTruthBundle ? `CONTEXT FROM DATABASE:\n${groundTruthBundle}\n\n` : ""}
-  
-  Return a JSON object where keys are the ingredient names and values match this structure:
-  {
-    "ins_number": string | null,
-    "common_names": string[],
-    "function": string,
-    "safety_tier": "SAFE" | "CAUTION" | "AVOID" | "BANNED_IN_INDIA" | "UNVERIFIED",
-    "fssai_status": "PERMITTED" | "RESTRICTED" | "PROHIBITED" | "NOT_APPLICABLE" | "UNKNOWN",
-    "condition_flags": [{"condition": string, "impact": "HIGH"|"MODERATE"|"LOW"|"POSITIVE", "reason": string, "source": string}],
-    "plain_explanation": string,
-    "india_specific_note": string | null,
-    "score_impact": number,
-    "data_quality": "LLM_GENERATED"
-  }
-  
-  Focus on Indian standards (FSSAI/CDSCO). Be objective.`;
+    PRODUCT: ${product_name} (${brand})
+    CATEGORY: ${category}
+    NUTRITION: ${JSON.stringify(nutrition)}
+    INGREDIENTS TO ANALYZE: ${JSON.stringify(rawIngredients)}
+    UNKNOWN INGREDIENTS (Need details): ${JSON.stringify(stillUnknown)}
+    ${groundTruthBundle ? `\nVERIFIED INGREDIENT CONTEXT (USE AS GROUND TRUTH):\n${groundTruthBundle}` : ''}
 
-  const result = await callGemini(() => ai.models.generateContent({
-    model,
-    contents: [{ parts: [{ text: prompt }] }],
-    config: { responseMimeType: "application/json" },
-  }));
+    TASK:
+    1. For each UNKNOWN INGREDIENT, provide: common_names, function, safety_tier (GREEN/YELLOW/ORANGE/RED), plain_explanation, and condition_flags.
+    2. Provide a summary, india_context, is_upf, hfss_status, and suggestions.
 
-  try {
-    return JSON.parse(result.text || "{}");
-  } catch (e) {
-    console.error("Failed to parse ingredient details:", e);
-    return {};
-  }
+    CRITICAL: Suggestions MUST be generic categories or types of products (e.g., "Whole Wheat Biscuits", "Cold Pressed Oils") and NOT specific brands.
+
+    Return ONLY JSON matching this structure:
+    {
+      "enriched_ingredients": { "ingredient_name": { "common_names": [], "function": "", "safety_tier": "", "plain_explanation": "", "condition_flags": [] } },
+      "summary": "",
+      "india_context": "",
+      "is_upf": boolean,
+      "hfss_status": "",
+      "suggestions": [
+        { "type": "GENERIC", "name": "Generic Alternative Name", "reason": "Short explanation why it is better" }
+      ]
+    }`;
+}
+
+function buildSummaryOnlyPrompt(
+  product_name: string,
+  brand: string,
+  category: string,
+  nutrition: any,
+  ingredients: any[]
+): string {
+  return `You are a food and cosmetic safety expert in India.
+    The ingredients have already been verified and scored from our database.
+    Your ONLY task is to write the narrative fields.
+
+    PRODUCT: ${product_name} (${brand})
+    CATEGORY: ${category}
+    NUTRITION: ${JSON.stringify(nutrition)}
+    VERIFIED INGREDIENTS: ${JSON.stringify(ingredients)}
+
+    Return ONLY JSON with exactly these fields:
+    {
+      "summary": "2-3 sentence plain English verdict for an Indian consumer",
+      "india_context": "Any India-specific note (FSSAI, common usage, regional relevance)",
+      "is_upf": boolean,
+      "hfss_status": "GREEN | HFSS",
+      "suggestions": [{ "type": "GENERIC", "name": "...", "reason": "..." }]
+    }`;
 }
 
 /**
  * Analyses product labels using Gemini API with RAG and Search fallback.
  */
 export async function analyseLabel(
-  backImageBase64: string, 
-  backMimeType: string, 
-  frontImageBase64?: string, 
+  backImageBase64: string,
+  backMimeType: string,
+  frontImageBase64?: string,
   frontMimeType?: string
 ) {
   const ai = getAI();
@@ -135,7 +161,7 @@ export async function analyseLabel(
        - saturated_fat_g (number)
        - trans_fat_g (number)
        - fibre_g (number)
-    
+
     Return ONLY JSON.`;
 
     const extractionParts: any[] = [
@@ -145,11 +171,11 @@ export async function analyseLabel(
       extractionParts.push({ inlineData: { data: frontImageBase64, mimeType: frontMimeType } });
     }
 
-    const extractionResult = await callGemini(() => ai.models.generateContent({
+    const extractionResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: extractionModel,
       contents: [{ parts: [...extractionParts, { text: extractionPrompt }] }],
       config: { responseMimeType: "application/json" },
-    }));
+    })));
 
     if (!extractionResult.text) {
       throw new Error("Gemini failed to extract data from label.");
@@ -189,6 +215,50 @@ export async function analyseLabel(
       return ragResult.cached_verdict;
     }
 
+    // Layer 2: DB coverage ≥ 80% — score already computed, only need summary
+    if (ragResult.layer === 2 && ragResult.partial_result) {
+      console.log('[Gemini] Layer 2 hit — requesting summary only');
+      const partial = ragResult.partial_result;
+      const summaryPrompt = buildSummaryOnlyPrompt(
+        product_name, brand, category, nutrition, partial.ingredients || []
+      );
+      const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
+        model: 'gemini-2.0-flash-exp',
+        contents: [{ parts: [{ text: summaryPrompt }] }],
+        config: { responseMimeType: 'application/json' },
+      })));
+      let summaryData: any = {};
+      try {
+        summaryData = JSON.parse(summaryResult.text?.trim() || '{}');
+      } catch (e) {
+        console.error('[Gemini] Layer 2 summary parse failed:', e);
+      }
+      const result = {
+        ...DEFAULT_RESULT,
+        product_name,
+        brand,
+        category,
+        nutrition,
+        ingredients: partial.ingredients || [],
+        overall_score: partial.overall_score ?? 0,
+        score_breakdown: partial.score_breakdown ?? [],
+        summary: summaryData.summary || 'Analysis complete.',
+        india_context: summaryData.india_context || '',
+        is_upf: summaryData.is_upf ?? false,
+        hfss_status: summaryData.hfss_status || 'GREEN',
+        suggestions: summaryData.suggestions || [],
+      };
+      await saveProductToCache(result);
+      return result;
+    }
+
+    // Layer 3: capture ground_truth_bundle to inject into master prompt
+    let groundTruthBundle: string | undefined;
+    if (ragResult.layer === 3 && ragResult.ground_truth_bundle) {
+      console.log('[Gemini] Layer 3 hit — injecting ground truth into prompt');
+      groundTruthBundle = ragResult.ground_truth_bundle;
+    }
+
     // STEP 3: Search Fallback if extraction is poor
     if ((!rawIngredients || rawIngredients.length < 3) && product_name && product_name !== "Unknown Product") {
       console.log("[Gemini] Extraction poor, falling back to internet search for:", product_name);
@@ -203,45 +273,20 @@ export async function analyseLabel(
     let finalLookupResult: BatchLookupResult;
 
     const lookup = batchLookupIngredients(rawIngredients || []);
-    
+
     // Check DB for unknown ingredients before asking Gemini
     const dbIngredients = await getIngredientsFromDB(lookup.unverified);
     const stillUnknown = lookup.unverified.filter(u => !dbIngredients[u]);
 
-    // We pass the unverified ingredients to the final summary call 
+    // We pass the unverified ingredients to the final summary call
     // so Gemini can enrich them and provide the summary in ONE go.
-    const masterPrompt = `You are a food and cosmetic safety expert in India.
-    Analyze this product data and provide a complete health verdict.
-    
-    PRODUCT: ${product_name} (${brand})
-    CATEGORY: ${category}
-    NUTRITION: ${JSON.stringify(nutrition)}
-    INGREDIENTS TO ANALYZE: ${JSON.stringify(rawIngredients)}
-    UNKNOWN INGREDIENTS (Need details): ${JSON.stringify(stillUnknown)}
-    
-    TASK:
-    1. For each UNKNOWN INGREDIENT, provide: common_names, function, safety_tier (GREEN/YELLOW/ORANGE/RED), plain_explanation, and condition_flags.
-    2. Provide a summary, india_context, is_upf, hfss_status, and suggestions.
-    
-    CRITICAL: Suggestions MUST be generic categories or types of products (e.g., "Whole Wheat Biscuits", "Cold Pressed Oils") and NOT specific brands.
-    
-    Return ONLY JSON matching this structure:
-    {
-      "enriched_ingredients": { "ingredient_name": { "common_names": [], "function": "", "safety_tier": "", "plain_explanation": "", "condition_flags": [] } },
-      "summary": "",
-      "india_context": "",
-      "is_upf": boolean,
-      "hfss_status": "",
-      "suggestions": [
-        { "type": "GENERIC", "name": "Generic Alternative Name", "reason": "Short explanation why it is better" }
-      ]
-    }`;
+    const masterPrompt = buildMasterPrompt(product_name, brand, category, nutrition, rawIngredients, stillUnknown, groundTruthBundle);
 
-    const masterResult = await callGemini(() => ai.models.generateContent({
+    const masterResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [{ parts: [{ text: masterPrompt }] }],
       config: { responseMimeType: "application/json" },
-    }));
+    })));
 
     if (!masterResult.text) {
       throw new Error("Gemini failed to return master analysis.");
@@ -265,21 +310,20 @@ export async function analyseLabel(
 
     // Add ingredients from Gemini and save to DB for future
     if (masterData.enriched_ingredients) {
-      for (const [name, entry] of Object.entries(masterData.enriched_ingredients)) {
-        const enrichedEntry = { ...(entry as any), data_quality: 'LLM_GENERATED' };
-        finalVerified.push({ 
-          rawName: name, 
-          entry: enrichedEntry
-        });
-        // Save to Learning DB
-        await saveIngredientToDB(name, enrichedEntry);
+      const enrichedEntries = Object.entries(masterData.enriched_ingredients).map(([name, entry]) => ({
+        name,
+        entry: { ...(entry as any), data_quality: 'LLM_GENERATED' }
+      }));
+      for (const { name, entry } of enrichedEntries) {
+        finalVerified.push({ rawName: name, entry });
       }
+      await Promise.all(enrichedEntries.map(({ name, entry }) => saveIngredientToDB(name, entry)));
     }
 
     finalLookupResult = {
       verified: finalVerified,
       unverified: stillUnknown.filter(u => !masterData.enriched_ingredients?.[u]),
-      coveragePercent: rawIngredients?.length > 0 
+      coveragePercent: rawIngredients?.length > 0
         ? Math.round((finalVerified.length / rawIngredients.length) * 100)
         : 0
     };
@@ -311,9 +355,8 @@ export async function analyseLabel(
       })),
     };
 
-    // Cache the result locally and in Firestore
+    // Cache the result locally
     await saveProductToCache(result);
-    await saveProductToDB(result);
 
     return result;
 
@@ -335,41 +378,34 @@ export async function searchProductByName(productName: string) {
       return ragCacheResult.cached_verdict;
     }
 
-    // STEP 1.5: Firestore Lookup (Learning DB)
-    const dbProduct = await getProductFromDB(productName);
-    if (dbProduct) {
-      console.log(`[DB] Found product in learning database: ${productName}`);
-      return dbProduct;
-    }
-
     // STEP 2: Search & Extraction Pass
-    const searchModel = "gemini-3.1-pro-preview"; 
-    const searchPrompt = `You are a product researcher. Search for the product "${productName}" in India. 
-    
+    const searchModel = "gemini-3.1-pro-preview";
+    const searchPrompt = `You are a product researcher. Search for the product "${productName}" in India.
+
     GOAL: Find the EXACT ingredients list and nutritional information (per 100g/100ml).
-    
+
     SOURCES: Official brand websites, BigBasket, Blinkit, Zepto, Amazon India, or grocery review sites.
-    
+
     If "${productName}" is just a brand, find their flagship product.
-    
+
     INSTRUCTIONS:
     1. Use the googleSearch tool to find the product's back-of-pack information.
     2. Extract the ingredients list as an array of strings.
     3. Extract nutrition facts (energy, sugar, sodium, protein, fat, etc.).
     4. Return a JSON object with: product_name, brand, category, ingredients (array), and nutrition (object).
-    
+
     If you find the product but ingredients are hard to find, look for "ingredients" or "composition" in the product description on e-commerce sites.
-    
+
     Return ONLY JSON.`;
 
     console.log(`[Search] Searching for "${productName}" using ${searchModel}...`);
-    const searchResult = await callGemini(() => ai.models.generateContent({
+    const searchResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: searchModel,
       contents: [{ parts: [{ text: searchPrompt }] }],
-      config: { 
+      config: {
         tools: [{ googleSearch: {} }]
       },
-    }));
+    })));
 
     let extractedData: any = null;
     if (searchResult.text) {
@@ -390,20 +426,20 @@ export async function searchProductByName(productName: string) {
     // FALLBACK 1: If no ingredients found, try a very specific search for ingredients
     if (!rawIngredients || rawIngredients.length === 0) {
       console.log(`[Search] No ingredients found for "${productName}". Trying deep search...`);
-      const deepSearchPrompt = `Find the FULL ingredients list for "${productName}" sold in India. 
-      Search specifically on BigBasket, Amazon.in, or Blinkit. 
+      const deepSearchPrompt = `Find the FULL ingredients list for "${productName}" sold in India.
+      Search specifically on BigBasket, Amazon.in, or Blinkit.
       Look for the "Ingredients" section in the product details.
-      
+
       Return ONLY a JSON array of strings.`;
-      
-      const deepResult = await callGemini(() => ai.models.generateContent({
+
+      const deepResult = await withTimeout(callGemini(() => ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: [{ parts: [{ text: deepSearchPrompt }] }],
-        config: { 
+        config: {
           tools: [{ googleSearch: {} }]
         },
-      }));
-      
+      })));
+
       if (deepResult.text) {
         try {
           const match = deepResult.text.match(/\[[\s\S]*\]/);
@@ -420,15 +456,15 @@ export async function searchProductByName(productName: string) {
     // FALLBACK 2: If still no ingredients, try to get them from a general description
     if (!rawIngredients || rawIngredients.length === 0) {
       console.log(`[Search] Still no ingredients. Attempting final extraction from general search...`);
-      const finalPrompt = `Search for "${productName}" and describe its ingredients list based on available web data. 
+      const finalPrompt = `Search for "${productName}" and describe its ingredients list based on available web data.
       Even if you can't find a perfect list, list the main components you find in descriptions.
       Return as a JSON array of strings.`;
 
-      const finalResult = await callGemini(() => ai.models.generateContent({
+      const finalResult = await withTimeout(callGemini(() => ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: [{ parts: [{ text: finalPrompt }] }],
         config: { tools: [{ googleSearch: {} }] },
-      }));
+      })));
 
       if (finalResult.text) {
         try {
@@ -446,14 +482,14 @@ export async function searchProductByName(productName: string) {
     // FALLBACK 3: Last Resort - Search for the brand's most popular product
     if (!rawIngredients || rawIngredients.length === 0) {
       console.log(`[Search] Exhausted specific searches. Trying to find any popular product for brand "${productName}"...`);
-      const brandPrompt = `Search for the most popular product of the brand "${productName}" in India. 
+      const brandPrompt = `Search for the most popular product of the brand "${productName}" in India.
       Find its ingredients and return as a JSON object with: product_name, brand, ingredients (array).`;
 
-      const brandResult = await callGemini(() => ai.models.generateContent({
+      const brandResult = await withTimeout(callGemini(() => ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: [{ parts: [{ text: brandPrompt }] }],
         config: { tools: [{ googleSearch: {} }] },
-      }));
+      })));
 
       if (brandResult.text) {
         try {
@@ -474,7 +510,7 @@ export async function searchProductByName(productName: string) {
     if (!rawIngredients || rawIngredients.length === 0) {
       console.log(`[Search] All search fallbacks failed. Using internal knowledge for "${productName}"...`);
       const knowledgePrompt = `You are a food expert. Even though you couldn't find recent search data, use your internal knowledge to provide the ingredients list for the most popular version of "${productName}" in India.
-      
+
       Return ONLY a JSON object with:
       {
         "product_name": "Full name",
@@ -483,10 +519,10 @@ export async function searchProductByName(productName: string) {
         "nutrition": { "energy_kcal": 0, ... }
       }`;
 
-      const knowledgeResult = await callGemini(() => ai.models.generateContent({
+      const knowledgeResult = await withTimeout(callGemini(() => ai.models.generateContent({
         model: "gemini-3.1-pro-preview",
         contents: [{ parts: [{ text: knowledgePrompt }] }],
-      }));
+      })));
 
       if (knowledgeResult.text) {
         try {
@@ -512,43 +548,18 @@ export async function searchProductByName(productName: string) {
     // STEP 3: Master Analysis (Enrichment + Summary)
     let finalLookupResult: BatchLookupResult;
     const lookup = batchLookupIngredients(rawIngredients || []);
-    
+
     // Check DB for unknown ingredients before asking Gemini
     const dbIngredients = await getIngredientsFromDB(lookup.unverified);
     const stillUnknown = lookup.unverified.filter(u => !dbIngredients[u]);
-    
-    const masterPrompt = `You are a food and cosmetic safety expert in India.
-    Analyze this product data found from an internet search and provide a complete health verdict.
-    
-    PRODUCT: ${product_name} (${brand})
-    CATEGORY: ${category}
-    NUTRITION: ${JSON.stringify(nutrition)}
-    INGREDIENTS: ${JSON.stringify(rawIngredients)}
-    UNKNOWN INGREDIENTS (Need details): ${JSON.stringify(stillUnknown)}
-    
-    TASK:
-    1. For each UNKNOWN INGREDIENT, provide: common_names, function, safety_tier (GREEN/YELLOW/ORANGE/RED), plain_explanation, and condition_flags.
-    2. Provide a summary, india_context, is_upf, hfss_status, and suggestions.
-    
-    CRITICAL: Suggestions MUST be generic categories or types of products (e.g., "Whole Wheat Biscuits", "Cold Pressed Oils") and NOT specific brands.
-    
-    Return ONLY JSON matching this structure:
-    {
-      "enriched_ingredients": { "ingredient_name": { "common_names": [], "function": "", "safety_tier": "", "plain_explanation": "", "condition_flags": [] } },
-      "summary": "",
-      "india_context": "",
-      "is_upf": boolean,
-      "hfss_status": "",
-      "suggestions": [
-        { "type": "GENERIC", "name": "Generic Alternative Name", "reason": "Short explanation why it is better" }
-      ]
-    }`;
 
-    const masterResult = await callGemini(() => ai.models.generateContent({
+    const masterPrompt = buildMasterPrompt(product_name, brand, category, nutrition, rawIngredients, stillUnknown, undefined);
+
+    const masterResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [{ parts: [{ text: masterPrompt }] }],
       config: { responseMimeType: "application/json" },
-    }));
+    })));
 
     if (!masterResult.text) {
       throw new Error("Gemini failed to return search analysis.");
@@ -564,7 +575,7 @@ export async function searchProductByName(productName: string) {
 
     // Integrate enriched data into final lookup
     const finalVerified = [...lookup.verified];
-    
+
     // Add ingredients from DB
     for (const [name, entry] of Object.entries(dbIngredients)) {
       finalVerified.push({ rawName: name, entry: { ...entry, data_quality: 'VERIFIED' } });
@@ -572,21 +583,20 @@ export async function searchProductByName(productName: string) {
 
     // Add ingredients from Gemini and save to DB for future
     if (masterData.enriched_ingredients) {
-      for (const [name, entry] of Object.entries(masterData.enriched_ingredients)) {
-        const enrichedEntry = { ...(entry as any), data_quality: 'LLM_GENERATED' };
-        finalVerified.push({ 
-          rawName: name, 
-          entry: enrichedEntry
-        });
-        // Save to Learning DB
-        await saveIngredientToDB(name, enrichedEntry);
+      const enrichedEntries = Object.entries(masterData.enriched_ingredients).map(([name, entry]) => ({
+        name,
+        entry: { ...(entry as any), data_quality: 'LLM_GENERATED' }
+      }));
+      for (const { name, entry } of enrichedEntries) {
+        finalVerified.push({ rawName: name, entry });
       }
+      await Promise.all(enrichedEntries.map(({ name, entry }) => saveIngredientToDB(name, entry)));
     }
 
     finalLookupResult = {
       verified: finalVerified,
       unverified: stillUnknown.filter(u => !masterData.enriched_ingredients?.[u]),
-      coveragePercent: rawIngredients?.length > 0 
+      coveragePercent: rawIngredients?.length > 0
         ? Math.round((finalVerified.length / rawIngredients.length) * 100)
         : 0
     };
@@ -618,9 +628,8 @@ export async function searchProductByName(productName: string) {
       })),
     };
 
-    // Cache the result locally and in Firestore
+    // Cache the result locally
     await saveProductToCache(result);
-    await saveProductToDB(result);
 
     return result;
 
