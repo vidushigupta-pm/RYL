@@ -642,8 +642,9 @@ export async function searchProductByName(productName: string) {
     return result;
 
   } catch (error: any) {
-    console.error("❌ searchProductByName failed:", error?.message || error);
-    return DEFAULT_RESULT;
+    const msg = error?.message || String(error) || 'Unknown error';
+    console.error("❌ searchProductByName failed:", msg);
+    return { ...DEFAULT_RESULT, product_name: '__ERROR__', summary: msg };
   }
 }
 

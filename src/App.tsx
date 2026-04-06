@@ -2758,10 +2758,20 @@ export default function App() {
     setPhase('processing');
     try {
       const analysis = await searchProductByName(name);
-      if (!analysis || analysis.product_name === "Unknown Product" || analysis.summary.includes("failed")) {
+
+      // API/network error — show the real message, don't silently show no-results
+      if (analysis?.product_name === '__ERROR__') {
+        alert(analysis.summary || 'Search failed. Please try again.');
+        setPhase('home');
+        return;
+      }
+
+      // Genuine not found (all fallbacks exhausted, no ingredients found)
+      if (!analysis || analysis.product_name === "Unknown Product") {
         setPhase('no-results');
         return;
       }
+
       setResult(analysis);
       setPhase('result');
 
@@ -2777,9 +2787,10 @@ export default function App() {
           timestamp: Timestamp.now()
         });
       }
-    } catch (error) {
-      console.error(error);
-      setPhase('no-results');
+    } catch (error: any) {
+      console.error("Search error:", error);
+      alert(error?.message || 'Search failed. Please try again.');
+      setPhase('home');
     }
   };
 
