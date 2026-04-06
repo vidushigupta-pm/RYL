@@ -153,7 +153,7 @@ export async function analyseLabel(
   const ai = getAI();
   try {
     // STEP 1: Extraction Pass
-    const extractionModel = "gemini-3.1-pro-preview";
+    const extractionModel = "gemini-2.5-pro";
     const extractionPrompt = `Extract the following from this product label:
     1. Product Name and Brand.
     2. Category (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
@@ -366,9 +366,9 @@ export async function analyseLabel(
 
     return result;
 
-  } catch (error) {
-    console.error("Error in analyseLabel:", error);
-    return DEFAULT_RESULT;
+  } catch (error: any) {
+    console.error("❌ analyseLabel failed:", error?.message || error);
+    return { ...DEFAULT_RESULT, summary: `Analysis error: ${error?.message || 'Unknown error'}` };
   }
 }
 
@@ -385,7 +385,7 @@ export async function searchProductByName(productName: string) {
     }
 
     // STEP 2: Search & Extraction Pass
-    const searchModel = "gemini-3.1-pro-preview";
+    const searchModel = "gemini-2.5-pro";
     const searchPrompt = `You are a product researcher. Search for the product "${productName}" in India.
 
     GOAL: Find the EXACT ingredients list and nutritional information (per 100g/100ml).
@@ -526,7 +526,7 @@ export async function searchProductByName(productName: string) {
       }`;
 
       const knowledgeResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
+        model: "gemini-2.5-pro",
         contents: [{ parts: [{ text: knowledgePrompt }] }],
       })));
 
@@ -639,8 +639,8 @@ export async function searchProductByName(productName: string) {
 
     return result;
 
-  } catch (error) {
-    console.error("Error in searchProductByName:", error);
+  } catch (error: any) {
+    console.error("❌ searchProductByName failed:", error?.message || error);
     return DEFAULT_RESULT;
   }
 }
@@ -651,7 +651,7 @@ export async function searchProductByName(productName: string) {
 export async function chatAboutProduct(productAnalysis: any, userMessage: string, profile: any, history: any[]) {
   const ai = getAI();
   try {
-    const model = "gemini-3.1-pro-preview";
+    const model = "gemini-2.5-pro";
 
     const systemInstruction = `You are the "Knowledgeable Friend" for ReadYourLabels — a health-aware, warm, honest companion who explains food and cosmetic safety to Indian consumers in plain language.
 

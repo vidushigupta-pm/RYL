@@ -86,7 +86,8 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     path
   }
   console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  // Do NOT re-throw — callers return safe defaults on Firestore failure
+  // so a DB miss or permission error never crashes the main analysis flow.
 }
 
 /**
