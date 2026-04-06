@@ -7,7 +7,8 @@ import {
 } from './data';
 import { calculateScore, NutritionData } from './scoringEngine';
 
-const db = getFirestore();
+// Lazy getter — ensures initializeApp() in index.ts runs first
+const getDb = () => getFirestore();
 
 export interface CachedProduct {
   id: string;
@@ -39,7 +40,7 @@ export async function checkProductCache(
 ): Promise<CachedProduct | null> {
   try {
     if (barcode) {
-      const snap = await db.collection('products')
+      const snap = await getDb().collection('products')
         .where('barcode', '==', barcode)
         .limit(1)
         .get();
@@ -67,7 +68,7 @@ export async function checkProductCache(
     }
 
     const normName = normaliseIngredientName(productName);
-    const snap = await db.collection('products')
+    const snap = await getDb().collection('products')
       .where('name_aliases', 'array-contains', normName)
       .limit(1)
       .get();
@@ -96,7 +97,7 @@ export async function checkProductCache(
     // Fuzzy fallback: match on individual word tokens
     const tokens = normName.split(/\s+/).filter((t: string) => t.length > 2);
     if (tokens.length > 0) {
-      const fuzzySnap = await db.collection('products')
+      const fuzzySnap = await getDb().collection('products')
         .where('name_aliases', 'array-contains-any', tokens.slice(0, 10))
         .limit(1)
         .get();
@@ -141,7 +142,7 @@ export async function saveProductToCache(
 
     if (!docId) return;
 
-    await db.collection('products').doc(docId).set({
+    await getDb().collection('products').doc(docId).set({
       barcode: barcode || null,
       product_name: analysisResult.product_name,
       brand: analysisResult.brand,
