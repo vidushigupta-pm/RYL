@@ -2711,8 +2711,11 @@ export default function App() {
         files.front?.type
       );
       
-      if (!analysis || analysis.product_name === "Unknown Product") {
-        throw new Error("Invalid analysis result");
+      if (!analysis || analysis.product_name === "Unknown Product" || analysis.product_name === "__ERROR__") {
+        const errMsg = analysis?.summary && analysis.product_name === "__ERROR__"
+          ? analysis.summary
+          : "Could not read the label. Please try again with a clearer photo.";
+        throw new Error(errMsg);
       }
 
       setResult(analysis);
@@ -2730,9 +2733,9 @@ export default function App() {
           timestamp: Timestamp.now()
         });
       }
-    } catch (error) {
-      console.error(error);
-      alert("Analysis failed. Please try a clearer photo.");
+    } catch (error: any) {
+      console.error("Scan error:", error);
+      alert(error?.message || "Analysis failed. Please try again.");
       setPhase('home');
     }
   };

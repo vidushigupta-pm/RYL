@@ -352,11 +352,11 @@ export async function analyseLabel(
       score_breakdown: scoreResult.score_breakdown,
       ingredients: finalLookupResult.verified.map(v => ({
         name: v.rawName,
-        plain_name: v.entry.common_names[0] || v.rawName,
-        function: v.entry.function,
-        safety_tier: v.entry.safety_tier,
-        plain_explanation: v.entry.plain_explanation,
-        flag_for: v.entry.condition_flags.map(f => f.condition),
+        plain_name: (v.entry.common_names || [])[0] || v.rawName,
+        function: v.entry.function || 'Unknown',
+        safety_tier: v.entry.safety_tier || 'UNVERIFIED',
+        plain_explanation: v.entry.plain_explanation || '',
+        flag_for: (v.entry.condition_flags || []).map((f: any) => f.condition),
         source: v.entry.data_quality === 'VERIFIED' ? 'DB_VERIFIED' : 'LLM_GENERATED'
       })),
     };
@@ -367,8 +367,10 @@ export async function analyseLabel(
     return result;
 
   } catch (error: any) {
-    console.error("❌ analyseLabel failed:", error?.message || error);
-    return { ...DEFAULT_RESULT, summary: `Analysis error: ${error?.message || 'Unknown error'}` };
+    const msg = error?.message || String(error) || 'Unknown error';
+    console.error("❌ analyseLabel failed:", msg);
+    // Use a special product_name so App.tsx can surface the real error
+    return { ...DEFAULT_RESULT, product_name: '__ERROR__', summary: msg };
   }
 }
 
@@ -625,11 +627,11 @@ export async function searchProductByName(productName: string) {
       score_breakdown: scoreResult.score_breakdown,
       ingredients: finalLookupResult.verified.map(v => ({
         name: v.rawName,
-        plain_name: v.entry.common_names[0] || v.rawName,
-        function: v.entry.function,
-        safety_tier: v.entry.safety_tier,
-        plain_explanation: v.entry.plain_explanation,
-        flag_for: v.entry.condition_flags.map(f => f.condition),
+        plain_name: (v.entry.common_names || [])[0] || v.rawName,
+        function: v.entry.function || 'Unknown',
+        safety_tier: v.entry.safety_tier || 'UNVERIFIED',
+        plain_explanation: v.entry.plain_explanation || '',
+        flag_for: (v.entry.condition_flags || []).map((f: any) => f.condition),
         source: v.entry.data_quality === 'VERIFIED' ? 'DB_VERIFIED' : 'LLM_GENERATED'
       })),
     };
