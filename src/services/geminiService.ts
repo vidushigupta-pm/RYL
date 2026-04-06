@@ -186,7 +186,7 @@ export async function analyseLabel(
       // When responseMimeType is application/json, text should be raw JSON
       extractedData = JSON.parse(extractionResult.text.trim());
     } catch (parseErr) {
-      console.error("Failed to parse Gemini extraction results:", extractionResult.text);
+      console.error("Failed to parse Gemini extraction results — text omitted for security");
       // Fallback for markdown-wrapped JSON
       const match = extractionResult.text.match(/\{[\s\S]*\}/);
       if (match) {
