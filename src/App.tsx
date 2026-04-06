@@ -1036,7 +1036,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
             p.id === editingProfile?.id ? { ...p, ...profileData } : p
           );
         }
-        localStorage.setItem('guest_profiles', JSON.stringify(updatedProfiles));
+        localStorage.setItem('ryl_guest_profiles', JSON.stringify(updatedProfiles));
         setProfiles(updatedProfiles);
       }
       
@@ -1052,7 +1052,13 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
   };
 
   const handleDelete = async (id: string) => {
-    if (!user) return;
+    if (!user) {
+      const updated = profiles.filter(p => p.id !== id);
+      localStorage.setItem('ryl_guest_profiles', JSON.stringify(updated));
+      setProfiles(updated);
+      setEditingProfile(null);
+      return;
+    }
     try {
       await deleteDoc(doc(db, `users/${user.uid}/profiles`, id));
       setEditingProfile(null);
@@ -2600,6 +2606,7 @@ export default function App() {
   const [result, setResult] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [scans, setScans] = useState<any[]>([]);
+  const [appToast, setAppToast] = useState<string | null>(null);
 
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -2609,10 +2616,30 @@ export default function App() {
   // --- Auth & Data Listeners ---
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       setIsAuthReady(true);
       if (u) {
+        // Migrate guest profiles from localStorage to Firestore on sign-in
+        const raw = localStorage.getItem('ryl_guest_profiles') || localStorage.getItem('guest_profiles');
+        if (raw) {
+          try {
+            const guestProfiles: Profile[] = JSON.parse(raw);
+            if (guestProfiles.length > 0) {
+              await Promise.all(
+                guestProfiles.map(p => {
+                  const { id: _id, userId: _uid, ...profileData } = p as any;
+                  return addDoc(collection(db, `users/${u.uid}/profiles`), profileData);
+                })
+              );
+              localStorage.removeItem('ryl_guest_profiles');
+              localStorage.removeItem('guest_profiles');
+              setAppToast('Your profiles have been saved to your account ✓');
+            }
+          } catch (e) {
+            console.error('Guest profile migration failed:', e);
+          }
+        }
         if (phase === 'onboarding' || phase === 'auth' || phase === 'signup') {
           setPhase('home');
         }
@@ -2626,7 +2653,7 @@ export default function App() {
     if (!isAuthReady) return;
 
     if (!user) {
-      const localProfiles = localStorage.getItem('guest_profiles');
+      const localProfiles = localStorage.getItem('ryl_guest_profiles') || localStorage.getItem('guest_profiles');
       if (localProfiles) {
         try {
           setProfiles(JSON.parse(localProfiles));
@@ -2764,6 +2791,20 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="max-w-md mx-auto h-screen bg-[#FDF6EE] shadow-2xl relative overflow-hidden flex flex-col">
+        {/* App-level toast for guest profile migration */}
+        <AnimatePresence>
+          {appToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              onAnimationComplete={() => setTimeout(() => setAppToast(null), 3000)}
+              className="absolute top-4 left-4 right-4 z-50 bg-[#1B3D2F] text-white text-sm font-medium px-4 py-3 rounded-2xl shadow-lg text-center"
+            >
+              {appToast}
+            </motion.div>
+          )}
+        </AnimatePresence>
         <AnimatePresence mode="wait">
           {phase === 'onboarding' && (
             <motion.div key="onboarding" className="h-full">

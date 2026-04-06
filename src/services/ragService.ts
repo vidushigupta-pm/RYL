@@ -35,6 +35,7 @@ export interface CachedProduct {
   cached_verdict: any;   // full result JSON, ready to serve
   verdict_computed_at: Timestamp;
   data_source: 'VERIFIED' | 'LLM_GENERATED' | 'COMMUNITY';
+  needs_reverification?: boolean;
 }
 
 export interface RAGLookupResult {
@@ -77,7 +78,41 @@ export async function checkProductCache(
     const snap = await getDocs(q);
     if (!snap.empty) {
       const d = snap.docs[0];
-      return { id: d.id, ...d.data() } as CachedProduct;
+      const cached = { id: d.id, ...d.data() } as CachedProduct;
+
+      if (cached?.cached_verdict) {
+        // TTL: reject cached data older than 90 days
+        const computedAt = (cached as any).verdict_computed_at;
+        if (computedAt) {
+          const ageInDays = (Date.now() - computedAt.toMillis()) / 86_400_000;
+          if (ageInDays > 90) {
+            console.log('[RAG] Cache expired (>90 days), forcing re-analysis:', cached.product_name);
+            return null;
+          }
+        }
+        // Reject if flagged for re-verification
+        if ((cached as any).needs_reverification === true) {
+          console.log('[RAG] Product flagged for re-verification, forcing re-analysis:', cached.product_name);
+          return null;
+        }
+      }
+
+      return cached;
+    }
+
+    // Fuzzy fallback: try matching on individual word tokens
+    const tokens = normName.split(/\s+/).filter(t => t.length > 2);
+    if (tokens.length > 0) {
+      const fuzzyQ = query(
+        collection(db, 'products'),
+        where('name_aliases', 'array-contains-any', tokens.slice(0, 10)),
+        limit(1)
+      );
+      const fuzzySnap = await getDocs(fuzzyQ);
+      if (!fuzzySnap.empty) {
+        const d = fuzzySnap.docs[0];
+        return { id: d.id, ...d.data() } as CachedProduct;
+      }
     }
 
     return null;
@@ -100,18 +135,23 @@ export async function saveProductToCache(
   try {
     const normName = normaliseIngredientName(analysisResult.product_name || '');
     const normBrand = normaliseIngredientName(analysisResult.brand || '');
-    
-    // Create a deterministic ID: brand-productname or just productname
-    const docId = normBrand 
-      ? `${normBrand}-${normName}`.replace(/\s+/g, '-').toLowerCase()
-      : normName.replace(/\s+/g, '-').toLowerCase();
+
+    // Create a deterministic ID: brand_productname or just productname
+    const docId = normBrand
+      ? `${normBrand}_${normName}`.replace(/\s+/g, '_').toLowerCase()
+      : normName.replace(/\s+/g, '_').toLowerCase();
 
     if (!docId) return;
 
-    const aliases = [
+    const nameTokens = normName.split(/\s+/).filter(t => t.length > 2);
+    const brandTokens = normBrand ? normBrand.split(/\s+/).filter(t => t.length > 2) : [];
+    const aliases = Array.from(new Set([
       normName,
-      ...(analysisResult.brand ? [normaliseIngredientName(analysisResult.brand + ' ' + analysisResult.product_name)] : [])
-    ].filter(Boolean);
+      ...(normBrand ? [normBrand] : []),
+      ...(analysisResult.brand ? [normaliseIngredientName(analysisResult.brand + ' ' + analysisResult.product_name)] : []),
+      ...nameTokens,
+      ...brandTokens
+    ])).filter(Boolean);
 
     await setDoc(doc(db, 'products', docId), {
       barcode: barcode || null,
@@ -124,9 +164,10 @@ export async function saveProductToCache(
       front_claims: analysisResult.front_claims_detected || [],
       cached_verdict: analysisResult,
       verdict_computed_at: Timestamp.now(),
-      data_source: 'LLM_GENERATED'
+      data_source: 'LLM_GENERATED',
+      needs_reverification: false
     }, { merge: true }); // Use merge to preserve any manually verified fields if they exist
-    
+
     console.log(`[RAG] Product cached successfully: ${docId}`);
   } catch (error) {
     console.error('Failed to save product to cache:', error);

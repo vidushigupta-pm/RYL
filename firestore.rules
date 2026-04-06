@@ -9,37 +9,37 @@ service cloud.firestore {
     // Collection: /products/{productId}
     // Fields:
     //   - product_name: string (required)
-    //   - brand: string (optional)
     //   - category: string (required)
-    //   - ingredients: list (required)
+    //   - cached_verdict: map (required) — full analysis result JSON
+    //   - verdict_computed_at: timestamp (required)
+    //   - brand: string (optional)
+    //   - ingredients_list: list (optional)
     //   - nutrition: map (optional)
-    //   - overall_score: number (required)
-    //   - score_breakdown: map (required)
-    //   - summary: string (required)
-    //   - india_context: string (required)
-    //   - is_upf: bool (required)
-    //   - hfss_status: string (required)
-    //   - suggestions: list (required)
-    //   - last_updated: timestamp (required)
+    //   - name_aliases: list (optional)
+    //   - data_source: string (optional)
+    //   - needs_reverification: bool (optional)
     //
     // Collection: /ingredients/{ingredientId}
     // Fields:
     //   - name: string (required)
-    //   - common_names: list (required)
+    //   - safety_tier: string (required, SAFE/CAUTION/AVOID/BANNED_IN_INDIA/UNVERIFIED)
     //   - function: string (required)
-    //   - safety_tier: string (required, GREEN/YELLOW/ORANGE/RED)
     //   - plain_explanation: string (required)
-    //   - condition_flags: list (required)
-    //   - india_specific_note: string (optional)
     //   - score_impact: number (required)
     //   - data_quality: string (required, VERIFIED/LLM_GENERATED)
+    //   - common_names: list (optional)
+    //   - condition_flags: list (optional)
+    //   - india_specific_note: string (optional)
+    //
+    // Collection: /users/{userId}/profiles/{profileId}
+    // Collection: /users/{userId}/scans/{scanId}
     //
     // ===============================================================
 
     // ===============================================================
     // Helper Functions
     // ===============================================================
-    
+
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -54,24 +54,18 @@ service cloud.firestore {
       return request.resource.data.keys().hasAll(fields);
     }
 
-    function hasOnlyAllowedFields(fields) {
-      return request.resource.data.keys().hasOnly(fields);
-    }
-
     function isValidProduct(data) {
-      return hasRequiredFields(['product_name', 'category', 'ingredients', 'overall_score', 'summary', 'last_updated']) &&
+      return hasRequiredFields(['product_name', 'category', 'cached_verdict', 'verdict_computed_at']) &&
              data.product_name is string && data.product_name.size() < 200 &&
              data.category is string &&
-             data.ingredients is list && data.ingredients.size() < 100 &&
-             data.overall_score is number &&
-             data.summary is string && data.summary.size() < 2000 &&
-             data.last_updated is timestamp;
+             data.cached_verdict is map &&
+             data.verdict_computed_at is timestamp;
     }
 
     function isValidIngredient(data) {
       return hasRequiredFields(['name', 'safety_tier', 'function', 'plain_explanation', 'score_impact', 'data_quality']) &&
              data.name is string && data.name.size() < 100 &&
-             data.safety_tier in ['GREEN', 'YELLOW', 'ORANGE', 'RED'] &&
+             data.safety_tier in ['SAFE', 'CAUTION', 'AVOID', 'BANNED_IN_INDIA', 'UNVERIFIED'] &&
              data.function is string && data.function.size() < 500 &&
              data.plain_explanation is string && data.plain_explanation.size() < 1000 &&
              data.score_impact is number &&
@@ -83,30 +77,39 @@ service cloud.firestore {
     // ===============================================================
 
     match /products/{productId} {
-      // Allow anyone to read products (publicly available info)
+      // Public read — product safety data is not personal
       allow read: if true;
-      // Only authenticated users can contribute new products
-      allow create: if isAuthenticated() && isValidProduct(request.resource.data);
-      // Only admins can update or delete products
-      allow update, delete: if isAdmin();
+      // Authenticated users can create or update products (upsert via merge: true)
+      allow create, update: if isAuthenticated() && isValidProduct(request.resource.data);
+      // Only admins can delete products
+      allow delete: if isAdmin();
     }
 
     match /ingredients/{ingredientId} {
-      // Allow anyone to read ingredient details
+      // Public read — ingredient data is not personal
       allow read: if true;
-      // Only authenticated users can contribute new ingredient data (LLM_GENERATED)
-      allow create: if isAuthenticated() && isValidIngredient(request.resource.data);
-      // Only admins can update or delete ingredients (to verify LLM data)
-      allow update, delete: if isAdmin();
+      // Authenticated users can create or update ingredient records
+      allow create, update: if isAuthenticated() && isValidIngredient(request.resource.data);
+      // Only admins can delete ingredients
+      allow delete: if isAdmin();
     }
 
     match /users/{userId} {
       allow read: if isAuthenticated() && request.auth.uid == userId;
-      allow create: if isAuthenticated() && request.auth.uid == userId && 
-                    hasOnlyAllowedFields(['role', 'email', 'name']) &&
+      allow create: if isAuthenticated() && request.auth.uid == userId &&
+                    request.resource.data.keys().hasOnly(['role', 'email', 'name']) &&
                     request.resource.data.role == 'user';
-      allow update: if isAdmin();
+      // Users can update their own document; admins can update anyone's
+      allow update: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
       allow delete: if isAdmin();
+    }
+
+    match /users/{userId}/profiles/{profileId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/scans/{scanId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
   }
 }

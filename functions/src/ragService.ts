@@ -21,6 +21,7 @@ export interface CachedProduct {
   cached_verdict: any;
   verdict_computed_at: Timestamp;
   data_source: 'VERIFIED' | 'LLM_GENERATED' | 'COMMUNITY';
+  needs_reverification?: boolean;
 }
 
 export interface RAGLookupResult {
@@ -44,7 +45,24 @@ export async function checkProductCache(
         .get();
       if (!snap.empty) {
         const d = snap.docs[0];
-        return { id: d.id, ...d.data() } as CachedProduct;
+        const cached = { id: d.id, ...d.data() } as CachedProduct;
+        if (cached?.cached_verdict) {
+          // TTL: reject cached data older than 90 days
+          const computedAt = (cached as any).verdict_computed_at as Timestamp | undefined;
+          if (computedAt) {
+            const ageInDays = (Date.now() - computedAt.toMillis()) / 86_400_000;
+            if (ageInDays > 90) {
+              console.log('[RAG] Cache expired (>90 days), forcing re-analysis:', cached.product_name);
+              return null;
+            }
+          }
+          // Reject if flagged for re-verification
+          if ((cached as any).needs_reverification === true) {
+            console.log('[RAG] Product flagged for re-verification:', cached.product_name);
+            return null;
+          }
+        }
+        return cached;
       }
     }
 
@@ -55,7 +73,37 @@ export async function checkProductCache(
       .get();
     if (!snap.empty) {
       const d = snap.docs[0];
-      return { id: d.id, ...d.data() } as CachedProduct;
+      const cached = { id: d.id, ...d.data() } as CachedProduct;
+      if (cached?.cached_verdict) {
+        // TTL: reject cached data older than 90 days
+        const computedAt = (cached as any).verdict_computed_at as Timestamp | undefined;
+        if (computedAt) {
+          const ageInDays = (Date.now() - computedAt.toMillis()) / 86_400_000;
+          if (ageInDays > 90) {
+            console.log('[RAG] Cache expired (>90 days), forcing re-analysis:', cached.product_name);
+            return null;
+          }
+        }
+        // Reject if flagged for re-verification
+        if ((cached as any).needs_reverification === true) {
+          console.log('[RAG] Product flagged for re-verification:', cached.product_name);
+          return null;
+        }
+      }
+      return cached;
+    }
+
+    // Fuzzy fallback: match on individual word tokens
+    const tokens = normName.split(/\s+/).filter((t: string) => t.length > 2);
+    if (tokens.length > 0) {
+      const fuzzySnap = await db.collection('products')
+        .where('name_aliases', 'array-contains-any', tokens.slice(0, 10))
+        .limit(1)
+        .get();
+      if (!fuzzySnap.empty) {
+        const d = fuzzySnap.docs[0];
+        return { id: d.id, ...d.data() } as CachedProduct;
+      }
     }
 
     return null;
@@ -72,25 +120,43 @@ export async function saveProductToCache(
   try {
     const normName = normaliseIngredientName(analysisResult.product_name || '');
     const normBrand = analysisResult.brand ? normaliseIngredientName(analysisResult.brand) : '';
-    const normFull = (analysisResult.brand && analysisResult.product_name) 
+    const normFull = (analysisResult.brand && analysisResult.product_name)
       ? normaliseIngredientName(analysisResult.brand + ' ' + analysisResult.product_name)
       : '';
 
-    const aliases = Array.from(new Set([normName, normBrand, normFull])).filter(Boolean);
+    const nameTokens = normName.split(/\s+/).filter((t: string) => t.length > 2);
+    const brandTokens = normBrand ? normBrand.split(/\s+/).filter((t: string) => t.length > 2) : [];
 
-    await db.collection('products').add({
+    const aliases = Array.from(new Set([
+      normName,
+      ...(normBrand ? [normBrand] : []),
+      ...(normFull ? [normFull] : []),
+      ...nameTokens,
+      ...brandTokens
+    ])).filter(Boolean);
+
+    const docId = normBrand
+      ? `${normBrand}_${normName}`.replace(/\s+/g, '_').toLowerCase()
+      : normName.replace(/\s+/g, '_').toLowerCase();
+
+    if (!docId) return;
+
+    await db.collection('products').doc(docId).set({
       barcode: barcode || null,
       product_name: analysisResult.product_name,
       brand: analysisResult.brand,
       category: analysisResult.category,
       name_aliases: aliases,
-      ingredients_list: (analysisResult.ingredients || []).map((i: any) => i.name),
+      ingredients_list: (analysisResult.ingredients || []).map((i: any) => i.name || i),
       nutrition: analysisResult.nutrition || null,
       front_claims: analysisResult.front_claims_detected || [],
       cached_verdict: analysisResult,
       verdict_computed_at: FieldValue.serverTimestamp(),
-      data_source: 'LLM_GENERATED'
-    });
+      data_source: 'LLM_GENERATED',
+      needs_reverification: false
+    }, { merge: true });
+
+    console.log(`[RAG] Product cached: ${docId}`);
   } catch (error) {
     console.error('Failed to save product to cache:', error);
   }
