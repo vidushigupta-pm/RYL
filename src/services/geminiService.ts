@@ -26,7 +26,7 @@ async function callGemini(fn: () => Promise<any>, retries = 3, delay = 2000): Pr
   }
 }
 
-function withTimeout<T>(promise: Promise<T>, ms = 45_000): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, ms = 120_000): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
@@ -223,7 +223,7 @@ export async function analyseLabel(
         product_name, brand, category, nutrition, partial.ingredients || []
       );
       const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-2.5-flash',
         contents: [{ parts: [{ text: summaryPrompt }] }],
         config: { responseMimeType: 'application/json' },
       })));
