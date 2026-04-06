@@ -5,7 +5,13 @@ import { calculateScore, NutritionData } from "./scoringEngine";
 import { getIngredientsFromDB, saveIngredientToDB } from "./firestoreService";
 
 // Helper to get a fresh Gemini instance
-const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const getAI = () => {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) {
+    console.error('[Gemini] GEMINI_API_KEY is missing. Create a .env.local file with GEMINI_API_KEY=your_key. Get a key at https://aistudio.google.com/app/apikey');
+  }
+  return new GoogleGenAI({ apiKey: key || "" });
+};
 
 /**
  * Helper to call Gemini with exponential backoff for 429 errors
