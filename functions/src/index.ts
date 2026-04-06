@@ -95,7 +95,7 @@ async function getIngredientDetails(
   });
 
   try {
-    return JSON.parse(result.text);
+    return JSON.parse(result.text ?? '{}');
   } catch (e) {
     console.error("Failed to parse ingredient details:", e);
     return {};
