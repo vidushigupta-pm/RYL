@@ -32,7 +32,7 @@ async function callGemini(fn: () => Promise<any>, retries = 3, delay = 2000): Pr
   }
 }
 
-function withTimeout<T>(promise: Promise<T>, ms = 120_000): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, ms = 300_000): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
@@ -289,7 +289,7 @@ export async function analyseLabel(
     const masterPrompt = buildMasterPrompt(product_name, brand, category, nutrition, rawIngredients, stillUnknown, groundTruthBundle);
 
     const masterResult = await withTimeout(callGemini(() => ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
       contents: [{ parts: [{ text: masterPrompt }] }],
       config: { responseMimeType: "application/json" },
     })));
@@ -439,7 +439,7 @@ export async function searchProductByName(productName: string) {
       Return ONLY a JSON array of strings.`;
 
       const deepResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: [{ parts: [{ text: deepSearchPrompt }] }],
         config: {
           tools: [{ googleSearch: {} }]
@@ -467,7 +467,7 @@ export async function searchProductByName(productName: string) {
       Return as a JSON array of strings.`;
 
       const finalResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: [{ parts: [{ text: finalPrompt }] }],
         config: { tools: [{ googleSearch: {} }] },
       })));
@@ -492,7 +492,7 @@ export async function searchProductByName(productName: string) {
       Find its ingredients and return as a JSON object with: product_name, brand, ingredients (array).`;
 
       const brandResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: [{ parts: [{ text: brandPrompt }] }],
         config: { tools: [{ googleSearch: {} }] },
       })));
@@ -562,7 +562,7 @@ export async function searchProductByName(productName: string) {
     const masterPrompt = buildMasterPrompt(product_name, brand, category, nutrition, rawIngredients, stillUnknown, undefined);
 
     const masterResult = await withTimeout(callGemini(() => ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
       contents: [{ parts: [{ text: masterPrompt }] }],
       config: { responseMimeType: "application/json" },
     })));
