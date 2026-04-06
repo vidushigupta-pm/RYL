@@ -14,7 +14,7 @@ initializeApp();
 // Define the secret for the Gemini API Key
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
-function withTimeout<T>(promise: Promise<T>, ms = 45_000): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, ms = 300_000): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
@@ -68,7 +68,7 @@ async function getIngredientDetails(
 ): Promise<Record<string, IngredientEntry>> {
   if (unknownIngredients.length === 0) return {};
 
-  const model = "gemini-3.1-pro-preview";
+  const model = "gemini-2.0-flash";
   const prompt = `Provide safety analysis for these Indian food/cosmetic ingredients: ${unknownIngredients.join(", ")}.
   Category: ${category}
 
@@ -106,11 +106,6 @@ async function getIngredientDetails(
  * Cloud Function to analyze product labels using Gemini API with RAG.
  */
 export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
-  }
-  checkRateLimit(request.auth.uid);
-
   const { backImageBase64, backMimeType, frontImageBase64, frontMimeType } = request.data;
 
   if (!backImageBase64 || !backMimeType) {
@@ -122,7 +117,7 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
     const ai = new GoogleGenAI({ apiKey });
 
     // STEP 1: Extraction Pass
-    const extractionModel = "gemini-3.1-pro-preview";
+    const extractionModel = "gemini-2.0-flash";
     const extractionPrompt = `Extract the following from this product label:
     1. Product Name and Brand.
     2. Category (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
@@ -195,7 +190,7 @@ Return ONLY JSON with exactly these fields:
 }`;
 
       const summaryResult = await withTimeout(ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-2.0-flash',
         contents: [{ parts: [{ text: summaryPrompt }] }],
         config: { responseMimeType: 'application/json' },
       }));
@@ -259,7 +254,7 @@ Return ONLY JSON with exactly these fields:
     Return ONLY JSON matching the AnalysisResult structure.`;
 
     const summaryResult = await withTimeout(ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
     }));
@@ -284,11 +279,11 @@ Return ONLY JSON with exactly these fields:
       score_breakdown: scoreResult.score_breakdown,
       ingredients: finalVerified.map(v => ({
         name: v.rawName,
-        plain_name: v.entry.common_names[0] || v.rawName,
-        function: v.entry.function,
-        safety_tier: v.entry.safety_tier,
-        plain_explanation: v.entry.plain_explanation,
-        flag_for: v.entry.condition_flags.map(f => f.condition),
+        plain_name: (v.entry.common_names || [])[0] || v.rawName,
+        function: v.entry.function || 'Unknown',
+        safety_tier: v.entry.safety_tier || 'UNVERIFIED',
+        plain_explanation: v.entry.plain_explanation || '',
+        flag_for: (v.entry.condition_flags || []).map((f: any) => f.condition),
         source: v.entry.data_quality === 'VERIFIED' ? 'DB_VERIFIED' : 'LLM_GENERATED'
       }))
     };
@@ -309,11 +304,6 @@ Return ONLY JSON with exactly these fields:
  * Cloud Function to search for products by name using Gemini API with RAG.
  */
 export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (request) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
-  }
-  checkRateLimit(request.auth.uid);
-
   const { productName } = request.data;
 
   if (!productName) {
@@ -331,7 +321,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     }
 
     // STEP 2: Search & Extraction Pass
-    const searchModel = "gemini-3.1-pro-preview";
+    const searchModel = "gemini-2.0-flash";
     const searchPrompt = `Search for the product "${productName}" in India.
     If "${productName}" is a brand name (like Maggi, Parle, etc.), find the most popular product of that brand (e.g., Maggi 2-Minute Noodles).
 
@@ -430,7 +420,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     Return ONLY JSON matching the AnalysisResult structure.`;
 
     const summaryResult = await withTimeout(ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
     }));
@@ -455,11 +445,11 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
       score_breakdown: scoreResult.score_breakdown,
       ingredients: finalVerified.map(v => ({
         name: v.rawName,
-        plain_name: v.entry.common_names[0] || v.rawName,
-        function: v.entry.function,
-        safety_tier: v.entry.safety_tier,
-        plain_explanation: v.entry.plain_explanation,
-        flag_for: v.entry.condition_flags.map(f => f.condition),
+        plain_name: (v.entry.common_names || [])[0] || v.rawName,
+        function: v.entry.function || 'Unknown',
+        safety_tier: v.entry.safety_tier || 'UNVERIFIED',
+        plain_explanation: v.entry.plain_explanation || '',
+        flag_for: (v.entry.condition_flags || []).map((f: any) => f.condition),
         source: v.entry.data_quality === 'VERIFIED' ? 'DB_VERIFIED' : 'LLM_GENERATED'
       }))
     };
@@ -497,7 +487,7 @@ export const chatAboutProduct = onCall({ secrets: [GEMINI_API_KEY] }, async (req
   try {
     const apiKey = GEMINI_API_KEY.value();
     const ai = new GoogleGenAI({ apiKey });
-    const model = "gemini-3.1-pro-preview";
+    const model = "gemini-2.0-flash";
 
     const systemInstruction = `You are the "Knowledgeable Friend" for ReadYourLabels — a health-aware, warm, honest companion who explains food and cosmetic safety to Indian consumers in plain language.
 

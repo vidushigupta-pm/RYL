@@ -37,7 +37,8 @@ import {
   ChevronUp,
   Check
 } from 'lucide-react';
-import { analyseLabel, chatAboutProduct, PRODUCT_CATEGORIES, searchProductByName } from './services/geminiService';
+import { PRODUCT_CATEGORIES } from './services/geminiService';
+import { analyseLabel, searchProductByName, chatAboutProduct } from './services/functionsService';
 import { recordScanEvent, normaliseProductId, detectSubCategory } from './services/swapService';
 import { calculateProfileVerdict } from './services/profileScoringEngine';
 import { 
