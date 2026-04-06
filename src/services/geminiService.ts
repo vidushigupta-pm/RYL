@@ -153,7 +153,7 @@ export async function analyseLabel(
   const ai = getAI();
   try {
     // STEP 1: Extraction Pass
-    const extractionModel = "gemini-2.5-pro";
+    const extractionModel = "gemini-2.0-flash";
     const extractionPrompt = `Extract the following from this product label:
     1. Product Name and Brand.
     2. Category (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
@@ -229,7 +229,7 @@ export async function analyseLabel(
         product_name, brand, category, nutrition, partial.ingredients || []
       );
       const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-2.0-flash',
         contents: [{ parts: [{ text: summaryPrompt }] }],
         config: { responseMimeType: 'application/json' },
       })));
@@ -289,7 +289,7 @@ export async function analyseLabel(
     const masterPrompt = buildMasterPrompt(product_name, brand, category, nutrition, rawIngredients, stillUnknown, groundTruthBundle);
 
     const masterResult = await withTimeout(callGemini(() => ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: [{ parts: [{ text: masterPrompt }] }],
       config: { responseMimeType: "application/json" },
     })));
@@ -387,7 +387,7 @@ export async function searchProductByName(productName: string) {
     }
 
     // STEP 2: Search & Extraction Pass
-    const searchModel = "gemini-2.5-pro";
+    const searchModel = "gemini-2.0-flash";
     const searchPrompt = `You are a product researcher. Search for the product "${productName}" in India.
 
     GOAL: Find the EXACT ingredients list and nutritional information (per 100g/100ml).
@@ -441,7 +441,7 @@ export async function searchProductByName(productName: string) {
       Return ONLY a JSON array of strings.`;
 
       const deepResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         contents: [{ parts: [{ text: deepSearchPrompt }] }],
         config: {
           tools: [{ googleSearch: {} }]
@@ -469,7 +469,7 @@ export async function searchProductByName(productName: string) {
       Return as a JSON array of strings.`;
 
       const finalResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         contents: [{ parts: [{ text: finalPrompt }] }],
         config: { tools: [{ googleSearch: {} }] },
       })));
@@ -494,7 +494,7 @@ export async function searchProductByName(productName: string) {
       Find its ingredients and return as a JSON object with: product_name, brand, ingredients (array).`;
 
       const brandResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         contents: [{ parts: [{ text: brandPrompt }] }],
         config: { tools: [{ googleSearch: {} }] },
       })));
@@ -528,7 +528,7 @@ export async function searchProductByName(productName: string) {
       }`;
 
       const knowledgeResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-2.0-flash",
         contents: [{ parts: [{ text: knowledgePrompt }] }],
       })));
 
@@ -564,7 +564,7 @@ export async function searchProductByName(productName: string) {
     const masterPrompt = buildMasterPrompt(product_name, brand, category, nutrition, rawIngredients, stillUnknown, undefined);
 
     const masterResult = await withTimeout(callGemini(() => ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: [{ parts: [{ text: masterPrompt }] }],
       config: { responseMimeType: "application/json" },
     })));
@@ -653,7 +653,7 @@ export async function searchProductByName(productName: string) {
 export async function chatAboutProduct(productAnalysis: any, userMessage: string, profile: any, history: any[]) {
   const ai = getAI();
   try {
-    const model = "gemini-2.5-pro";
+    const model = "gemini-2.0-flash";
 
     const systemInstruction = `You are the "Knowledgeable Friend" for ReadYourLabels — a health-aware, warm, honest companion who explains food and cosmetic safety to Indian consumers in plain language.
 
