@@ -2005,7 +2005,19 @@ const ResultScreen = ({
     };
   };
 
-  const currentVerdict = getProfileVerdict(activeProfile);
+  const defaultProfile: Profile = {
+    id: 'default',
+    name: 'You',
+    age_group: 'ADULT',
+    isDefault: true,
+    conditions: [],
+    allergens: [],
+    dietary_preference: 'NO_RESTRICTION',
+    health_goals: [],
+    activity_level: 'MODERATE',
+    avatar_letter: 'Y',
+  };
+  const currentVerdict = getProfileVerdict(activeProfile || defaultProfile);
 
   return (
     <div className="flex flex-col h-full bg-[#FDF6EE]">
