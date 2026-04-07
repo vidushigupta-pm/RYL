@@ -68,7 +68,7 @@ async function getIngredientDetails(
 ): Promise<Record<string, IngredientEntry>> {
   if (unknownIngredients.length === 0) return {};
 
-  const model = "gemini-2.0-flash";
+  const model = "gemini-2.5-flash";
   const prompt = `Provide safety analysis for these Indian food/cosmetic ingredients: ${unknownIngredients.join(", ")}.
   Category: ${category}
 
@@ -117,7 +117,7 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
     const ai = new GoogleGenAI({ apiKey });
 
     // STEP 1: Extraction Pass
-    const extractionModel = "gemini-2.0-flash";
+    const extractionModel = "gemini-2.5-flash";
     const extractionPrompt = `Extract the following from this product label:
     1. Product Name and Brand.
     2. Category (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
@@ -190,7 +190,7 @@ Return ONLY JSON with exactly these fields:
 }`;
 
       const summaryResult = await withTimeout(ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         contents: [{ parts: [{ text: summaryPrompt }] }],
         config: { responseMimeType: 'application/json' },
       }));
@@ -254,7 +254,7 @@ Return ONLY JSON with exactly these fields:
     Return ONLY JSON matching the AnalysisResult structure.`;
 
     const summaryResult = await withTimeout(ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
     }));
@@ -321,7 +321,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     }
 
     // STEP 2: Search & Extraction Pass
-    const searchModel = "gemini-2.0-flash";
+    const searchModel = "gemini-2.5-flash";
     const searchPrompt = `Search for the product "${productName}" in India.
     If "${productName}" is a brand name (like Maggi, Parle, etc.), find the most popular product of that brand (e.g., Maggi 2-Minute Noodles).
 
@@ -420,7 +420,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
     Return ONLY JSON matching the AnalysisResult structure.`;
 
     const summaryResult = await withTimeout(ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
     }));
@@ -487,7 +487,7 @@ export const chatAboutProduct = onCall({ secrets: [GEMINI_API_KEY] }, async (req
   try {
     const apiKey = GEMINI_API_KEY.value();
     const ai = new GoogleGenAI({ apiKey });
-    const model = "gemini-2.0-flash";
+    const model = "gemini-2.5-flash";
 
     const systemInstruction = `You are the "Knowledgeable Friend" for ReadYourLabels — a health-aware, warm, honest companion who explains food and cosmetic safety to Indian consumers in plain language.
 
