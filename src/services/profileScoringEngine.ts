@@ -902,7 +902,7 @@ function applyHealthGoalRules(
             source: 'User Goal'
           });
         }
-        const maidaInTop = ingredients.slice(0, 3).some(i => i.name.toLowerCase().includes('maida') || i.name.toLowerCase().includes('refined wheat'));
+        const maidaInTop = ingredients.slice(0, 3).some(i => i?.name && (i.name.toLowerCase().includes('maida') || i.name.toLowerCase().includes('refined wheat')));
         if (maidaInTop) {
           score -= 8;
           concerns.push({
@@ -1292,8 +1292,8 @@ export function calculateProfileVerdict(
 
   // ── Step 0: Dietary Preference Flagging ──────────────────────
   const dietaryPref = profile.dietary_preference;
-  const modifiedIngredients = ingredients.map(ing => {
-    const name = ing.name.toLowerCase();
+  const modifiedIngredients = ingredients.filter(ing => ing && ing.name).map(ing => {
+    const name = (ing.name || '').toLowerCase();
     const flags = [...(ing.flag_for || [])];
     let tier = ing.safety_tier;
 
