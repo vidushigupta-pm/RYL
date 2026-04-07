@@ -153,7 +153,8 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
       throw new HttpsError("internal", "Failed to parse label data.");
     }
 
-    const { ingredients: rawIngredients, nutrition, category, product_name, brand } = extractedData;
+    const { ingredients: rawIngredientsRaw, nutrition, category, product_name, brand } = extractedData;
+    const rawIngredients: string[] = Array.isArray(rawIngredientsRaw) ? rawIngredientsRaw : [];
 
     // STEP 2: RAG Lookup (Layer 1: Cache)
     const ragResult = await ragLookup({
@@ -387,7 +388,8 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
       throw new HttpsError("internal", "Failed to parse product data.");
     }
 
-    const { ingredients: rawIngredients, nutrition, category, product_name, brand } = extractedData;
+    const { ingredients: rawIngredientsRaw2, nutrition, category, product_name, brand } = extractedData;
+    const rawIngredients: string[] = Array.isArray(rawIngredientsRaw2) ? rawIngredientsRaw2 : [];
 
     if (!rawIngredients || rawIngredients.length === 0) {
       console.error("Gemini extracted zero ingredients for:", productName, extractedData);
