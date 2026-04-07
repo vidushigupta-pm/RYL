@@ -2719,7 +2719,16 @@ export default function App() {
         throw new Error(errMsg);
       }
 
-      setResult(analysis);
+      const safeAnalysis = {
+        ...analysis,
+        suggestions: Array.isArray(analysis.suggestions) ? analysis.suggestions : [],
+        ingredients: Array.isArray(analysis.ingredients) ? analysis.ingredients : [],
+        score_breakdown: Array.isArray(analysis.score_breakdown) ? analysis.score_breakdown : [],
+        claim_checks: Array.isArray(analysis.claim_checks) ? analysis.claim_checks : [],
+        front_claims_detected: Array.isArray(analysis.front_claims_detected) ? analysis.front_claims_detected : [],
+        unverified_ingredients: Array.isArray(analysis.unverified_ingredients) ? analysis.unverified_ingredients : [],
+      };
+      setResult(safeAnalysis);
       setPhase('result');
 
       if (user) {
@@ -2773,7 +2782,16 @@ export default function App() {
         return;
       }
 
-      setResult(analysis);
+      const safeAnalysis = {
+        ...analysis,
+        suggestions: Array.isArray(analysis.suggestions) ? analysis.suggestions : [],
+        ingredients: Array.isArray(analysis.ingredients) ? analysis.ingredients : [],
+        score_breakdown: Array.isArray(analysis.score_breakdown) ? analysis.score_breakdown : [],
+        claim_checks: Array.isArray(analysis.claim_checks) ? analysis.claim_checks : [],
+        front_claims_detected: Array.isArray(analysis.front_claims_detected) ? analysis.front_claims_detected : [],
+        unverified_ingredients: Array.isArray(analysis.unverified_ingredients) ? analysis.unverified_ingredients : [],
+      };
+      setResult(safeAnalysis);
       setPhase('result');
 
       if (user) {
