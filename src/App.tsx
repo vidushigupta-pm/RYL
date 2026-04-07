@@ -1972,10 +1972,25 @@ const ResultScreen = ({
       health_goals: profile.health_goals || []
     };
 
+    // Normalise ingredients to the shape profileScoringEngine expects
+    const normalisedIngredients = (result.ingredients || [])
+      .filter(Boolean)
+      .map((ing: any) => ({
+        name: ing.name || ing.plain_name || 'Unknown',
+        safety_tier: ing.safety_tier || 'UNVERIFIED',
+        flag_for: Array.isArray(ing.flag_for) ? ing.flag_for : [],
+        function: ing.function || '',
+        plain_explanation: ing.plain_explanation || '',
+        common_names: Array.isArray(ing.common_names) ? ing.common_names : [],
+        condition_flags: Array.isArray(ing.condition_flags) ? ing.condition_flags : [],
+        score_impact: ing.score_impact ?? 0,
+        data_quality: ing.data_quality || 'LLM_GENERATED',
+      }));
+
     const verdict = calculateProfileVerdict(
       familyProfile,
       result.overall_score,
-      result.ingredients || [],
+      normalisedIngredients,
       result.nutrition || null,
       result.allergens || []
     );
@@ -2160,7 +2175,7 @@ const ResultScreen = ({
             <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Ingredient Breakdown</h3>
           </div>
           <div className="bg-white rounded-[32px] border border-[#E8DDD0] overflow-hidden">
-            {(result.ingredients || []).map((ing: any, i: number) => (
+            {(result.ingredients || []).filter((ing: any) => ing && (ing.name || ing.plain_name)).map((ing: any, i: number) => (
               <div 
                 key={i} 
                 onClick={() => setExpandedIng(expandedIng === i ? null : i)}
