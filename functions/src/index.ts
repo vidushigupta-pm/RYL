@@ -23,6 +23,22 @@ function withTimeout<T>(promise: Promise<T>, ms = 300_000): Promise<T> {
   ]);
 }
 
+async function callGemini(fn: () => Promise<any>, retries = 4, delay = 3000): Promise<any> {
+  try {
+    return await fn();
+  } catch (error: any) {
+    const msg = JSON.stringify(error);
+    const isRetryable = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED') ||
+                        msg.includes('503') || msg.includes('UNAVAILABLE');
+    if (isRetryable && retries > 0) {
+      console.warn(`[Gemini] Retryable error, retrying in ${delay}ms... (${retries} left)`);
+      await new Promise(r => setTimeout(r, delay));
+      return callGemini(fn, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+}
+
 const userCallLog = new Map<string, number[]>();
 const RATE_LIMIT_PER_MIN = 10;
 
@@ -88,11 +104,11 @@ async function getIngredientDetails(
 
   Focus on Indian standards (FSSAI/CDSCO). Be objective.`;
 
-  const result = await ai.models.generateContent({
+  const result = await callGemini(() => ai.models.generateContent({
     model,
     contents: [{ parts: [{ text: prompt }] }],
     config: { responseMimeType: "application/json" },
-  });
+  }));
 
   try {
     return JSON.parse(result.text ?? '{}');
@@ -133,11 +149,11 @@ export const analyseLabel = onCall({ secrets: [GEMINI_API_KEY] }, async (request
       extractionParts.push({ inlineData: { data: frontImageBase64, mimeType: frontMimeType } });
     }
 
-    const extractionResult = await withTimeout(ai.models.generateContent({
+    const extractionResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: extractionModel,
       contents: [{ parts: [...extractionParts, { text: extractionPrompt }] }],
       config: { responseMimeType: "application/json" },
-    }));
+    })));
 
     if (!extractionResult.text) {
       console.error("Gemini extractionResult.text is empty:", JSON.stringify(extractionResult));
@@ -190,11 +206,11 @@ Return ONLY JSON with exactly these fields:
   "suggestions": [{ "type": "GENERIC", "name": "...", "reason": "..." }]
 }`;
 
-      const summaryResult = await withTimeout(ai.models.generateContent({
+      const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: [{ parts: [{ text: summaryPrompt }] }],
         config: { responseMimeType: 'application/json' },
-      }));
+      })));
 
       let summaryData: any = {};
       try {
@@ -254,11 +270,11 @@ Return ONLY JSON with exactly these fields:
 
     Return ONLY JSON matching the AnalysisResult structure.`;
 
-    const summaryResult = await withTimeout(ai.models.generateContent({
+    const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
-    }));
+    })));
 
     if (!summaryResult.text) {
       console.error("Gemini summaryResult.text is empty:", JSON.stringify(summaryResult));
@@ -362,7 +378,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
       required: ["product_name", "brand", "category", "ingredients"]
     };
 
-    const searchResult = await withTimeout(ai.models.generateContent({
+    const searchResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: searchModel,
       contents: [{ parts: [{ text: searchPrompt }] }],
       config: {
@@ -371,7 +387,7 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
         tools: [{ googleSearch: {} }],
         toolConfig: { includeServerSideToolInvocations: true }
       },
-    }));
+    })));
 
     if (!searchResult.text) {
       const grounding = searchResult.candidates?.[0]?.groundingMetadata;
@@ -421,11 +437,11 @@ export const searchProductByName = onCall({ secrets: [GEMINI_API_KEY] }, async (
 
     Return ONLY JSON matching the AnalysisResult structure.`;
 
-    const summaryResult = await withTimeout(ai.models.generateContent({
+    const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [{ parts: [{ text: summaryPrompt }] }],
       config: { responseMimeType: "application/json" },
-    }));
+    })));
 
     if (!summaryResult.text) {
       console.error("Gemini summaryResult.text is empty:", JSON.stringify(summaryResult));
@@ -526,13 +542,13 @@ CONVERSATION_HISTORY: ${JSON.stringify(history)}
 
 USER QUESTION: ${userMessage}`;
 
-    const result = await withTimeout(ai.models.generateContent({
+    const result = await withTimeout(callGemini(() => ai.models.generateContent({
       model,
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         systemInstruction,
       },
-    }));
+    })));
 
     return result.text;
   } catch (error) {
