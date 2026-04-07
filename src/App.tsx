@@ -2721,12 +2721,12 @@ export default function App() {
 
       const safeAnalysis = {
         ...analysis,
-        suggestions: Array.isArray(analysis.suggestions) ? analysis.suggestions : [],
-        ingredients: Array.isArray(analysis.ingredients) ? analysis.ingredients : [],
-        score_breakdown: Array.isArray(analysis.score_breakdown) ? analysis.score_breakdown : [],
-        claim_checks: Array.isArray(analysis.claim_checks) ? analysis.claim_checks : [],
-        front_claims_detected: Array.isArray(analysis.front_claims_detected) ? analysis.front_claims_detected : [],
-        unverified_ingredients: Array.isArray(analysis.unverified_ingredients) ? analysis.unverified_ingredients : [],
+        suggestions: Array.isArray(analysis.suggestions) ? analysis.suggestions.filter(Boolean) : [],
+        ingredients: Array.isArray(analysis.ingredients) ? analysis.ingredients.filter(Boolean) : [],
+        score_breakdown: Array.isArray(analysis.score_breakdown) ? analysis.score_breakdown.filter(Boolean) : [],
+        claim_checks: Array.isArray(analysis.claim_checks) ? analysis.claim_checks.filter(Boolean) : [],
+        front_claims_detected: Array.isArray(analysis.front_claims_detected) ? analysis.front_claims_detected.filter(Boolean) : [],
+        unverified_ingredients: Array.isArray(analysis.unverified_ingredients) ? analysis.unverified_ingredients.filter(Boolean) : [],
       };
       setResult(safeAnalysis);
       setPhase('result');
@@ -2784,12 +2784,12 @@ export default function App() {
 
       const safeAnalysis = {
         ...analysis,
-        suggestions: Array.isArray(analysis.suggestions) ? analysis.suggestions : [],
-        ingredients: Array.isArray(analysis.ingredients) ? analysis.ingredients : [],
-        score_breakdown: Array.isArray(analysis.score_breakdown) ? analysis.score_breakdown : [],
-        claim_checks: Array.isArray(analysis.claim_checks) ? analysis.claim_checks : [],
-        front_claims_detected: Array.isArray(analysis.front_claims_detected) ? analysis.front_claims_detected : [],
-        unverified_ingredients: Array.isArray(analysis.unverified_ingredients) ? analysis.unverified_ingredients : [],
+        suggestions: Array.isArray(analysis.suggestions) ? analysis.suggestions.filter(Boolean) : [],
+        ingredients: Array.isArray(analysis.ingredients) ? analysis.ingredients.filter(Boolean) : [],
+        score_breakdown: Array.isArray(analysis.score_breakdown) ? analysis.score_breakdown.filter(Boolean) : [],
+        claim_checks: Array.isArray(analysis.claim_checks) ? analysis.claim_checks.filter(Boolean) : [],
+        front_claims_detected: Array.isArray(analysis.front_claims_detected) ? analysis.front_claims_detected.filter(Boolean) : [],
+        unverified_ingredients: Array.isArray(analysis.unverified_ingredients) ? analysis.unverified_ingredients.filter(Boolean) : [],
       };
       setResult(safeAnalysis);
       setPhase('result');
