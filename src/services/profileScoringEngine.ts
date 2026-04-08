@@ -108,8 +108,14 @@ function checkAllergens(
     FISH:            ['fish', 'cod', 'salmon', 'tuna', 'sardine', 'anchovy', 'mackerel', 'omega-3 (fish)'],
     SESAME:          ['sesame', 'til', 'tahini', 'gingelly', 'benne'],
     MUSTARD:         ['mustard', 'sarson', 'mustard oil', 'mustard seed'],
-    SULPHITES:       ['ins 220', 'ins 221', 'ins 222', 'ins 223', 'ins 224', 'sulphite', 'sulfite', 'sulphur dioxide'],
-    TARTRAZINE_DYE:  ['ins 102', 'tartrazine', 'yellow 5'],
+    SULPHITES:            ['ins 220', 'ins 221', 'ins 222', 'ins 223', 'ins 224', 'sulphite', 'sulfite', 'sulphur dioxide'],
+    TARTRAZINE_DYE:       ['ins 102', 'tartrazine', 'yellow 5'],
+    // Skin / topical allergens
+    FRAGRANCE_ALLERGY:    ['fragrance', 'parfum', 'perfume', 'limonene', 'linalool', 'eugenol', 'geraniol', 'cinnamal', 'citronellol'],
+    NICKEL_ALLERGY:       ['nickel sulfate', 'nickel sulphate', 'nickel'],
+    LATEX_ALLERGY:        ['latex', 'natural rubber', 'rubber latex'],
+    LANOLIN_ALLERGY:      ['lanolin', 'wool wax', 'wool fat', 'adeps lanae', 'lanolin alcohol'],
+    PARABENS_SENSITIVITY: ['methylparaben', 'ethylparaben', 'propylparaben', 'butylparaben', 'isobutylparaben', 'isopropylparaben', 'paraben'],
   };
 
   const found: string[] = [];
@@ -1235,6 +1241,356 @@ function applyActivityRules(
   return score;
 }
 
+// ── SECTION 6: Position-Aware Ingredient Rules ───────────────────────────────
+// Ingredients are listed in descending order by weight on every Indian pack.
+// If sugar, palm oil, maida or salt is in the top 3 positions, it's a MAJOR
+// component of the product — amplify deductions for relevant profiles.
+
+function applyPositionAwareRules(
+  conditions: HealthCondition[],
+  ingredients: IngredientEntry[],
+  concerns: ProfileConcern[]
+): void {
+  const top3 = ingredients.slice(0, 3);
+  const ordinals = ['#1', '#2', '#3'];
+
+  top3.forEach((ing, idx) => {
+    const name = (ing.name || '').toLowerCase();
+    const ord = ordinals[idx];
+
+    // ── SUGAR as major ingredient ──────────────────────────
+    const isSugar = ['sugar', 'sucrose', 'glucose syrup', 'corn syrup',
+                     'fructose', 'invert sugar syrup', 'invert sugar'].some(kw => name.includes(kw));
+    if (isSugar) {
+      if (has(conditions, 'DIABETES_T1') || has(conditions, 'DIABETES_T2') ||
+          has(conditions, 'PRE_DIABETES') || has(conditions, 'INSULIN_RESISTANCE')) {
+        concerns.push({
+          label: `⚠ Sugar is ${ord} Ingredient — Diabetes`,
+          detail: `Sugar is the ${ord} ingredient by weight — a large proportion of this product IS sugar. This is incompatible with blood sugar management. Avoid.`,
+          severity: 'HIGH',
+          impact: -10,
+          source: 'ICMR-NIN 2024'
+        });
+      } else if (has(conditions, 'OBESITY') || has(conditions, 'WEIGHT_LOSS') ||
+                 has(conditions, 'PCOD_PCOS') || has(conditions, 'FATTY_LIVER')) {
+        concerns.push({
+          label: `Sugar is ${ord} Ingredient — Your Goal`,
+          detail: `Sugar is the ${ord} ingredient by weight. The majority of this product is sugar — not compatible with your health goals.`,
+          severity: 'HIGH',
+          impact: -8,
+          source: 'ICMR-NIN 2024'
+        });
+      }
+    }
+
+    // ── PALM OIL as major ingredient ───────────────────────
+    const isPalmOil = ['palm oil', 'palm fat', 'palm kernel', 'vegetable oil (palm)',
+                       'edible vegetable oil (palm)'].some(kw => name.includes(kw));
+    if (isPalmOil && (has(conditions, 'HEART_DISEASE') || has(conditions, 'HEART_ATTACK_HISTORY') ||
+                      has(conditions, 'HIGH_CHOLESTEROL'))) {
+      concerns.push({
+        label: `⚠ Palm Oil is ${ord} Ingredient — Heart Risk`,
+        detail: `Palm oil is the ${ord} ingredient — a massive source of saturated fat. A serious concern for your cardiovascular condition. Limit or avoid.`,
+        severity: 'HIGH',
+        impact: -10,
+        source: 'ICMR-NIN 2024 / WHO'
+      });
+    }
+
+    // ── MAIDA / REFINED FLOUR as major ingredient ──────────
+    const isMaida = ['maida', 'refined wheat flour', 'refined flour',
+                     'all purpose flour'].some(kw => name.includes(kw));
+    if (isMaida && (has(conditions, 'DIABETES_T1') || has(conditions, 'DIABETES_T2') ||
+                    has(conditions, 'PRE_DIABETES') || has(conditions, 'INSULIN_RESISTANCE'))) {
+      concerns.push({
+        label: `Maida is ${ord} Ingredient — Blood Sugar`,
+        detail: `Refined flour (maida) is the ${ord} ingredient — acts like sugar in the body, causing rapid blood glucose spikes. Equivalent to eating refined sugar for diabetics.`,
+        severity: 'HIGH',
+        impact: -8,
+        source: 'ICMR-NIN 2024'
+      });
+    }
+
+    // ── SALT as major ingredient ────────────────────────────
+    const isSalt = ['iodised salt', 'sodium chloride', 'salt'].some(kw => name.includes(kw));
+    if (isSalt && (has(conditions, 'HYPERTENSION') || has(conditions, 'HEART_DISEASE') ||
+                   has(conditions, 'HEART_ATTACK_HISTORY') || has(conditions, 'KIDNEY_DISEASE_CKD'))) {
+      concerns.push({
+        label: `⚠ Salt is ${ord} Ingredient — Critical`,
+        detail: `Salt appears in the top ingredients by weight — meaning extremely high sodium. For your condition, this product should be strictly avoided.`,
+        severity: 'HIGH',
+        impact: -12,
+        source: 'ICMR-NIN 2024'
+      });
+    }
+
+    // ── MALTODEXTRIN as major ingredient ───────────────────
+    const isMaltodextrin = name.includes('maltodextrin') || name.includes('modified starch');
+    if (isMaltodextrin && (has(conditions, 'DIABETES_T1') || has(conditions, 'DIABETES_T2') ||
+                           has(conditions, 'PRE_DIABETES') || has(conditions, 'INSULIN_RESISTANCE'))) {
+      concerns.push({
+        label: `Maltodextrin is ${ord} Ingredient — High GI Concern`,
+        detail: `Maltodextrin is the ${ord} ingredient — it has a higher glycaemic index than table sugar. A primary filler in this product that directly spikes blood glucose.`,
+        severity: 'HIGH',
+        impact: -8,
+        source: 'ICMR-NIN 2024'
+      });
+    }
+  });
+}
+
+// ── SECTION 7: Skin Condition Rules (COSMETIC / PERSONAL_CARE only) ───────────
+
+function applySkinConditionRules(
+  score: number,
+  conditions: HealthCondition[],
+  ingredients: IngredientEntry[],
+  concerns: ProfileConcern[],
+  positives: string[]
+): number {
+
+  const ingNames = ingredients.map(i => i.name.toLowerCase());
+  const hasAny = (keywords: string[]) => ingNames.some(n => keywords.some(kw => n.includes(kw)));
+
+  // ── ACNE-PRONE ────────────────────────────────────────────────
+  if (has(conditions, 'ACNE_PRONE')) {
+    const comedogenic = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['coconut oil', 'isopropyl myristate', 'isopropyl palmitate', 'wheat germ oil',
+              'cocoa butter', 'flaxseed oil', 'linseed oil'].some(kw => n.includes(kw));
+    });
+    if (comedogenic.length > 0) {
+      const d = -10; score += d;
+      concerns.push({
+        label: 'Comedogenic Ingredients — Acne Risk',
+        detail: `${comedogenic.map(i => i.name).join(', ')} can clog pores and trigger breakouts for acne-prone skin. Best avoided.`,
+        severity: 'HIGH',
+        impact: d,
+        source: 'Dermatology Research & Practice / IJDVL'
+      });
+    }
+
+    // Silicones — film-forming, can trap bacteria
+    const heavySilicones = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['dimethicone', 'cyclopentasiloxane', 'cyclohexasiloxane', 'trimethicone'].some(kw => n.includes(kw));
+    });
+    if (heavySilicones.length > 0) {
+      score -= 5;
+      concerns.push({
+        label: 'Heavy Silicones — Pore Clogging Note',
+        detail: `${heavySilicones.map(i => i.name).join(', ')} can form an occlusive film that traps sebum and bacteria. Worth monitoring for acne-prone skin.`,
+        severity: 'MODERATE',
+        impact: -5,
+        source: 'IJDVL'
+      });
+    }
+
+    // Beneficial for acne
+    const acneBeneficial = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['niacinamide', 'salicylic acid', 'zinc', 'tea tree', 'benzoyl peroxide',
+              'glycolic acid', 'azelaic acid'].some(kw => n.includes(kw));
+    });
+    if (acneBeneficial.length > 0) {
+      const d = acneBeneficial.length * 4; score += d;
+      concerns.push({
+        label: 'Acne-Fighting Actives ✓',
+        detail: `${acneBeneficial.map(i => i.name).join(', ')} — proven to reduce acne, control sebum, and improve skin texture.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'British Journal of Dermatology'
+      });
+      positives.push(`Contains acne-fighting actives: ${acneBeneficial.map(i => i.name).join(', ')}`);
+    }
+  }
+
+  // ── SENSITIVE SKIN / ROSACEA ──────────────────────────────────
+  if (has(conditions, 'SENSITIVE_SKIN_TOPICAL') || has(conditions, 'ROSACEA') || has(conditions, 'CONTACT_DERMATITIS')) {
+
+    const hasFragrance = hasAny(['fragrance', 'parfum', 'perfume', 'limonene', 'linalool', 'eugenol', 'geraniol', 'cinnamal']);
+    if (hasFragrance) {
+      const d = has(conditions, 'CONTACT_DERMATITIS') ? -15 : -10;
+      score += d;
+      concerns.push({
+        label: 'Fragrance / Parfum — Irritation Risk',
+        detail: 'Fragrance is the #1 cause of contact dermatitis and skin sensitisation. EU Cosmetics Regulation lists 26 fragrance allergens. Best avoided for sensitive skin.',
+        severity: 'HIGH',
+        impact: d,
+        source: 'EU Cosmetics Regulation 1223/2009 / ICMR'
+      });
+    }
+
+    const hasAlcohol = hasAny(['alcohol denat', 'denatured alcohol', 'sd alcohol', 'ethanol (denat)', 'isopropanol']);
+    if (hasAlcohol) {
+      const d = -8; score += d;
+      concerns.push({
+        label: 'Drying Alcohol — Skin Barrier Concern',
+        detail: 'Denatured alcohol strips the skin barrier, triggers inflammation, and worsens rosacea and sensitive skin. Avoid repeatedly.',
+        severity: has(conditions, 'ROSACEA') ? 'HIGH' : 'MODERATE',
+        impact: d,
+        source: 'Journal of Clinical and Aesthetic Dermatology'
+      });
+    }
+
+    const hasMIorMCI = hasAny(['methylisothiazolinone', 'methylchloroisothiazolinone', 'mi/mci', 'kathon']);
+    if (hasMIorMCI) {
+      const d = -12; score += d;
+      concerns.push({
+        label: '⚠ MI/MCI — Sensitiser',
+        detail: 'Methylisothiazolinone (MI) and Methylchloroisothiazolinone (MCI) are potent skin sensitisers. EU banned MI in leave-on products. High risk for contact dermatitis.',
+        severity: 'HIGH',
+        impact: d,
+        source: 'EU Cosmetics Regulation / SCCS'
+      });
+    }
+
+    const hasSLS = hasAny(['sodium lauryl sulfate', 'sls', 'sodium lauryl sulphate']);
+    if (hasSLS) {
+      const d = -8; score += d;
+      concerns.push({
+        label: 'SLS — Skin Barrier Disruption',
+        detail: 'Sodium Lauryl Sulfate (SLS) strips natural oils and disrupts the skin barrier. Particularly problematic for sensitive, reactive, or eczema-prone skin.',
+        severity: 'MODERATE',
+        impact: d,
+        source: 'Contact Dermatitis Journal'
+      });
+    }
+
+    // Gentle/soothing actives are a positive
+    const soothing = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['centella asiatica', 'cica', 'allantoin', 'bisabolol', 'aloe vera', 'panthenol',
+              'ceramide', 'hyaluronic acid', 'glycerin', 'beta-glucan'].some(kw => n.includes(kw));
+    });
+    if (soothing.length > 0) {
+      const d = Math.min(soothing.length * 3, 12); score += d;
+      concerns.push({
+        label: 'Soothing / Barrier Ingredients ✓',
+        detail: `${soothing.map(i => i.name).join(', ')} — clinically proven to calm inflammation and strengthen the skin barrier.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'British Journal of Dermatology'
+      });
+      positives.push(`Soothing actives present: ${soothing.map(i => i.name).join(', ')}`);
+    }
+  }
+
+  // ── DRY SKIN ─────────────────────────────────────────────────
+  if (has(conditions, 'DRY_SKIN')) {
+    const hasHarshSurfactants = hasAny(['sodium lauryl sulfate', 'sls', 'sodium lauryl sulphate', 'ammonium lauryl sulfate']);
+    if (hasHarshSurfactants) {
+      const d = -8; score += d;
+      concerns.push({
+        label: 'Harsh Surfactants — Dryness Risk',
+        detail: 'SLS and ALS strip the skin of natural oils, worsening dryness and tightness. Look for SLES or amino-acid surfactants instead.',
+        severity: 'MODERATE',
+        impact: d,
+        source: 'IJDVL'
+      });
+    }
+
+    const humectants = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['glycerin', 'hyaluronic acid', 'sodium hyaluronate', 'urea', 'sorbitol',
+              'panthenol', 'aloe vera', 'honey extract'].some(kw => n.includes(kw));
+    });
+    if (humectants.length > 0) {
+      const d = humectants.length * 3; score += Math.min(d, 10);
+      concerns.push({
+        label: 'Humectants — Dry Skin Benefit ✓',
+        detail: `${humectants.map(i => i.name).join(', ')} — attract and retain moisture. Great for dry skin.`,
+        severity: 'BENEFICIAL',
+        impact: Math.min(d, 10),
+        source: 'British Journal of Dermatology'
+      });
+      positives.push(`Humectants present: ${humectants.map(i => i.name).join(', ')}`);
+    }
+  }
+
+  // ── OILY SKIN ─────────────────────────────────────────────────
+  if (has(conditions, 'OILY_SKIN')) {
+    const heavyOcclusive = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['mineral oil', 'petrolatum', 'paraffin oil', 'coconut oil', 'cocoa butter',
+              'shea butter (heavy formula)'].some(kw => n.includes(kw));
+    });
+    if (heavyOcclusive.length > 0) {
+      const d = -6; score += d;
+      concerns.push({
+        label: 'Heavy Occlusive Oils — Oily Skin Note',
+        detail: `${heavyOcclusive.map(i => i.name).join(', ')} can feel greasy and contribute to congestion for oily or combination skin types.`,
+        severity: 'LOW',
+        impact: d,
+        source: 'IJDVL'
+      });
+    }
+
+    const oilControlIngredients = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['niacinamide', 'salicylic acid', 'zinc', 'kaolin', 'bentonite', 'clay'].some(kw => n.includes(kw));
+    });
+    if (oilControlIngredients.length > 0) {
+      const d = 6; score += d;
+      concerns.push({
+        label: 'Oil-Control Actives ✓',
+        detail: `${oilControlIngredients.map(i => i.name).join(', ')} help regulate sebum production and mattify the skin.`,
+        severity: 'BENEFICIAL',
+        impact: d,
+        source: 'Journal of Clinical and Aesthetic Dermatology'
+      });
+      positives.push(`Oil-control ingredients found: ${oilControlIngredients.map(i => i.name).join(', ')}`);
+    }
+  }
+
+  // ── PSORIASIS / ECZEMA ────────────────────────────────────────
+  if (has(conditions, 'PSORIASIS') || has(conditions, 'ECZEMA_SENSITIVE_SKIN')) {
+    const hasFragrance = hasAny(['fragrance', 'parfum', 'perfume']);
+    if (hasFragrance) {
+      const d = -12; score += d;
+      concerns.push({
+        label: 'Fragrance — Psoriasis / Eczema Trigger',
+        detail: 'Fragrance is one of the most common triggers for eczema and psoriasis flares. NHS and AAD both recommend fragrance-free products for these conditions.',
+        severity: 'HIGH',
+        impact: d,
+        source: 'NHS / American Academy of Dermatology'
+      });
+    }
+
+    const hasHarshPreservatives = hasAny(['methylisothiazolinone', 'methylchloroisothiazolinone',
+                                           'formaldehyde', 'imidazolidinyl urea', 'dmdm hydantoin']);
+    if (hasHarshPreservatives) {
+      const d = -10; score += d;
+      concerns.push({
+        label: 'Harsh Preservatives — Skin Barrier Risk',
+        detail: 'Formaldehyde-releasing preservatives and isothiazolinones can aggravate psoriasis and eczema by triggering contact sensitisation.',
+        severity: 'HIGH',
+        impact: d,
+        source: 'British Journal of Dermatology'
+      });
+    }
+
+    const skinBarrier = ingredients.filter(i => {
+      const n = i.name.toLowerCase();
+      return ['ceramide', 'cholesterol', 'fatty acid', 'niacinamide', 'colloidal oatmeal',
+              'allantoin', 'panthenol'].some(kw => n.includes(kw));
+    });
+    if (skinBarrier.length > 0) {
+      const d = skinBarrier.length * 4; score += Math.min(d, 12);
+      concerns.push({
+        label: 'Skin Barrier Repair Ingredients ✓',
+        detail: `${skinBarrier.map(i => i.name).join(', ')} — help repair the compromised skin barrier in eczema and psoriasis.`,
+        severity: 'BENEFICIAL',
+        impact: Math.min(d, 12),
+        source: 'British Journal of Dermatology'
+      });
+      positives.push(`Barrier-repair ingredients: ${skinBarrier.map(i => i.name).join(', ')}`);
+    }
+  }
+
+  return score;
+}
+
 // ── Consumption Note ──────────────────────────────────────────────────────────
 
 function getConsumptionNote(
@@ -1287,7 +1643,8 @@ export function calculateProfileVerdict(
   baseProductScore: number,
   ingredients: IngredientEntry[],
   nutrition: NutritionData | null,
-  declaredAllergens: string[]
+  declaredAllergens: string[],
+  productCategory: string = 'FOOD'
 ): ProfileVerdict {
 
   // ── Step 0: Dietary Preference Flagging ──────────────────────
@@ -1368,7 +1725,12 @@ export function calculateProfileVerdict(
     baseProductScore, profile.health_conditions, modifiedIngredients, nutrition, concerns, positives
   );
 
-  // ── Step 4.5: Apply health goal rules ────────────────────────
+  // ── Step 4.5: Apply position-aware ingredient rules (FOOD only) ──
+  if (productCategory === 'FOOD' || productCategory === 'SUPPLEMENT') {
+    applyPositionAwareRules(profile.health_conditions, modifiedIngredients, concerns);
+  }
+
+  // ── Step 4.6: Apply health goal rules ────────────────────────
   applyHealthGoalRules(
     baseProductScore, profile.health_goals, modifiedIngredients, nutrition, concerns, positives
   );
@@ -1390,6 +1752,17 @@ export function calculateProfileVerdict(
   applyActivityRules(
     baseProductScore, profile.activity_level, profile.gender, nutrition, concerns, positives
   );
+
+  // ── Step 6.5: Apply skin condition rules (cosmetics only) ─────
+  if (productCategory === 'COSMETIC' || productCategory === 'PERSONAL_CARE') {
+    const hasSkinCondition = profile.health_conditions.some(c =>
+      ['ACNE_PRONE', 'SENSITIVE_SKIN_TOPICAL', 'ROSACEA', 'PSORIASIS',
+       'DRY_SKIN', 'OILY_SKIN', 'CONTACT_DERMATITIS', 'ECZEMA_SENSITIVE_SKIN'].includes(c)
+    );
+    if (hasSkinCondition) {
+      applySkinConditionRules(baseProductScore, profile.health_conditions, modifiedIngredients, concerns, positives);
+    }
+  }
 
   // ── Step 7: Sort concerns by severity ────────────────────────
   const order = { HIGH: 0, MODERATE: 1, LOW: 2, BENEFICIAL: 3 };
@@ -1425,7 +1798,8 @@ export function calculateAllFamilyVerdicts(
   baseProductScore: number,
   ingredients: IngredientEntry[],
   nutrition: NutritionData | null,
-  declaredAllergens: string[]
+  declaredAllergens: string[],
+  productCategory: string = 'FOOD'
 ): ProfileVerdict[] {
   return profiles.map(profile =>
     calculateProfileVerdict(
@@ -1433,7 +1807,8 @@ export function calculateAllFamilyVerdicts(
       baseProductScore,
       ingredients,
       nutrition,
-      declaredAllergens
+      declaredAllergens,
+      productCategory
     )
   );
 }

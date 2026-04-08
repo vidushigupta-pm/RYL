@@ -87,40 +87,112 @@ exports.analyseLabel = (0, https_1.onCall)({ secrets: [GEMINI_API_KEY] }, async 
     try {
         const apiKey = GEMINI_API_KEY.value();
         const ai = new genai_1.GoogleGenAI({ apiKey });
-        const extractionModel = "gemini-2.5-flash";
-        const extractionPrompt = `Extract the following from this product label:
-    1. Product Name and Brand.
-    2. Category (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
-    3. Full Ingredients List (as an array of strings).
-    4. Nutritional Information (Energy, Sugar, Sodium, Protein, Fat, Saturated Fat, Trans Fat, Fibre).
+        const VALID_CATEGORIES = ['FOOD', 'COSMETIC', 'PERSONAL_CARE', 'SUPPLEMENT', 'HOUSEHOLD', 'PET_FOOD'];
+        const singlePassPrompt = `You are a product safety analyst for Indian consumers. Your output is displayed directly to users — accuracy is critical. Never guess or hallucinate.
 
-    Return ONLY JSON.`;
-        const extractionParts = [
+━━━ ANTI-HALLUCINATION RULES (non-negotiable) ━━━
+1. EXTRACT ONLY what is explicitly printed on the label image. Do not infer, assume, or add anything not visibly written.
+2. If text is unclear or cut off, extract what you can read with certainty. Skip what you cannot read — do not guess.
+3. ALL ingredient names must be in ENGLISH exactly as printed. Never translate to Hindi or any other language.
+4. Nutrition values: extract ONLY from the visible nutrition facts panel. If the panel is not in the image, use null for all nutrition fields. Never use 0 as a placeholder.
+5. safety_tier assignment rules — use ONLY these criteria:
+   • SAFE: Permitted by FSSAI/CDSCO with no significant concern at food-grade concentrations
+   • CAUTION: Has documented restrictions or advisories from FSSAI, WHO, EFSA, or peer-reviewed science
+   • AVOID: Specifically flagged as harmful by FSSAI/CDSCO/WHO or linked to serious adverse effects in published clinical research
+   • BANNED_IN_INDIA: Explicitly prohibited under FSSAI Food Safety & Standards Act or CDSCO order — ONLY use when you are certain of the specific ban
+   • When in doubt between tiers, always choose the LOWER concern tier (e.g. SAFE over CAUTION). Never overstate risk.
+6. plain_explanation: State only established facts. Reference the specific standard or body (e.g. "FSSAI permits up to 200mg/kg", "WHO recommends limiting to...", "ICMR-NIN 2024 notes..."). Do not speculate or exaggerate.
+7. flag_for: Only include health conditions where peer-reviewed clinical evidence or government guidelines confirm a specific concern.
+8. summary: Only state what the data above shows. Do not add new claims, risks, or benefits not supported by the extracted data.
+9. india_context: Only cite FSSAI regulations, CDSCO orders, or BIS standards that you are certain exist. Do not fabricate regulation numbers or policy names.
+10. claim_checks: Only flag a front-of-pack claim as misleading if it violates a specific, named FSSAI/BIS standard. Do not flag valid claims.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TASK — do all of the following in one response:
+
+1. EXTRACT from the label (only what is visibly printed):
+   - Product name and brand exactly as shown
+   - Category: FOOD | COSMETIC | PERSONAL_CARE | SUPPLEMENT | HOUSEHOLD | PET_FOOD
+   - Full ingredients list in the exact order printed (include sub-ingredients in parentheses)
+   - Nutrition per 100g/100ml from the visible panel only (null if panel not visible)
+
+2. ANALYSE each ingredient using only established regulatory and scientific evidence:
+   - plain_name: the common English name consumers will recognise
+   - function: its role in the product (e.g. "Preservative", "Emulsifier", "Artificial Colour")
+   - safety_tier: per the strict rules above
+   - plain_explanation: one factual sentence citing the relevant standard or body
+   - flag_for: conditions with confirmed clinical concern only, or empty array []
+
+3. WRITE a verdict based strictly on what was extracted:
+   - summary: 2-3 sentences citing only the specific ingredients found and their established concerns/benefits
+   - india_context: one sentence citing a real FSSAI/CDSCO regulation relevant to this product
+   - is_upf: true only if the product meets Nova Group 4 ultra-processed food criteria
+   - hfss_status: "HFSS" only if the product exceeds FSSAI/WHO thresholds for fat, sugar, or salt
+   - suggestions: 1-2 product TYPE alternatives (never a specific brand name)
+
+Return ONLY this JSON (no markdown, no explanation outside the JSON):
+{
+  "product_name": "string",
+  "brand": "string",
+  "category": "FOOD|COSMETIC|PERSONAL_CARE|SUPPLEMENT|HOUSEHOLD|PET_FOOD",
+  "nutrition": { "energy_kcal": number|null, "sugar_g": number|null, "sodium_mg": number|null, "protein_g": number|null, "fat_g": number|null, "saturated_fat_g": number|null, "trans_fat_g": number|null, "fibre_g": number|null },
+  "raw_ingredients": ["string", ...],
+  "ingredients_analysis": [
+    { "name": "string", "plain_name": "string", "function": "string", "safety_tier": "SAFE|CAUTION|AVOID|BANNED_IN_INDIA", "plain_explanation": "string citing source", "flag_for": ["string"] }
+  ],
+  "summary": "string",
+  "india_context": "string",
+  "is_upf": boolean,
+  "hfss_status": "GREEN|HFSS",
+  "suggestions": [{ "type": "SWAP", "name": "product type only — never a brand name", "reason": "string" }]
+}`;
+        const imageParts = [
             { inlineData: { data: backImageBase64, mimeType: backMimeType } }
         ];
         if (frontImageBase64 && frontMimeType) {
-            extractionParts.push({ inlineData: { data: frontImageBase64, mimeType: frontMimeType } });
+            imageParts.push({ inlineData: { data: frontImageBase64, mimeType: frontMimeType } });
         }
-        const extractionResult = await withTimeout(callGemini(() => ai.models.generateContent({
-            model: extractionModel,
-            contents: [{ parts: [...extractionParts, { text: extractionPrompt }] }],
+        imageParts.push({ text: singlePassPrompt });
+        const singlePassResult = await withTimeout(callGemini(() => ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: [{ parts: imageParts }],
             config: { responseMimeType: "application/json" },
         })));
-        if (!extractionResult.text) {
-            console.error("Gemini extractionResult.text is empty:", JSON.stringify(extractionResult));
-            throw new https_1.HttpsError("internal", "Gemini failed to extract data from label.");
+        if (!singlePassResult.text) {
+            console.error("Gemini singlePassResult.text is empty:", JSON.stringify(singlePassResult));
+            throw new https_1.HttpsError("internal", "Gemini failed to analyse the label.");
         }
-        let extractedData;
+        let geminiData;
         try {
-            const cleanText = extractionResult.text.replace(/```json/g, '').replace(/```/g, '').trim();
-            extractedData = JSON.parse(cleanText);
+            const raw = singlePassResult.text ?? '';
+            const jsonStart = raw.indexOf('{');
+            const jsonEnd = raw.lastIndexOf('}');
+            if (jsonStart === -1 || jsonEnd === -1) {
+                console.error("No JSON object found in scan response:", raw);
+                throw new Error("No JSON in response");
+            }
+            const clean = raw.slice(jsonStart, jsonEnd + 1);
+            geminiData = JSON.parse(clean);
         }
         catch (parseErr) {
-            console.error("Failed to parse Gemini extraction results:", extractionResult.text);
-            throw new https_1.HttpsError("internal", "Failed to parse label data.");
+            console.error("Failed to parse Gemini single-pass results:", singlePassResult.text);
+            throw new https_1.HttpsError("internal", "Failed to parse label analysis. Please try again with a clearer image.");
         }
-        const { ingredients: rawIngredientsRaw, nutrition, category, product_name, brand } = extractedData;
-        const rawIngredients = Array.isArray(rawIngredientsRaw) ? rawIngredientsRaw : [];
+        const product_name = geminiData.product_name || 'Unknown Product';
+        const brand = geminiData.brand || '';
+        const category = VALID_CATEGORIES.includes(geminiData.category) ? geminiData.category : 'FOOD';
+        const nutrition = geminiData.nutrition || null;
+        const seenRaw = new Set();
+        const rawIngredients = (Array.isArray(geminiData.raw_ingredients) ? geminiData.raw_ingredients : [])
+            .filter((r) => { const k = (r || '').toLowerCase().trim(); if (seenRaw.has(k))
+            return false; seenRaw.add(k); return true; });
+        const seenAnal = new Set();
+        const ingredientsAnalysis = (Array.isArray(geminiData.ingredients_analysis) ? geminiData.ingredients_analysis : [])
+            .filter((ing) => { const k = (ing.name || ing.plain_name || '').toLowerCase().trim(); if (seenAnal.has(k))
+            return false; seenAnal.add(k); return true; });
+        if (!VALID_CATEGORIES.includes(geminiData.category)) {
+            console.warn(`[analyseLabel] Unrecognised category "${geminiData.category}" — defaulted to FOOD`);
+        }
         const ragResult = await (0, ragService_1.ragLookup)({
             productName: product_name,
             extractedIngredients: rawIngredients,
@@ -130,100 +202,46 @@ exports.analyseLabel = (0, https_1.onCall)({ secrets: [GEMINI_API_KEY] }, async 
         if (ragResult.layer === 1) {
             return ragResult.cached_verdict;
         }
-        if (ragResult.layer === 2 && ragResult.partial_result) {
-            console.log('[analyseLabel] Layer 2 hit — requesting summary only');
-            const partial = ragResult.partial_result;
-            const summaryPrompt = `You are a food and cosmetic safety expert in India.
-The ingredients have already been verified and scored from our database.
-Your ONLY task is to write the narrative fields.
-
-PRODUCT: ${product_name} (${brand})
-CATEGORY: ${category}
-NUTRITION: ${JSON.stringify(nutrition)}
-VERIFIED INGREDIENTS: ${JSON.stringify(partial.ingredients)}
-
-Return ONLY JSON with exactly these fields:
-{
-  "summary": "2-3 sentence plain English verdict for an Indian consumer",
-  "india_context": "Any India-specific note (FSSAI, common usage, regional relevance)",
-  "is_upf": boolean,
-  "hfss_status": "GREEN | HFSS",
-  "suggestions": [{ "type": "GENERIC", "name": "...", "reason": "..." }]
-}`;
-            const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: [{ parts: [{ text: summaryPrompt }] }],
-                config: { responseMimeType: 'application/json' },
-            })));
-            let summaryData = {};
-            try {
-                const clean = (summaryResult.text || '').replace(/```json/g, '').replace(/```/g, '').trim();
-                summaryData = JSON.parse(clean);
-            }
-            catch (e) {
-                console.error('[analyseLabel] Layer 2 summary parse failed:', e);
-            }
-            const result = {
-                product_name,
-                brand,
-                category,
-                nutrition,
-                ingredients: partial.ingredients || [],
-                overall_score: partial.overall_score ?? 0,
-                score_breakdown: partial.score_breakdown ?? [],
-                summary: summaryData.summary || 'Analysis complete.',
-                india_context: summaryData.india_context || '',
-                is_upf: summaryData.is_upf ?? false,
-                hfss_status: summaryData.hfss_status || 'GREEN',
-                suggestions: summaryData.suggestions || [],
-            };
-            await (0, ragService_1.saveProductToCache)(result);
-            return result;
-        }
-        let groundTruthBundle;
-        if (ragResult.layer === 3 && ragResult.ground_truth_bundle) {
-            console.log('[analyseLabel] Layer 3 hit — injecting ground truth into prompt');
-            groundTruthBundle = ragResult.ground_truth_bundle;
-        }
         const lookup = (0, data_1.batchLookupIngredients)(rawIngredients);
-        const enrichedDetails = await getIngredientDetails(ai, lookup.unverified, category);
         const finalVerified = [...lookup.verified];
-        for (const [name, entry] of Object.entries(enrichedDetails)) {
-            finalVerified.push({ rawName: name, entry });
+        const dbVerifiedNames = new Set(lookup.verified.map(v => v.rawName.toLowerCase()));
+        for (const ing of ingredientsAnalysis) {
+            if (!dbVerifiedNames.has((ing.name || '').toLowerCase())) {
+                finalVerified.push({
+                    rawName: ing.name,
+                    entry: {
+                        common_names: [ing.plain_name || ing.name],
+                        function: ing.function || 'Unknown',
+                        safety_tier: ing.safety_tier || 'UNVERIFIED',
+                        plain_explanation: ing.plain_explanation || '',
+                        condition_flags: (ing.flag_for || []).map((c) => ({ condition: c, impact: 'MODERATE', reason: '', source: 'Gemini AI (unverified — not from regulatory DB)' })),
+                        score_impact: ing.safety_tier === 'AVOID' ? -10 : ing.safety_tier === 'BANNED_IN_INDIA' ? -30 : ing.safety_tier === 'CAUTION' ? -3 : 0,
+                        data_quality: 'LLM_GENERATED',
+                        fssai_status: 'UNKNOWN',
+                        ins_number: null,
+                        india_specific_note: null,
+                    }
+                });
+            }
         }
         const finalLookupResult = {
             verified: finalVerified,
-            unverified: lookup.unverified.filter(u => !enrichedDetails[u]),
-            coveragePercent: Math.round((finalVerified.length / rawIngredients.length) * 100)
+            unverified: rawIngredients.filter(r => !finalVerified.some(v => v.rawName === r)),
+            coveragePercent: rawIngredients.length > 0 ? Math.round((finalVerified.length / rawIngredients.length) * 100) : 100
         };
-        const scoreResult = (0, scoringEngine_1.calculateScore)(finalLookupResult, nutrition, category);
-        const summaryPrompt = `Based on this data, provide a summary, india_context, is_upf, hfss_status, and suggestions.
-    DATA: ${JSON.stringify({ product_name, brand, category, nutrition, scoreResult, finalLookupResult })}
-    ${groundTruthBundle ? `\nVERIFIED INGREDIENT CONTEXT (USE AS GROUND TRUTH):\n${groundTruthBundle}` : ''}
-
-    Return ONLY JSON matching the AnalysisResult structure.`;
-        const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: [{ parts: [{ text: summaryPrompt }] }],
-            config: { responseMimeType: "application/json" },
-        })));
-        if (!summaryResult.text) {
-            console.error("Gemini summaryResult.text is empty:", JSON.stringify(summaryResult));
-            throw new https_1.HttpsError("internal", "Gemini failed to return analysis summary.");
-        }
-        let finalAnalysis;
-        try {
-            const cleanSummary = summaryResult.text.replace(/```json/g, '').replace(/```/g, '').trim();
-            finalAnalysis = JSON.parse(cleanSummary);
-        }
-        catch (parseErr) {
-            console.error("Failed to parse Gemini summary results:", summaryResult.text);
-            throw new https_1.HttpsError("internal", "Failed to parse analysis summary.");
-        }
+        const scoreResult = (0, scoringEngine_1.calculateScore)(finalLookupResult, nutrition, category, geminiData.is_upf ?? false);
         const result = {
-            ...finalAnalysis,
+            product_name,
+            brand,
+            category,
+            nutrition,
             overall_score: scoreResult.overall_score,
             score_breakdown: scoreResult.score_breakdown,
+            summary: geminiData.summary || 'Analysis complete.',
+            india_context: geminiData.india_context || '',
+            is_upf: geminiData.is_upf ?? false,
+            hfss_status: geminiData.hfss_status || 'GREEN',
+            suggestions: Array.isArray(geminiData.suggestions) ? geminiData.suggestions : [],
             ingredients: finalVerified.map(v => ({
                 name: v.rawName,
                 plain_name: (v.entry.common_names || [])[0] || v.rawName,
@@ -256,114 +274,130 @@ exports.searchProductByName = (0, https_1.onCall)({ secrets: [GEMINI_API_KEY] },
         if (ragCacheResult.layer === 1) {
             return ragCacheResult.cached_verdict;
         }
-        const searchModel = "gemini-2.5-flash";
-        const searchPrompt = `Search for the product "${productName}" in India.
-    If "${productName}" is a brand name (like Maggi, Parle, etc.), find the most popular product of that brand (e.g., Maggi 2-Minute Noodles).
+        const VALID_CATS = ['FOOD', 'COSMETIC', 'PERSONAL_CARE', 'SUPPLEMENT', 'HOUSEHOLD', 'PET_FOOD'];
+        const searchAnalysePrompt = `You are a product safety analyst for Indian consumers. Your output is displayed directly to users in a health app — accuracy is critical. Never guess or hallucinate.
 
-    Find the exact ingredients list and nutritional information for this product.
-    Look for data on official brand websites or major Indian grocery platforms like BigBasket, Blinkit, or Zepto.
+━━━ ANTI-HALLUCINATION RULES (non-negotiable) ━━━
+1. Use Google Search to find the OFFICIAL ingredient list for "${productName}" from: the brand's official website, FSSAI label database, or verified retailers (BigBasket, Amazon India, Nykaa) that show the actual label. Do NOT use unofficial sources.
+2. ONLY include ingredients that appear on the official product label. Never invent, infer, or add any ingredient not confirmed on the label.
+3. ALL ingredient names must be in ENGLISH only — exactly as printed on the label. Never translate to Hindi or any other language.
+4. Nutrition values: only from the official nutrition panel on the label. Use null for any value not found — never use 0 as a placeholder.
+5. If "${productName}" is a brand name, resolve to the flagship product (e.g. "Maggi" → "Maggi 2-Minute Masala Noodles", "Nutella" → "Nutella Hazelnut Spread with Cocoa").
+6. safety_tier assignment — use ONLY these criteria:
+   • SAFE: Permitted by FSSAI/CDSCO with no significant concern at label concentrations
+   • CAUTION: Has documented restrictions or advisories from FSSAI, WHO, EFSA, or peer-reviewed science
+   • AVOID: Specifically flagged as harmful by FSSAI/CDSCO/WHO or linked to serious adverse effects in published clinical research
+   • BANNED_IN_INDIA: Explicitly prohibited under FSSAI or CDSCO — ONLY use when certain of the specific ban
+   • When uncertain between tiers, always use the LOWER concern tier. Never overstate risk.
+7. plain_explanation: State only established facts, citing the specific regulatory body or standard (e.g. "FSSAI permits up to...", "WHO recommends limiting...", "ICMR-NIN 2024 states..."). Do not speculate.
+8. flag_for: Only conditions with confirmed clinical or regulatory evidence.
+9. summary and india_context: Only state what the verified data supports. Cite real FSSAI/CDSCO regulations. Do not fabricate regulation names or numbers.
+10. suggestions: Product TYPES only — never specific brand names.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    You MUST return a valid JSON object with these fields:
-    - product_name: Full name of the specific product found.
-    - brand: Brand name.
-    - category: One of (FOOD, COSMETIC, PERSONAL_CARE, SUPPLEMENT, HOUSEHOLD, PET_FOOD).
-    - ingredients: Array of strings (the full ingredients list).
-    - nutrition: Object with keys (energy, sugar, sodium, protein, fat, saturated_fat, trans_fat, fibre).
+Return ONLY this JSON (no markdown, no explanation outside the JSON):
+{
+  "product_name": "full product name in English",
+  "brand": "brand name",
+  "category": "FOOD|COSMETIC|PERSONAL_CARE|SUPPLEMENT|HOUSEHOLD|PET_FOOD",
+  "nutrition": { "energy_kcal": number|null, "sugar_g": number|null, "sodium_mg": number|null, "protein_g": number|null, "fat_g": number|null, "saturated_fat_g": number|null, "trans_fat_g": number|null, "fibre_g": number|null },
+  "raw_ingredients": ["ingredient in English", ...],
+  "ingredients_analysis": [
+    { "name": "exact English name from label", "plain_name": "common English name", "function": "string", "safety_tier": "SAFE|CAUTION|AVOID|BANNED_IN_INDIA", "plain_explanation": "1 factual sentence citing source", "flag_for": ["condition"] }
+  ],
+  "summary": "2-3 sentences based only on verified ingredients and their established concerns or benefits",
+  "india_context": "1 sentence citing a real FSSAI/CDSCO regulation relevant to this product",
+  "is_upf": boolean,
+  "hfss_status": "GREEN|HFSS",
+  "suggestions": [{ "type": "SWAP", "name": "product type only — never a brand name", "reason": "why it is better" }],
+  "not_found": false
+}
 
-    Use the googleSearch tool to find the most recent and accurate data.`;
-        const searchSchema = {
-            type: genai_1.Type.OBJECT,
-            properties: {
-                product_name: { type: genai_1.Type.STRING },
-                brand: { type: genai_1.Type.STRING },
-                category: { type: genai_1.Type.STRING },
-                ingredients: { type: genai_1.Type.ARRAY, items: { type: genai_1.Type.STRING } },
-                nutrition: {
-                    type: genai_1.Type.OBJECT,
-                    properties: {
-                        energy: { type: genai_1.Type.STRING },
-                        sugar: { type: genai_1.Type.STRING },
-                        sodium: { type: genai_1.Type.STRING },
-                        protein: { type: genai_1.Type.STRING },
-                        fat: { type: genai_1.Type.STRING },
-                        saturated_fat: { type: genai_1.Type.STRING },
-                        trans_fat: { type: genai_1.Type.STRING },
-                        fibre: { type: genai_1.Type.STRING }
-                    }
-                }
-            },
-            required: ["product_name", "brand", "category", "ingredients"]
-        };
+If the product cannot be found on any verified source after searching, return: { "not_found": true, "product_name": "${productName}" }`;
         const searchResult = await withTimeout(callGemini(() => ai.models.generateContent({
-            model: searchModel,
-            contents: [{ parts: [{ text: searchPrompt }] }],
+            model: "gemini-2.5-flash",
+            contents: [{ parts: [{ text: searchAnalysePrompt }] }],
             config: {
-                responseMimeType: "application/json",
-                responseSchema: searchSchema,
                 tools: [{ googleSearch: {} }],
-                toolConfig: { includeServerSideToolInvocations: true }
             },
         })));
         if (!searchResult.text) {
-            const grounding = searchResult.candidates?.[0]?.groundingMetadata;
-            console.error("Gemini searchResult.text is empty. Grounding:", JSON.stringify(grounding));
-            throw new https_1.HttpsError("internal", `Gemini failed to return search results for "${productName}". Grounding: ${JSON.stringify(grounding)}`);
+            throw new https_1.HttpsError("internal", `Gemini returned no data for "${productName}".`);
         }
-        let extractedData;
+        let geminiData;
         try {
-            const cleanText = searchResult.text.replace(/```json/g, '').replace(/```/g, '').trim();
-            extractedData = JSON.parse(cleanText);
+            const raw = searchResult.text ?? '';
+            const jsonStart = raw.indexOf('{');
+            const jsonEnd = raw.lastIndexOf('}');
+            if (jsonStart === -1 || jsonEnd === -1) {
+                console.error("No JSON object found in search response:", raw);
+                throw new Error("No JSON in response");
+            }
+            const clean = raw.slice(jsonStart, jsonEnd + 1);
+            geminiData = JSON.parse(clean);
         }
         catch (parseErr) {
-            console.error("Failed to parse Gemini search results:", searchResult.text);
-            throw new https_1.HttpsError("internal", "Failed to parse product data.");
+            console.error("Failed to parse search results:", searchResult.text);
+            throw new https_1.HttpsError("internal", "Failed to parse product data. Please try scanning the label instead.");
         }
-        const { ingredients: rawIngredientsRaw2, nutrition, category, product_name, brand } = extractedData;
-        const rawIngredients = Array.isArray(rawIngredientsRaw2) ? rawIngredientsRaw2 : [];
-        if (!rawIngredients || rawIngredients.length === 0) {
-            console.error("Gemini extracted zero ingredients for:", productName, extractedData);
+        if (geminiData.not_found) {
+            throw new https_1.HttpsError("not-found", `Could not find "${productName}". Try scanning the label instead.`);
+        }
+        const product_name = geminiData.product_name || productName;
+        const brand = geminiData.brand || '';
+        const category = VALID_CATS.includes(geminiData.category) ? geminiData.category : 'FOOD';
+        const nutrition = geminiData.nutrition || null;
+        const seenRawS = new Set();
+        const rawIngredients = (Array.isArray(geminiData.raw_ingredients) ? geminiData.raw_ingredients : [])
+            .filter((r) => { const k = (r || '').toLowerCase().trim(); if (seenRawS.has(k))
+            return false; seenRawS.add(k); return true; });
+        const seenAnalS = new Set();
+        const ingredientsAnalysis = (Array.isArray(geminiData.ingredients_analysis) ? geminiData.ingredients_analysis : [])
+            .filter((ing) => { const k = (ing.name || ing.plain_name || '').toLowerCase().trim(); if (seenAnalS.has(k))
+            return false; seenAnalS.add(k); return true; });
+        if (rawIngredients.length === 0) {
             throw new https_1.HttpsError("internal", `Could not find ingredient data for "${productName}". Please try scanning the label instead.`);
         }
-        const lookup = (0, data_1.batchLookupIngredients)(rawIngredients || []);
-        const enrichedDetails = await getIngredientDetails(ai, lookup.unverified, category);
+        const lookup = (0, data_1.batchLookupIngredients)(rawIngredients);
         const finalVerified = [...lookup.verified];
-        for (const [name, entry] of Object.entries(enrichedDetails)) {
-            finalVerified.push({ rawName: name, entry });
+        const dbVerifiedNames = new Set(lookup.verified.map(v => v.rawName.toLowerCase()));
+        for (const ing of ingredientsAnalysis) {
+            if (!dbVerifiedNames.has((ing.name || '').toLowerCase())) {
+                finalVerified.push({
+                    rawName: ing.name,
+                    entry: {
+                        common_names: [ing.plain_name || ing.name],
+                        function: ing.function || 'Unknown',
+                        safety_tier: ing.safety_tier || 'UNVERIFIED',
+                        plain_explanation: ing.plain_explanation || '',
+                        condition_flags: (ing.flag_for || []).map((c) => ({ condition: c, impact: 'MODERATE', reason: '', source: 'Gemini AI (unverified — not from regulatory DB)' })),
+                        score_impact: ing.safety_tier === 'AVOID' ? -10 : ing.safety_tier === 'BANNED_IN_INDIA' ? -30 : ing.safety_tier === 'CAUTION' ? -3 : 0,
+                        data_quality: 'LLM_GENERATED',
+                        fssai_status: 'UNKNOWN',
+                        ins_number: null,
+                        india_specific_note: null,
+                    }
+                });
+            }
         }
         const finalLookupResult = {
             verified: finalVerified,
-            unverified: lookup.unverified.filter(u => !enrichedDetails[u]),
-            coveragePercent: rawIngredients?.length > 0
-                ? Math.round((finalVerified.length / rawIngredients.length) * 100)
-                : 0
+            unverified: rawIngredients.filter(r => !finalVerified.some(v => v.rawName === r)),
+            coveragePercent: rawIngredients.length > 0 ? Math.round((finalVerified.length / rawIngredients.length) * 100) : 100
         };
-        const scoreResult = (0, scoringEngine_1.calculateScore)(finalLookupResult, nutrition, category);
-        const summaryPrompt = `Based on this data, provide a summary, india_context, is_upf, hfss_status, and suggestions.
-    DATA: ${JSON.stringify({ product_name, brand, category, nutrition, scoreResult, finalLookupResult })}
-
-    Return ONLY JSON matching the AnalysisResult structure.`;
-        const summaryResult = await withTimeout(callGemini(() => ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: [{ parts: [{ text: summaryPrompt }] }],
-            config: { responseMimeType: "application/json" },
-        })));
-        if (!summaryResult.text) {
-            console.error("Gemini summaryResult.text is empty:", JSON.stringify(summaryResult));
-            throw new https_1.HttpsError("internal", "Gemini failed to return search summary.");
-        }
-        let finalAnalysis;
-        try {
-            const cleanSummary = summaryResult.text.replace(/```json/g, '').replace(/```/g, '').trim();
-            finalAnalysis = JSON.parse(cleanSummary);
-        }
-        catch (parseErr) {
-            console.error("Failed to parse Gemini summary results:", summaryResult.text);
-            throw new https_1.HttpsError("internal", "Failed to parse search summary.");
-        }
+        const scoreResult = (0, scoringEngine_1.calculateScore)(finalLookupResult, nutrition, category, geminiData.is_upf ?? false);
         const result = {
-            ...finalAnalysis,
+            product_name,
+            brand,
+            category,
+            nutrition,
             overall_score: scoreResult.overall_score,
             score_breakdown: scoreResult.score_breakdown,
+            summary: geminiData.summary || 'Analysis complete.',
+            india_context: geminiData.india_context || '',
+            is_upf: geminiData.is_upf ?? false,
+            hfss_status: geminiData.hfss_status || 'GREEN',
+            suggestions: Array.isArray(geminiData.suggestions) ? geminiData.suggestions : [],
             ingredients: finalVerified.map(v => ({
                 name: v.rawName,
                 plain_name: (v.entry.common_names || [])[0] || v.rawName,

@@ -51,9 +51,17 @@ export type HealthCondition =
   | 'KIDNEY_STONES'
   | 'FATTY_LIVER'
   | 'LIVER_DISEASE'
-  // Respiratory / Skin
+  // Respiratory
   | 'ASTHMA'
+  // Skin & Hair (topical concerns — for cosmetic / personal care analysis)
   | 'ECZEMA_SENSITIVE_SKIN'
+  | 'ACNE_PRONE'
+  | 'SENSITIVE_SKIN_TOPICAL'
+  | 'ROSACEA'
+  | 'PSORIASIS'
+  | 'DRY_SKIN'
+  | 'OILY_SKIN'
+  | 'CONTACT_DERMATITIS'
   // Life stage
   | 'PREGNANCY_T1'        // first trimester — most restrictive
   | 'PREGNANCY_T2'        // second trimester
@@ -84,6 +92,7 @@ export type HealthGoal =
   | 'NONE';
 
 export type Allergen =
+  // Food allergens
   | 'GLUTEN'
   | 'DAIRY_MILK'
   | 'EGGS'
@@ -95,7 +104,13 @@ export type Allergen =
   | 'SESAME'              // til — common in Indian food
   | 'MUSTARD'             // common in Indian food
   | 'SULPHITES'           // INS 220-228 — triggers asthma
-  | 'TARTRAZINE_DYE';     // INS 102 — common sensitivity
+  | 'TARTRAZINE_DYE'      // INS 102 — common sensitivity
+  // Skin / topical allergens
+  | 'FRAGRANCE_ALLERGY'   // parfum / fragrance in cosmetics
+  | 'NICKEL_ALLERGY'      // nickel sulfate in jewellery / cosmetics
+  | 'LATEX_ALLERGY'       // latex / rubber in gloves, condoms, some products
+  | 'LANOLIN_ALLERGY'     // wool wax / lanolin in moisturisers
+  | 'PARABENS_SENSITIVITY'; // methylparaben, ethylparaben, propylparaben
 
 export type DietaryPreference =
   | 'NO_RESTRICTION'
@@ -348,6 +363,20 @@ export const CONDITION_GROUPS: Array<{
     ]
   },
   {
+    group: "Skin & Hair",
+    emoji: "✨",
+    conditions: [
+      { id: "ACNE_PRONE",           label: "Acne-Prone Skin",          description: "Comedogenic oils, heavy silicones, high-oleic oils flagged" },
+      { id: "SENSITIVE_SKIN_TOPICAL", label: "Sensitive / Reactive Skin", description: "Fragrance, SLS, alcohol, MI/MCI flagged — prone to irritation" },
+      { id: "ROSACEA",              label: "Rosacea",                   description: "Alcohol, fragrance, harsh actives, menthol flagged" },
+      { id: "DRY_SKIN",             label: "Dry / Dehydrated Skin",     description: "Harsh surfactants and alcohol denat flagged; humectants noted as positive" },
+      { id: "OILY_SKIN",            label: "Oily / Combination Skin",   description: "Heavy occlusive oils and high-silicone products flagged" },
+      { id: "PSORIASIS",            label: "Psoriasis",                  description: "Fragrances, harsh preservatives, and SLS flagged — skin barrier is compromised" },
+      { id: "CONTACT_DERMATITIS",   label: "Contact Dermatitis",         description: "Fragrance, formaldehyde releasers, methylisothiazolinone flagged" },
+      { id: "ECZEMA_SENSITIVE_SKIN", label: "Eczema",                   description: "Artificial colours, fragrances, SLS, and preservatives flagged" },
+    ]
+  },
+  {
     group: "Fitness Goals",
     emoji: "🏋️",
     conditions: [
@@ -381,6 +410,12 @@ export const ALLERGEN_OPTIONS: Array<{ id: Allergen; label: string; emoji: strin
   { id: 'SHELLFISH',       label: 'Shellfish',             emoji: '🦐', india_note: null },
   { id: 'SULPHITES',       label: 'Sulphites (INS 220–228)', emoji: '⚗️', india_note: 'Hidden in dried fruits, wine, juices — major asthma trigger' },
   { id: 'TARTRAZINE_DYE',  label: 'Tartrazine / Yellow Dye', emoji: '🟡', india_note: 'INS 102 — very common in Indian snacks, drinks, and mithai' },
+  // Skin / topical
+  { id: 'FRAGRANCE_ALLERGY',    label: 'Fragrance / Parfum Allergy', emoji: '🌸', india_note: 'Very common contact allergen — in most perfumed skincare, soaps, and hair products' },
+  { id: 'NICKEL_ALLERGY',       label: 'Nickel Allergy',             emoji: '💍', india_note: 'Present in some cosmetic pigments and certain skincare formulations' },
+  { id: 'LATEX_ALLERGY',        label: 'Latex / Rubber Allergy',     emoji: '🧤', india_note: 'Relevant to some skincare gloves and applicators' },
+  { id: 'LANOLIN_ALLERGY',      label: 'Lanolin / Wool Wax Allergy', emoji: '🐑', india_note: 'Found in moisturisers, lip balms, and some baby creams' },
+  { id: 'PARABENS_SENSITIVITY', label: 'Parabens Sensitivity',       emoji: '🧴', india_note: 'Methylparaben, ethylparaben, propylparaben — very common preservatives in Indian skincare' },
 ];
 
 // ── Activity level display ────────────────────────────────────────────────────

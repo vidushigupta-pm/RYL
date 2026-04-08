@@ -24,6 +24,11 @@ export async function getAlsoScanned(
 ): Promise<AlsoScannedProduct[]> {
 
   try {
+    // Guard: Firestore where() crashes on undefined values
+    if (!subCategory || !currentProductId || currentScore == null) {
+      return [];
+    }
+
     // Find other products in same sub-category
     // that scored BETTER than current product
     const q = query(

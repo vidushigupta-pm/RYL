@@ -278,6 +278,48 @@ const ScoreBadge = ({ score }: { score: number }) => {
   );
 };
 
+// ── Position-aware ingredient logic ──────────────────────────────────────────
+// Ingredients are listed in descending order by weight on every Indian pack.
+// If a nutritionally concerning ingredient appears in top 3, it's a MAJOR component.
+
+const POSITION_WATCH: Record<string, string> = {
+  'sugar':               'Sugar is the {ord} ingredient by weight — a large part of this product IS sugar.',
+  'sucrose':             'Sucrose (sugar) is the {ord} ingredient — a significant portion of this product is sugar.',
+  'glucose syrup':       'Glucose syrup is the {ord} ingredient — a high-GI sugar making up a major part of this product.',
+  'corn syrup':          'Corn syrup is the {ord} ingredient — a high-GI sweetener as a primary component.',
+  'invert sugar':        'Invert sugar is the {ord} ingredient — sugar in a different form, still a primary component.',
+  'fructose':            'Fructose is the {ord} ingredient — processed directly by the liver in large quantities.',
+  'maltodextrin':        'Maltodextrin is the {ord} ingredient — a high-GI filler that spikes blood sugar like sugar.',
+  'palm oil':            'Palm oil is the {ord} ingredient — a major source of saturated fat in this product.',
+  'edible vegetable oil':'Vegetable oil is the {ord} ingredient — contributes heavily to the fat content.',
+  'wheat flour':         'Wheat flour is the {ord} ingredient — refined wheat flour has a high GI and low fibre; the dominant base of this product.',
+  'maida':               'Maida (refined flour) is the {ord} ingredient — the primary base with very low fibre and high GI.',
+  'refined wheat flour': 'Refined wheat flour is the {ord} ingredient — acts like sugar in the body, spikes blood glucose.',
+  'refined flour':       'Refined flour is the {ord} ingredient — high-GI base with minimal nutritional value.',
+  'salt':                'Salt is the {ord} ingredient — very high sodium as a primary component.',
+  'iodised salt':        'Iodised salt is the {ord} ingredient — very high sodium as a primary component.',
+  'sodium chloride':     'Sodium chloride (salt) is the {ord} ingredient — very high sodium content.',
+};
+
+function getPositionWatchMatch(name: string): string | null {
+  const n = (name || '').toLowerCase();
+  for (const keyword of Object.keys(POSITION_WATCH)) {
+    if (n.includes(keyword)) return keyword;
+  }
+  return null;
+}
+
+function getPositionAwareTier(name: string, position: number, originalTier: string): string {
+  if (position >= 3) return originalTier;
+  if (originalTier === 'AVOID' || originalTier === 'BANNED_IN_INDIA') return originalTier;
+  const match = getPositionWatchMatch(name);
+  if (!match) return originalTier;
+  if (originalTier === 'SAFE') return 'CAUTION';
+  return originalTier;
+}
+
+const ORDINALS = ['#1', '#2', '#3'];
+
 const TierBadge = ({ tier }: { tier: string }) => {
   const tiers: any = {
     SAFE: { label: 'Safe', color: 'text-[#2E7D4F] bg-[#E6F4EC]' },
@@ -442,62 +484,7 @@ const SignUpScreen = ({ onBack, onSignUp, onSignIn }: { onBack: () => void, onSi
             Sign up with Google
           </button>
 
-          <div className="relative flex items-center justify-center py-2">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#E8DDD0]"></div></div>
-            <span className="relative bg-[#FDF6EE] px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or</span>
-          </div>
-
-          {/* Email Signup Option */}
-          {!showEmailForm ? (
-            <button 
-              onClick={() => setShowEmailForm(true)}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-[#1B3D2F] text-white rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all"
-            >
-              <ImageIcon className="w-5 h-5" />
-              Sign up with Email
-            </button>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
-            >
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Full Name</label>
-                <input 
-                  type="text" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Arjun Sharma"
-                  className="w-full bg-white border border-[#E8DDD0] rounded-2xl px-5 py-3.5 focus:outline-none focus:border-[#1B3D2F] transition-all"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Email Address</label>
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="arjun@example.com"
-                  className="w-full bg-white border border-[#E8DDD0] rounded-2xl px-5 py-3.5 focus:outline-none focus:border-[#1B3D2F] transition-all"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Password</label>
-                <input 
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-white border border-[#E8DDD0] rounded-2xl px-5 py-3.5 focus:outline-none focus:border-[#1B3D2F] transition-all"
-                />
-              </div>
-              
-              <Button onClick={() => alert("Email signup is coming soon! Please use Google for now.")} className="w-full py-4 mt-4">
-                Create Account
-              </Button>
-            </motion.div>
-          )}
+          <p className="text-xs text-center text-gray-400 pt-2">More sign-in options coming soon.</p>
         </div>
       </div>
 
@@ -542,53 +529,7 @@ const LoginScreen = ({ onBack, onLogin, onSignUp }: { onBack: () => void, onLogi
             Sign in with Google
           </button>
 
-          <div className="relative flex items-center justify-center py-2">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#E8DDD0]"></div></div>
-            <span className="relative bg-[#FDF6EE] px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Or</span>
-          </div>
-
-          {/* Email Login Option */}
-          {!showEmailForm ? (
-            <button 
-              onClick={() => setShowEmailForm(true)}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-[#1B3D2F] text-white rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-all"
-            >
-              <ImageIcon className="w-5 h-5" />
-              Sign in with Email
-            </button>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Email Address</label>
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className="w-full bg-white border border-[#E8DDD0] rounded-2xl px-5 py-4 focus:outline-none focus:border-[#1B3D2F] transition-all"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Password</label>
-                <input 
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-white border border-[#E8DDD0] rounded-2xl px-5 py-4 focus:outline-none focus:border-[#1B3D2F] transition-all"
-                />
-              </div>
-              <button className="text-sm font-bold text-[#D4871E] hover:underline px-1">Forgot Password?</button>
-              
-              <Button onClick={() => alert("Email login is coming soon! Please use Google for now.")} className="w-full py-4 mt-4">
-                Sign In
-              </Button>
-            </motion.div>
-          )}
+          <p className="text-xs text-center text-gray-400 pt-2">More sign-in options coming soon.</p>
         </div>
       </div>
 
@@ -1091,7 +1032,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
     } catch (error) {
       console.error("Delete all failed:", error);
       setIsDeletingAll(false);
-      alert("Failed to delete data. Please try again.");
+      setToast("Failed to delete data. Please try again.");
     }
   };
 
@@ -1487,8 +1428,29 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                       </p>
                     </div>
 
+                    {/* Food allergens */}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#8B6F47]">Food & Ingredient Allergens</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {ALLERGEN_OPTIONS.map(allergen => (
+                      {ALLERGEN_OPTIONS.filter(a => !['FRAGRANCE_ALLERGY','NICKEL_ALLERGY','LATEX_ALLERGY','LANOLIN_ALLERGY','PARABENS_SENSITIVITY'].includes(a.id)).map(allergen => (
+                        <button
+                          key={allergen.id}
+                          onClick={() => toggleAllergen(allergen.id)}
+                          className={`flex items-center gap-2 p-3 rounded-xl border transition-all text-left ${
+                            allergens.includes(allergen.id)
+                              ? 'bg-[#D94F3D] border-[#D94F3D] text-white'
+                              : 'bg-white border-[#E8DDD0] text-[#1B3D2F]'
+                          }`}
+                        >
+                          <span className="text-lg">{allergen.emoji}</span>
+                          <span className="text-xs font-bold">{allergen.label}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Skin / topical sensitisers */}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#8B6F47] mt-2">Skin & Topical Sensitivities</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {ALLERGEN_OPTIONS.filter(a => ['FRAGRANCE_ALLERGY','NICKEL_ALLERGY','LATEX_ALLERGY','LANOLIN_ALLERGY','PARABENS_SENSITIVITY'].includes(a.id)).map(allergen => (
                         <button
                           key={allergen.id}
                           onClick={() => toggleAllergen(allergen.id)}
@@ -1781,6 +1743,34 @@ const Processing = ({ isSearch = false, onBack }: { isSearch?: boolean, onBack: 
 );
 };
 
+const BreakdownItem = ({ label, explanation, impact, impactColor }: { label: string; explanation: string; impact?: number | null; impactColor?: string }) => {
+  const [expanded, setExpanded] = React.useState(false);
+  const isLong = explanation.length > 90;
+  return (
+    <div className="flex justify-between items-start gap-4">
+      <div className="flex-1">
+        <h5 className="text-sm font-bold text-[#1B3D2F]">{label}</h5>
+        <p className="text-[11px] text-gray-500 leading-relaxed">
+          {isLong && !expanded ? explanation.slice(0, 90) + '…' : explanation}
+        </p>
+        {isLong && (
+          <button
+            onClick={() => setExpanded(e => !e)}
+            className="text-[10px] font-bold text-[#D4871E] mt-0.5 hover:underline"
+          >
+            {expanded ? 'Show less' : 'Read more'}
+          </button>
+        )}
+      </div>
+      {impact != null && impact !== 0 && (
+        <span className={`text-xs font-bold font-mono mt-1 whitespace-nowrap ${impactColor || (impact < 0 ? 'text-[#D94F3D]' : 'text-[#2E7D4F]')}`}>
+          {impact > 0 ? `+${impact}` : impact}
+        </span>
+      )}
+    </div>
+  );
+};
+
 const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakdown }: any) => {
   return (
     <div className="space-y-6 p-1 max-h-[60vh] overflow-y-auto no-scrollbar">
@@ -1790,22 +1780,21 @@ const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakd
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Product Analysis</span>
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Impact</span>
         </div>
-        
+
         <div className="flex justify-between items-center">
           <span className="text-sm font-bold text-[#1B3D2F]">Starting Score</span>
           <span className="font-mono font-bold text-gray-400">100</span>
         </div>
 
-        {productBreakdown?.map((item: any, i: number) => (
-          <div key={i} className="flex justify-between items-start gap-4">
-            <div className="flex-1">
-              <h5 className="text-sm font-bold text-[#1B3D2F]">{item.label}</h5>
-              <p className="text-[11px] text-gray-500 leading-relaxed">{item.explanation}</p>
-            </div>
-            <span className={`text-xs font-bold font-mono mt-1 ${item.impact < 0 ? 'text-[#D94F3D]' : 'text-[#2E7D4F]'}`}>
-              {item.impact > 0 ? `+${item.impact}` : item.impact}
-            </span>
+        {(!productBreakdown || productBreakdown.length === 0) && (
+          <div className="py-3 px-4 bg-[#FDF6EE] rounded-2xl border border-dashed border-[#E8DDD0]">
+            <p className="text-xs text-gray-500 leading-relaxed">No specific deductions or bonuses were identified — score reflects the baseline for this product category.</p>
           </div>
+        )}
+        {(productBreakdown || []).map((item: any, i: number) => (
+          <React.Fragment key={i}>
+            <BreakdownItem label={item.label} explanation={item.explanation} impact={item.impact} />
+          </React.Fragment>
         ))}
 
         <div className="flex justify-between items-center pt-3 border-t border-gray-100">
@@ -1819,19 +1808,13 @@ const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakd
         <div className="flex justify-between items-center pb-2 border-b border-gray-100">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Personalization for {profileName}</span>
         </div>
-        
+
         {concerns.length > 0 ? (
           <div className="space-y-4">
             {concerns.map((c: any, i: number) => (
-              <div key={i} className="flex justify-between items-start gap-4">
-                <div className="flex-1">
-                  <h5 className="text-sm font-bold text-[#1B3D2F]">{c.label}</h5>
-                  <p className="text-[11px] text-gray-500 leading-relaxed font-medium">{c.detail}</p>
-                </div>
-                <span className={`text-xs font-bold font-mono mt-1 ${c.impact < 0 ? 'text-[#D94F3D]' : 'text-[#2E7D4F]'}`}>
-                  {c.impact > 0 ? `+${c.impact}` : c.impact}
-                </span>
-              </div>
+              <React.Fragment key={i}>
+                <BreakdownItem label={c.label} explanation={c.detail} impact={c.impact} />
+              </React.Fragment>
             ))}
           </div>
         ) : (
@@ -1926,7 +1909,8 @@ const ResultScreen = ({
 
   // Update active profile if it was changed/deleted (fallback to first)
   useEffect(() => {
-    const exists = profiles.find(p => p.id === activeProfile.id);
+    const exists = profiles.find(p => p.id === activeProfile?.id);
+    if (profiles.length === 0) return; // guest — keep the fallback profile
     if (!exists) setActiveProfile(profiles[0]);
     else setActiveProfile(exists); // Update in case name/conditions changed
   }, [profiles]);
@@ -1992,7 +1976,8 @@ const ResultScreen = ({
       result.overall_score,
       normalisedIngredients,
       result.nutrition || null,
-      result.allergens || []
+      result.allergens || [],
+      result.category || 'FOOD'
     );
 
     return { 
@@ -2008,14 +1993,17 @@ const ResultScreen = ({
   const defaultProfile: Profile = {
     id: 'default',
     name: 'You',
-    age_group: 'ADULT',
+    display_name: 'You',
+    avatar_color: '#1B3D2F',
+    avatar_letter: 'Y',
+    age_group: 'ADULT_26_45',
+    gender: 'PREFER_NOT_TO_SAY',
     isDefault: true,
     conditions: [],
     allergens: [],
     dietary_preference: 'NO_RESTRICTION',
     health_goals: [],
-    activity_level: 'MODERATE',
-    avatar_letter: 'Y',
+    activity_level: 'MODERATELY_ACTIVE',
   };
   const currentVerdict = getProfileVerdict(activeProfile || defaultProfile);
 
@@ -2032,7 +2020,7 @@ const ResultScreen = ({
               <button 
                 key={p.id}
                 onClick={() => setActiveProfile(p)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${activeProfile.id === p.id ? 'bg-white scale-110 shadow-lg' : 'bg-white/10 opacity-50'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${activeProfile?.id === p.id ? 'bg-white scale-110 shadow-lg' : 'bg-white/10 opacity-50'}`}
               >
                 <ProfileAvatar profile={p} size="md" />
               </button>
@@ -2042,8 +2030,12 @@ const ResultScreen = ({
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <h2 className="font-display text-2xl font-bold leading-tight mb-1">{result.product_name}</h2>
-            <p className="text-white/60 text-sm font-medium">{result.brand}</p>
+            <h2 className="font-display text-2xl font-bold leading-tight mb-1">
+              {result.product_name && result.product_name.toLowerCase() !== 'unknown' ? result.product_name : 'Scanned Product'}
+            </h2>
+            <p className="text-white/60 text-sm font-medium">
+              {result.brand && result.brand.toLowerCase() !== 'unknown' ? result.brand : 'Brand not identified — add front of pack for full details'}
+            </p>
             
             {/* HFSS & UPF Badges */}
             <div className="flex flex-wrap gap-2 mt-3">
@@ -2091,39 +2083,6 @@ const ResultScreen = ({
       </header>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
-        {/* Family Banner */}
-        {profiles.length === 0 && showFamilyBanner && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-[#FFF3DC] border border-[#E07B2A]/30 p-5 rounded-[32px] relative overflow-hidden"
-          >
-            <div className="flex items-start gap-4">
-              <div className="text-2xl">👨‍👩‍👧</div>
-              <div className="flex-1">
-                <h4 className="font-bold text-[#1B3D2F] text-sm mb-1">Is this safe for your family too?</h4>
-                <p className="text-xs text-[#1B3D2F]/70 leading-relaxed mb-4">
-                  Add family members to see personalised scores for Dadi, kids, or anyone with health conditions.
-                </p>
-                <div className="flex gap-3">
-                  <button 
-                    onClick={onProfileClick}
-                    className="px-4 py-2 bg-[#1B3D2F] text-white text-[11px] font-bold rounded-xl active:scale-95 transition-all"
-                  >
-                    + Add Family Members
-                  </button>
-                  <button 
-                    onClick={() => setShowFamilyBanner(false)}
-                    className="px-4 py-2 bg-white/50 text-[#1B3D2F] text-[11px] font-bold rounded-xl active:scale-95 transition-all"
-                  >
-                    Not now
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
         {/* Summary */}
         <div className="bg-[#E8DDD0]/30 p-6 rounded-[32px] border border-[#E8DDD0] shadow-sm">
           <p className="text-[#1B3D2F] font-medium leading-relaxed italic">
@@ -2159,26 +2118,69 @@ const ResultScreen = ({
         )}
 
         {/* Nutrition */}
-        {result.nutrition && (result.category === 'FOOD' || result.category === 'SUPPLEMENT' || result.category === 'PET_FOOD') && (
+        {(result.category === 'FOOD' || result.category === 'SUPPLEMENT' || result.category === 'PET_FOOD') && (() => {
+          const n = result.nutrition;
+          // Check if any real nutrition data exists (calories > 0 means a nutrition panel was in the image)
+          const hasRealNutrition = n && (n.energy_kcal ?? 0) > 0;
+          return (
           <div className="space-y-3">
             <div className="flex items-center gap-2 px-1">
               <Info className="w-4 h-4 text-[#1B3D2F]" />
-              <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Nutrition Context</h3>
+              <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Nutrition per 100g</h3>
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Sugar', val: `${result.nutrition?.sugar_g ?? 0}g`, color: (result.nutrition?.sugar_g || 0) > 10 ? 'bg-[#FDECEA] text-[#D94F3D]' : 'bg-white' },
-                { label: 'Protein', val: `${result.nutrition?.protein_g ?? 0}g`, color: 'bg-white' },
-                { label: 'Sodium', val: `${result.nutrition?.sodium_mg ?? 0}mg`, color: (result.nutrition?.sodium_mg || 0) > 500 ? 'bg-[#FDECEA] text-[#D94F3D]' : 'bg-white' },
-              ].map((item, i) => (
-                <div key={i} className={`p-4 rounded-3xl border border-[#E8DDD0] flex flex-col items-center justify-center text-center shadow-sm ${item.color}`}>
-                  <span className="text-xl font-mono font-bold tracking-tighter">{item.val}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-1">{item.label}</span>
+            {hasRealNutrition ? (
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  {
+                    label: 'Calories',
+                    val: (n!.energy_kcal ?? 0) > 0 ? `${n!.energy_kcal} kcal` : '—',
+                    sub: 'per 100g',
+                    color: 'bg-white',
+                    icon: '🔥'
+                  },
+                  {
+                    label: 'Sugar',
+                    val: n!.sugar_g != null ? `${n!.sugar_g}g` : '—',
+                    sub: (n!.sugar_g || 0) > 20 ? 'Very High' : (n!.sugar_g || 0) > 10 ? 'High' : 'OK',
+                    color: (n!.sugar_g || 0) > 10 ? 'bg-[#FDECEA] text-[#D94F3D]' : 'bg-white',
+                    icon: '🍬'
+                  },
+                  {
+                    label: 'Sodium',
+                    val: n!.sodium_mg != null ? `${n!.sodium_mg}mg` : '—',
+                    sub: (n!.sodium_mg || 0) > 800 ? 'Very High' : (n!.sodium_mg || 0) > 500 ? 'High' : 'OK',
+                    color: (n!.sodium_mg || 0) > 500 ? 'bg-[#FFF3DC] text-[#D4871E]' : 'bg-white',
+                    icon: '🧂'
+                  },
+                  {
+                    label: 'Protein',
+                    val: n!.protein_g != null ? `${n!.protein_g}g` : '—',
+                    sub: (n!.protein_g || 0) > 20 ? 'High ✓' : (n!.protein_g || 0) > 10 ? 'Good ✓' : 'Low',
+                    color: (n!.protein_g || 0) > 10 ? 'bg-[#E6F4EC] text-[#2E7D4F]' : 'bg-white',
+                    icon: '💪'
+                  },
+                ].map((item, i) => (
+                  <div key={i} className={`p-4 rounded-[20px] border border-[#E8DDD0] flex items-center gap-3 shadow-sm ${item.color}`}>
+                    <span className="text-2xl">{item.icon}</span>
+                    <div>
+                      <div className="text-lg font-mono font-bold tracking-tight leading-none">{item.val}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest opacity-70 mt-0.5">{item.label}</div>
+                      <div className="text-[9px] opacity-50 mt-0.5">{item.sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white border border-dashed border-[#E8DDD0] rounded-[20px] p-5 flex items-center gap-3 text-center justify-center">
+                <div>
+                  <p className="text-sm font-bold text-[#1B3D2F]">Nutrition panel not in image</p>
+                  <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">Add a photo of the nutrition facts table to see calories, sugar, sodium &amp; protein.</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
-        )}
+          );
+        })()}
 
         {/* Ingredients */}
         <div className="space-y-3">
@@ -2187,44 +2189,93 @@ const ResultScreen = ({
             <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Ingredient Breakdown</h3>
           </div>
           <div className="bg-white rounded-[32px] border border-[#E8DDD0] overflow-hidden">
-            {(result.ingredients || []).filter((ing: any) => ing && (ing.name || ing.plain_name)).map((ing: any, i: number) => (
-              <div 
-                key={i} 
-                onClick={() => setExpandedIng(expandedIng === i ? null : i)}
-                className={`p-5 transition-colors ${expandedIng === i ? 'bg-[#FDF6EE]' : ''} ${i > 0 ? 'border-t border-[#FDF6EE]' : ''}`}
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-[#1B3D2F] truncate">{ing.plain_name || ing.name}</h4>
-                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{ing.function}</p>
-                  </div>
-                  <TierBadge tier={ing.safety_tier} />
+            {(result.ingredients || []).filter((ing: any) => ing && (ing.name || ing.plain_name)).length === 0 ? (
+              <div className="p-6 flex flex-col items-center justify-center text-center gap-3">
+                <AlertCircle className="w-8 h-8 text-gray-300" />
+                <div>
+                  <p className="font-bold text-[#1B3D2F] text-sm">Ingredients Not Readable</p>
+                  <p className="text-xs text-gray-400 mt-1 leading-relaxed">The ingredients list could not be read from this image. Try scanning a clearer photo of the back label, or use the search feature instead.</p>
                 </div>
-                <AnimatePresence>
-                  {expandedIng === i && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="mt-4 text-sm text-gray-600 leading-relaxed">
-                        {ing.plain_explanation}
-                      </p>
-                      {ing.flag_for?.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {ing.flag_for.map((f: string, j: number) => (
-                            <span key={j} className="text-[10px] font-bold bg-[#FDECEA] text-[#D94F3D] px-2 py-0.5 rounded-md">
-                              ⚠ {f}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
-            ))}
+            ) : null}
+            {(() => {
+              // Deduplicate by name client-side as a safety net
+              const seen = new Set<string>();
+              return (result.ingredients || []).filter((ing: any) => {
+                if (!ing || (!ing.name && !ing.plain_name)) return false;
+                const key = (ing.plain_name || ing.name || '').toLowerCase().trim();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              });
+            })().map((ing: any, i: number) => {
+              const ingName = ing.plain_name || ing.name || '';
+              const positionKey = getPositionWatchMatch(ingName);
+              const isPositionConcern = i < 3 && !!positionKey;
+              const displayTier = getPositionAwareTier(ingName, i, ing.safety_tier);
+              const positionNote = isPositionConcern
+                ? POSITION_WATCH[positionKey!].replace('{ord}', ORDINALS[i])
+                : null;
+
+              return (
+                <div
+                  key={i}
+                  onClick={() => setExpandedIng(expandedIng === i ? null : i)}
+                  className={`p-5 transition-colors ${expandedIng === i ? 'bg-[#FDF6EE]' : ''} ${i > 0 ? 'border-t border-[#FDF6EE]' : ''}`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-bold text-[#1B3D2F]">{ingName}</h4>
+                        {isPositionConcern && (
+                          <span className="text-[9px] font-bold bg-[#FFF3DC] text-[#D4871E] px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                            {ORDINALS[i]} ingredient
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{ing.function}</p>
+                    </div>
+                    <TierBadge tier={displayTier} />
+                  </div>
+                  <AnimatePresence>
+                    {expandedIng === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        {positionNote && (
+                          <div className="mt-3 p-3 bg-[#FFF3DC] border border-[#E07B2A]/20 rounded-xl">
+                            <p className="text-[11px] text-[#D4871E] font-semibold leading-relaxed">
+                              ⚠ {positionNote}
+                            </p>
+                          </div>
+                        )}
+                        <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+                          {ing.plain_explanation}
+                        </p>
+                        {ing.flag_for?.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {ing.flag_for.map((f: string, j: number) => (
+                              <span key={j} className="text-[10px] font-bold bg-[#FDECEA] text-[#D94F3D] px-2 py-0.5 rounded-md">
+                                ⚠ {f}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {/* Data quality indicator */}
+                        <p className="mt-3 text-[9px] text-gray-300 leading-relaxed">
+                          {ing.data_quality === 'LLM_GENERATED'
+                            ? '⚠ AI-analysed · not from regulatory database · verify independently'
+                            : '✓ Verified against FSSAI / CDSCO / WHO regulatory database'}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -2465,7 +2516,7 @@ const ResultScreen = ({
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-[#1B3D2F]">Score Breakdown</h3>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">For {activeProfile.name}</p>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">For {activeProfile?.name ?? 'You'}</p>
                 </div>
                 <button 
                   onClick={() => setShowBreakdown(false)}
@@ -2479,7 +2530,7 @@ const ResultScreen = ({
                 score={currentVerdict.score} 
                 concerns={currentVerdict.concerns} 
                 baseScore={currentVerdict.baseScore}
-                profileName={activeProfile.name}
+                profileName={activeProfile?.name ?? 'You'}
                 productBreakdown={result.score_breakdown}
               />
 
@@ -2635,6 +2686,7 @@ export default function App() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [scans, setScans] = useState<any[]>([]);
   const [appToast, setAppToast] = useState<string | null>(null);
+  const [appError, setAppError] = useState<string | null>(null);
 
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -2772,7 +2824,7 @@ export default function App() {
       }
     } catch (error: any) {
       console.error("Scan error:", error);
-      alert(error?.message || "Analysis failed. Please try again.");
+      setAppError(error?.message || "Analysis failed. Please try again.");
       setPhase('home');
     }
   };
@@ -2798,7 +2850,7 @@ export default function App() {
 
       // API/network error — show the real message, don't silently show no-results
       if (analysis?.product_name === '__ERROR__') {
-        alert(analysis.summary || 'Search failed. Please try again.');
+        setAppError(analysis.summary || 'Search failed. Please try again.');
         setPhase('home');
         return;
       }
@@ -2835,7 +2887,7 @@ export default function App() {
       }
     } catch (error: any) {
       console.error("Search error:", error);
-      alert(error?.message || 'Search failed. Please try again.');
+      setAppError(error?.message || 'Search failed. Please try again.');
       setPhase('home');
     }
   };
@@ -2851,7 +2903,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="max-w-md mx-auto h-screen bg-[#FDF6EE] shadow-2xl relative overflow-hidden flex flex-col">
-        {/* App-level toast for guest profile migration */}
+        {/* App-level toasts */}
         <AnimatePresence>
           {appToast && (
             <motion.div
@@ -2862,6 +2914,19 @@ export default function App() {
               className="absolute top-4 left-4 right-4 z-50 bg-[#1B3D2F] text-white text-sm font-medium px-4 py-3 rounded-2xl shadow-lg text-center"
             >
               {appToast}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {appError && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              onAnimationComplete={() => setTimeout(() => setAppError(null), 4000)}
+              className="absolute top-4 left-4 right-4 z-50 bg-[#C0392B] text-white text-sm font-medium px-4 py-3 rounded-2xl shadow-lg text-center"
+            >
+              ⚠ {appError}
             </motion.div>
           )}
         </AnimatePresence>
