@@ -2880,8 +2880,12 @@ export default function App() {
         return;
       }
 
-      // Genuine not found (all fallbacks exhausted, no ingredients found)
-      if (!analysis || analysis.product_name === "Unknown Product") {
+      // Genuine not found — only show no-results if we have no ingredients at all
+      // Don't gate on product_name being "Unknown Product" as Gemini may return a valid product
+      // with a different name than expected (e.g. brand name resolved to full product name)
+      const hasIngredients = Array.isArray(analysis?.ingredients) && analysis.ingredients.length > 0;
+      if (!analysis || !hasIngredients) {
+        console.warn('[handleSearch] No ingredients in response — showing no-results. Response:', JSON.stringify(analysis).slice(0, 300));
         setPhase('no-results');
         return;
       }
