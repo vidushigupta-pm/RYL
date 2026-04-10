@@ -124,6 +124,14 @@ export async function saveProductToCache(
   barcode?: string
 ): Promise<void> {
   try {
+    // Guard: never cache a result with no ingredients or a fallback product name
+    const name = (analysisResult.product_name || '').toLowerCase().trim();
+    const hasIngredients = Array.isArray(analysisResult.ingredients) && analysisResult.ingredients.length > 0;
+    if (!hasIngredients || name === 'unknown product' || name === '') {
+      console.log('[RAG] Skipping cache — no ingredients or generic product name:', name);
+      return;
+    }
+
     const normName = normaliseIngredientName(analysisResult.product_name || '');
     const normBrand = analysisResult.brand ? normaliseIngredientName(analysisResult.brand) : '';
     const normFull = (analysisResult.brand && analysisResult.product_name)
