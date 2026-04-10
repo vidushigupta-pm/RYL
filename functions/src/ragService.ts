@@ -7,8 +7,13 @@ import {
 } from './data';
 import { calculateScore, NutritionData } from './scoringEngine';
 
-// Lazy getter — ensures initializeApp() in index.ts runs first
-const getDb = () => getFirestore();
+// Lazy getter — uses the named database to match the Firebase client SDK.
+// The DB ID is passed via FIRESTORE_DB_ID env var (set in Vercel).
+// Falls back to the default database in Firebase Functions emulator (local dev).
+const getDb = () => {
+  const dbId = process.env.FIRESTORE_DB_ID;
+  return dbId ? getFirestore(dbId) : getFirestore();
+};
 
 export interface CachedProduct {
   id: string;
