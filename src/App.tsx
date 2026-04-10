@@ -2784,11 +2784,12 @@ export default function App() {
       const backBase64 = await fileToBase64(files.back);
       const frontBase64 = files.front ? await fileToBase64(files.front) : undefined;
       
+      // Always send as image/jpeg (canvas compression output)
       const analysis = await analyseLabel(
-        backBase64, 
-        files.back.type, 
-        frontBase64, 
-        files.front?.type
+        backBase64,
+        'image/jpeg',
+        frontBase64,
+        frontBase64 ? 'image/jpeg' : undefined
       );
       
       if (!analysis || analysis.product_name === "Unknown Product" || analysis.product_name === "__ERROR__") {
@@ -2829,15 +2830,28 @@ export default function App() {
     }
   };
 
+  // Compress image to JPEG ≤1200px wide, quality 0.82 — keeps files well under Vercel's 4.5 MB limit
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1];
-        resolve(base64);
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const MAX_DIM = 1200;
+        let { width, height } = img;
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+          else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        resolve(dataUrl.split(',')[1]);
       };
-      reader.onerror = error => reject(error);
+      img.onerror = reject;
+      img.src = objectUrl;
     });
   };
 
