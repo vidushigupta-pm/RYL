@@ -1682,26 +1682,32 @@ const Processing = ({ isSearch = false, onBack }: { isSearch?: boolean, onBack: 
     "Reading label with OCR...",
     "Detecting product category...",
     "Identifying ingredients...",
-    "Cross-checking marketing claims...",
+    "Checking FSSAI & CDSCO database...",
+    "Cross-referencing ingredient safety...",
+    "Analysing nutritional panel...",
+    "Calculating health score...",
     "Generating safety verdict..."
   ];
 
   const searchSteps = [
     "Searching for product details...",
-    "Fetching ingredients list...",
+    "Fetching official ingredients list...",
     "Retrieving nutritional table...",
-    "Analyzing safety data...",
+    "Checking FSSAI & CDSCO database...",
+    "Cross-referencing ingredient safety...",
+    "Calculating health score...",
     "Generating safety verdict..."
   ];
 
   const steps = isSearch ? searchSteps : scanSteps;
 
   useEffect(() => {
+    // Cycle through steps every 6s — loops back to keep UI active for 30–60s responses
     const timer = setInterval(() => {
-      setStep(s => (s < steps.length - 1 ? s + 1 : s));
-    }, 2000);
+      setStep(s => (s + 1) % steps.length);
+    }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [steps.length]);
 
   return (
     <div className="flex flex-col h-full">
@@ -1735,7 +1741,10 @@ const Processing = ({ isSearch = false, onBack }: { isSearch?: boolean, onBack: 
         ))}
       </div>
       
-      <p className="mt-12 text-xs text-gray-400 font-medium uppercase tracking-widest">
+      <p className="mt-8 text-xs text-gray-400 text-center">
+        First-time analysis takes 30–60 seconds.<br/>Cached products load instantly next time.
+      </p>
+      <p className="mt-4 text-xs text-gray-400 font-medium uppercase tracking-widest">
         FSSAI · ICMR-NIN · CDSCO · BIS
       </p>
     </div>
@@ -2792,11 +2801,13 @@ export default function App() {
         frontBase64 ? 'image/jpeg' : undefined
       );
       
-      if (!analysis || analysis.product_name === "Unknown Product" || analysis.product_name === "__ERROR__") {
-        const errMsg = analysis?.summary && analysis.product_name === "__ERROR__"
-          ? analysis.summary
-          : "Could not read the label. Please try again with a clearer photo.";
+      if (!analysis || analysis.product_name === "__ERROR__") {
+        const errMsg = analysis?.summary || "Could not read the label. Please try again with a clearer photo.";
         throw new Error(errMsg);
+      }
+      // If name is generic but ingredients were found, still show the result
+      if (analysis.product_name === "Unknown Product" && (!analysis.ingredients || analysis.ingredients.length === 0)) {
+        throw new Error("Could not read the label clearly. Please try again with a clearer photo pointing directly at the ingredients list.");
       }
 
       const safeAnalysis = {
