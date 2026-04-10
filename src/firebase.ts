@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, getDocFromServer, Timestamp } from 'firebase/firestore';
 import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
@@ -14,7 +15,26 @@ if (import.meta.env.DEV) {
   connectFunctionsEmulator(functions, 'localhost', 5001);
 }
 
-export { onAuthStateChanged, Timestamp, httpsCallable };
+// Analytics — only init if measurementId is present (may be empty in dev)
+export let analytics: any = null;
+try {
+  if ((firebaseConfig as any).measurementId) {
+    analytics = getAnalytics(app);
+  }
+} catch {}
+
+export { logEvent, onAuthStateChanged, Timestamp, httpsCallable };
+
+/**
+ * Safely track an analytics event. No-ops if analytics is not initialized.
+ */
+export function trackEvent(name: string, params?: Record<string, any>) {
+  try {
+    if (analytics) {
+      logEvent(analytics, name, params);
+    }
+  } catch {}
+}
 
 /**
  * Sign in with Google

@@ -53,15 +53,16 @@ import {
 } from './data/familyProfiles';
 import { AlsoScanned } from './components/AlsoScanned';
 
-import { 
-  auth, 
-  db, 
-  signInWithGoogle, 
-  logout, 
-  onAuthStateChanged, 
-  handleFirestoreError, 
+import {
+  auth,
+  db,
+  signInWithGoogle,
+  logout,
+  onAuthStateChanged,
+  handleFirestoreError,
   OperationType,
-  Timestamp
+  Timestamp,
+  trackEvent
 } from './firebase';
 import { 
   collection, 
@@ -2821,6 +2822,7 @@ export default function App() {
       };
       setResult(safeAnalysis);
       setPhase('result');
+      trackEvent('scan_complete', { category: analysis.category, score: analysis.overall_score });
 
       if (user) {
         await addDoc(collection(db, `users/${user.uid}/scans`), {
@@ -2901,6 +2903,7 @@ export default function App() {
       };
       setResult(safeAnalysis);
       setPhase('result');
+      trackEvent('search_complete', { product: name, score: analysis.overall_score });
 
       if (user) {
         await addDoc(collection(db, `users/${user.uid}/scans`), {
