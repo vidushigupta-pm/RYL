@@ -42,7 +42,7 @@ export async function callGemini<T>(fn: () => Promise<T>, retries = 4, delay = 3
 }
 
 // ── Timeout wrapper ───────────────────────────────────────────────────────────
-export function withTimeout<T>(promise: Promise<T>, ms = 55_000): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, ms = 58_000): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
