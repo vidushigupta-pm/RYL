@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": ".",
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": false
+  },
+  "include": [
+    "lib/**/*.ts",
+    "functions/src/data.ts",
+    "functions/src/scoringEngine.ts",
+    "functions/src/ragService.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "functions/src/index.ts",
+    "functions/lib"
+  ]
+}
