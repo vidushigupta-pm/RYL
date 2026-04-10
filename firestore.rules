@@ -110,5 +110,17 @@ service cloud.firestore {
     match /users/{userId}/scans/{scanId} {
       allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
+
+    // scan_events — community scan history used by AlsoScanned component
+    // Public read so unauthenticated users can see "also scanned" products
+    // Authenticated users can write their own scan events
+    match /scan_events/{eventId} {
+      allow read: if true;
+      allow create: if isAuthenticated() &&
+                    request.resource.data.keys().hasAll(['product_id', 'product_name', 'overall_score', 'sub_category']) &&
+                    request.resource.data.product_name is string &&
+                    request.resource.data.overall_score is number;
+      allow update, delete: if isAdmin();
+    }
   }
 }

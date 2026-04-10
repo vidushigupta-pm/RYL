@@ -29,9 +29,12 @@
       ]
     }
   ],
-  "firestore": {
-    "rules": "firestore.rules"
-  },
+  "firestore": [
+    {
+      "database": "ai-studio-0f7174ae-7a98-4951-8d4f-e23ec80681da",
+      "rules": "firestore.rules"
+    }
+  ],
   "emulators": {
     "functions": {
       "port": 5001
