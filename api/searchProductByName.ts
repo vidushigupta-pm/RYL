@@ -70,7 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // STEP 2: Single Gemini call — search + analyse + summarise
     const searchResult = await withTimeout(callGemini(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: [{ parts: [{ text: searchAnalysePrompt(productName) }] }],
       config: {
         // NOTE: responseMimeType cannot be used together with tools (googleSearch).
@@ -96,7 +96,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (geminiData.not_found) {
-      return res.status(404).json({ error: `Could not find "${productName}". Try scanning the label instead.` });
+      // Retry once with a simpler, direct prompt before giving up
+      console.warn(`[searchProductByName] not_found on first attempt for "${productName}", retrying...`);
+      const retryResult = await withTimeout(callGemini(() => ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{ parts: [{ text: `Search for the product "${productName}" sold in India and return its ingredients list and nutrition facts as JSON with fields: product_name, brand, category, raw_ingredients (array), ingredients_analysis (array), nutrition, summary, india_context, is_upf, hfss_status, suggestions, not_found (false).` }] }],
+        config: { tools: [{ googleSearch: {} }] },
+      })));
+      const retryRaw = retryResult.text ?? '';
+      const rs = retryRaw.indexOf('{'), re = retryRaw.lastIndexOf('}');
+      if (rs !== -1 && re !== -1) {
+        try { geminiData = JSON.parse(retryRaw.slice(rs, re + 1)); } catch { /* keep original */ }
+      }
+      if (geminiData.not_found || !geminiData.raw_ingredients?.length) {
+        return res.status(404).json({ error: `We couldn't find "${productName}" in our search. Try scanning the product label for accurate results.` });
+      }
     }
 
     const product_name: string = geminiData.product_name || productName;
