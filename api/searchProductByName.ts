@@ -1,4 +1,4 @@
-// api/searchProductByName.ts — Vercel serverless function replacing Firebase searchProductByName
+// api/searchProductByName.ts — Vercel serverless function
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { initAdmin } from '../lib/adminInit';
 import {
@@ -7,46 +7,44 @@ import {
   ragLookup, saveProductToCache
 } from '../lib/shared';
 
-const searchAnalysePrompt = (productName: string) =>
-  `You are a product safety analyst for Indian consumers. Your output is displayed directly to users in a health app — accuracy is critical. Never guess or hallucinate.
+// No Google Search grounding — too slow for Vercel Hobby 60s limit.
+// Gemini's training data covers all major Indian & global brands accurately.
+const searchPrompt = (productName: string) =>
+  `You are a product safety analyst for Indian consumers.
 
-━━━ ANTI-HALLUCINATION RULES (non-negotiable) ━━━
-1. Use Google Search to find the OFFICIAL ingredient list for "${productName}" from: the brand's official website, FSSAI label database, or verified retailers (BigBasket, Amazon India, Nykaa) that show the actual label. Do NOT use unofficial sources.
-2. ONLY include ingredients that appear on the official product label. Never invent, infer, or add any ingredient not confirmed on the label.
-3. ALL ingredient names must be in ENGLISH only — exactly as printed on the label. Never translate to Hindi or any other language.
-4. Nutrition values: only from the official nutrition panel on the label. Use null for any value not found — never use 0 as a placeholder.
-5. If "${productName}" is a brand name, resolve to the flagship product (e.g. "Maggi" → "Maggi 2-Minute Masala Noodles", "Nutella" → "Nutella Hazelnut Spread with Cocoa").
-6. safety_tier assignment — use ONLY these criteria:
-   • SAFE: Permitted by FSSAI/CDSCO with no significant concern at label concentrations
-   • CAUTION: Has documented restrictions or advisories from FSSAI, WHO, EFSA, or peer-reviewed science
-   • AVOID: Specifically flagged as harmful by FSSAI/CDSCO/WHO or linked to serious adverse effects in published clinical research
-   • BANNED_IN_INDIA: Explicitly prohibited under FSSAI or CDSCO — ONLY use when certain of the specific ban
-   • When uncertain between tiers, always use the LOWER concern tier. Never overstate risk.
-7. plain_explanation: State only established facts, citing the specific regulatory body or standard (e.g. "FSSAI permits up to...", "WHO recommends limiting...", "ICMR-NIN 2024 states..."). Do not speculate.
-8. flag_for: Only conditions with confirmed clinical or regulatory evidence.
-9. summary and india_context: Only state what the verified data supports. Cite real FSSAI/CDSCO regulations. Do not fabricate regulation names or numbers.
-10. suggestions: Product TYPES only — never specific brand names.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TASK: Provide a complete safety analysis for the product "${productName}" sold in India.
 
-Return ONLY this JSON (no markdown, no explanation outside the JSON):
+INSTRUCTIONS:
+1. If "${productName}" is a brand name, resolve to the flagship product (e.g. "Maggi" → "Maggi 2-Minute Masala Noodles", "Nutella" → "Nutella Hazelnut Spread with Cocoa").
+2. Use your training knowledge of the product's official label. If you don't know the exact ingredients, use the most commonly listed formulation for India.
+3. ALL ingredient names in ENGLISH only.
+4. Nutrition values from official India label per 100g/100ml. Use null if unknown — never use 0 as placeholder.
+5. safety_tier: SAFE | CAUTION | AVOID | BANNED_IN_INDIA — use established FSSAI/WHO/EFSA evidence only.
+6. plain_explanation: one factual sentence citing source (FSSAI, WHO, ICMR-NIN etc.).
+7. flag_for: conditions with confirmed clinical evidence only.
+8. summary: 2-3 sentences on what the data shows.
+9. india_context: one sentence citing a real FSSAI/CDSCO regulation.
+10. suggestions: product TYPES only — never specific brand names.
+11. is_upf: true only if Nova Group 4 criteria met.
+12. If you genuinely have no information about this product, set not_found: true.
+
+Return ONLY valid JSON matching this exact structure:
 {
-  "product_name": "full product name in English",
+  "product_name": "full product name",
   "brand": "brand name",
   "category": "FOOD|COSMETIC|PERSONAL_CARE|SUPPLEMENT|HOUSEHOLD|PET_FOOD",
   "nutrition": { "energy_kcal": number|null, "sugar_g": number|null, "sodium_mg": number|null, "protein_g": number|null, "fat_g": number|null, "saturated_fat_g": number|null, "trans_fat_g": number|null, "fibre_g": number|null },
-  "raw_ingredients": ["ingredient in English", ...],
+  "raw_ingredients": ["string"],
   "ingredients_analysis": [
-    { "name": "exact English name from label", "plain_name": "common English name", "function": "string", "safety_tier": "SAFE|CAUTION|AVOID|BANNED_IN_INDIA", "plain_explanation": "1 factual sentence citing source", "flag_for": ["condition"] }
+    { "name": "string", "plain_name": "string", "function": "string", "safety_tier": "SAFE|CAUTION|AVOID|BANNED_IN_INDIA", "plain_explanation": "string", "flag_for": ["string"] }
   ],
-  "summary": "2-3 sentences based only on verified ingredients and their established concerns or benefits",
-  "india_context": "1 sentence citing a real FSSAI/CDSCO regulation relevant to this product",
+  "summary": "string",
+  "india_context": "string",
   "is_upf": boolean,
   "hfss_status": "GREEN|HFSS",
-  "suggestions": [{ "type": "SWAP", "name": "product type only — never a brand name", "reason": "why it is better" }],
+  "suggestions": [{ "type": "SWAP", "name": "string", "reason": "string" }],
   "not_found": false
-}
-
-If the product cannot be found on any verified source after searching, return: { "not_found": true, "product_name": "${productName}" }`;
+}`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(res);
@@ -62,27 +60,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     initAdmin();
     const ai = getAI();
 
-    // STEP 1: RAG cache check
+    // STEP 1: RAG cache check — instant return if previously searched/scanned
     const ragCacheResult = await ragLookup({ productName });
     if (ragCacheResult.layer === 1) {
       return res.status(200).json(ragCacheResult.cached_verdict);
     }
 
-    // STEP 2: Single Gemini call — search + analyse + summarise
+    // STEP 2: Gemini call using training knowledge (no Google Search = much faster)
     const searchResult = await withTimeout(callGemini(() => ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [{ parts: [{ text: searchAnalysePrompt(productName) }] }],
-      config: {
-        // NOTE: responseMimeType cannot be used together with tools (googleSearch).
-        tools: [{ googleSearch: {} }],
-      },
+      model: 'gemini-2.0-flash',
+      contents: [{ parts: [{ text: searchPrompt(productName) }] }],
+      config: { responseMimeType: 'application/json' },
     })));
 
     if (!searchResult.text) {
-      return res.status(500).json({ error: `Gemini returned no data for "${productName}".` });
+      return res.status(500).json({ error: `Could not retrieve data for "${productName}".` });
     }
 
-    // Google Search grounding often adds citation text — extract just the JSON object
     let geminiData: any;
     try {
       const raw = searchResult.text ?? '';
@@ -91,26 +85,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (jsonStart === -1 || jsonEnd === -1) throw new Error('No JSON in response');
       geminiData = JSON.parse(raw.slice(jsonStart, jsonEnd + 1));
     } catch {
-      console.error('[searchProductByName] Parse error:', searchResult.text?.slice(0, 500));
+      console.error('[searchProductByName] Parse error:', searchResult.text?.slice(0, 300));
       return res.status(500).json({ error: 'Failed to parse product data. Please try scanning the label instead.' });
     }
 
-    if (geminiData.not_found) {
-      // Retry once with a simpler, direct prompt before giving up
-      console.warn(`[searchProductByName] not_found on first attempt for "${productName}", retrying...`);
-      const retryResult = await withTimeout(callGemini(() => ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [{ parts: [{ text: `Search for the product "${productName}" sold in India and return its ingredients list and nutrition facts as JSON with fields: product_name, brand, category, raw_ingredients (array), ingredients_analysis (array), nutrition, summary, india_context, is_upf, hfss_status, suggestions, not_found (false).` }] }],
-        config: { tools: [{ googleSearch: {} }] },
-      })));
-      const retryRaw = retryResult.text ?? '';
-      const rs = retryRaw.indexOf('{'), re = retryRaw.lastIndexOf('}');
-      if (rs !== -1 && re !== -1) {
-        try { geminiData = JSON.parse(retryRaw.slice(rs, re + 1)); } catch { /* keep original */ }
-      }
-      if (geminiData.not_found || !geminiData.raw_ingredients?.length) {
-        return res.status(404).json({ error: `We couldn't find "${productName}" in our search. Try scanning the product label for accurate results.` });
-      }
+    if (geminiData.not_found || !geminiData.raw_ingredients?.length) {
+      return res.status(404).json({
+        error: `We couldn't find reliable ingredient data for "${productName}". Try scanning the product label for accurate results.`
+      });
     }
 
     const product_name: string = geminiData.product_name || productName;
@@ -127,19 +109,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       (ing: any) => ing.name || ing.plain_name || ''
     );
 
-    if (rawIngredients.length === 0) {
-      return res.status(500).json({
-        error: `Could not find ingredient data for "${productName}". Please try scanning the label instead.`
-      });
-    }
-
     // STEP 3: Merge DB + Gemini
     const finalVerified = buildFinalIngredients(rawIngredients, ingredientsAnalysis);
 
     // STEP 4: Score + build result
     const result = buildResult(product_name, brand, category, nutrition, finalVerified, rawIngredients, geminiData);
 
-    // STEP 5: Cache
+    // STEP 5: Cache for future requests
     await saveProductToCache(result);
 
     return res.status(200).json(result);
