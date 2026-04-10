@@ -1,11 +1,11 @@
 // api/analyseLabel.ts — Vercel serverless function replacing Firebase analyseLabel
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { initAdmin } from './_adminInit';
+import { initAdmin } from '../lib/adminInit';
 import {
   getAI, callGemini, withTimeout, setCors,
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
   ragLookup, saveProductToCache
-} from './_shared';
+} from '../lib/shared';
 
 const singlePassPrompt = `You are a product safety analyst for Indian consumers. Your output is displayed directly to users — accuracy is critical. Never guess or hallucinate.
 

@@ -1,7 +1,7 @@
 // api/chatAboutProduct.ts — Vercel serverless function replacing Firebase chatAboutProduct
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { initAdmin } from './_adminInit';
-import { getAI, callGemini, withTimeout, setCors } from './_shared';
+import { initAdmin } from '../lib/adminInit';
+import { getAI, callGemini, withTimeout, setCors } from '../lib/shared';
 import { getAuth } from 'firebase-admin/auth';
 
 const systemInstruction = `You are the "Knowledgeable Friend" for ReadYourLabels — a health-aware, warm, honest companion who explains food and cosmetic safety to Indian consumers in plain language.
