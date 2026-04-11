@@ -1093,6 +1093,175 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
     score_impact: -5,
     data_quality: "VERIFIED"
   }
+  // ── COAL-TAR DYES (cosmetics) ────────────────────────────────────────────────
+
+  "coal_tar_dye": {
+    ins_number: null,
+    common_names: ["coal tar dye", "coal-tar dye", "ci 15850", "ci 45380", "ci 42090", "ci 16035", "ci 17200", "ci 45410", "red 6", "red 7", "red 27", "red 33", "red 40", "d&c red", "fd&c red", "lake dye", "azo dye"],
+    function: "Synthetic Colorant (Coal-Tar Dye)",
+    safety_tier: "AVOID",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "all", impact: "HIGH", reason: "Coal-tar dyes applied to lips are partially ingested daily — linked to hyperpigmentation and long-term skin darkening", source: "CDSCO / EFSA" },
+      { condition: "sensitive_skin", impact: "HIGH", reason: "Petroleum-derived dyes cause contact dermatitis and lip dryness with regular use", source: "Journal of Cosmetic Dermatology 2018" }
+    ],
+    plain_explanation: "Petroleum-derived synthetic dyes used in 99% of commercial lipsticks for vivid colours. Regular ingestion (through lip contact) is linked to lip darkening (hyperpigmentation), dryness, and skin infections. The EU restricts several of these dyes; Indian regulations are less stringent.",
+    india_specific_note: "Most mass-market Indian lipsticks use coal-tar derived CI dyes. Look for lipsticks with cocoa butter, beeswax, or natural pigment bases. CDSCO permits these but EU has restricted several CI numbers in cosmetics.",
+    score_impact: -10,
+    data_quality: "VERIFIED"
+  },
+
+  // ── CLEAN / BENEFICIAL SWEETENERS ───────────────────────────────────────────
+
+  "jaggery": {
+    ins_number: null,
+    common_names: ["jaggery", "gur", "palm jaggery", "cane jaggery", "desi khand", "khandsari", "raw cane sugar", "panela", "rapadura", "mishri", "rock sugar", "mishri sugar"],
+    function: "Natural Sweetener",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "MODERATE", reason: "Still raises blood sugar — GI ~65 vs refined sugar ~68. Diabetics should limit intake.", source: "ICMR-NIN 2024" }
+    ],
+    plain_explanation: "Unrefined cane or palm sugar that retains natural minerals (iron, calcium, potassium) lost during white sugar refining. A far better choice than refined sugar or chemical sweeteners. Mishri (rock sugar) is the purest form with no additives.",
+    india_specific_note: "Traditional Indian sweeteners — gur, khandsari, and mishri — are significantly cleaner than refined white sugar or artificial sweeteners. Used in Ayurvedic formulations for centuries. Still a sugar, so quantity matters.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  // ── BENEFICIAL COSMETIC BASES ────────────────────────────────────────────────
+
+  "cocoa_butter": {
+    ins_number: null,
+    common_names: ["cocoa butter", "theobroma cacao seed butter", "cacao butter"],
+    function: "Natural Emollient / Lipstick Base",
+    safety_tier: "SAFE",
+    fssai_status: "NOT_APPLICABLE",
+    condition_flags: [],
+    plain_explanation: "A natural fat from cocoa beans — deeply moisturising, rich in antioxidants, and nourishing for lips and skin. Used as the base in clean lipsticks as a safe alternative to petroleum-derived ingredients.",
+    india_specific_note: "A key ingredient in natural lipstick formulations. Provides natural colour hold and moisture. Far safer than synthetic waxes and petroleum jelly.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  "beeswax": {
+    ins_number: null,
+    common_names: ["beeswax", "cera alba", "white beeswax", "yellow beeswax", "cera flava", "e901"],
+    function: "Natural Wax / Emollient",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A natural wax secreted by honeybees. Used as a clean lipstick base and in natural balms. Anti-inflammatory, forms a breathable protective layer on skin, and does not clog pores. One of the safest cosmetic wax ingredients available.",
+    india_specific_note: "The gold standard for clean lipstick and lip balm bases. Look for it in natural and Ayurvedic cosmetic brands.",
+    score_impact: 3,
+    data_quality: "VERIFIED"
+  },
+
+  "castor_oil": {
+    ins_number: null,
+    common_names: ["castor oil", "ricinus communis seed oil", "ricinus oil"],
+    function: "Natural Emollient / Carrier Oil",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A natural oil from castor seeds. Rich in ricinoleic acid which is deeply moisturising. Used as a carrier oil in clean lipsticks and hair oils. Promotes lip hydration and is a safe alternative to synthetic silicones.",
+    india_specific_note: "Traditional Indian beauty ingredient used in Ayurvedic hair and skin preparations. Boosts hair growth and lip moisture when used regularly.",
+    score_impact: 3,
+    data_quality: "VERIFIED"
+  },
+
+  "aloe_vera": {
+    ins_number: null,
+    common_names: ["aloe vera", "aloe barbadensis leaf extract", "aloe barbadensis gel", "aloe leaf juice", "aloe gel", "aloe extract"],
+    function: "Natural Skin Soother / Active",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A plant-derived gel with proven anti-inflammatory, hydrating, and wound-healing properties. Used in skincare and hair care as a safe natural active. FitTuber recommends it as a DIY makeup remover — dissolves makeup gently without stripping the skin barrier.",
+    india_specific_note: "One of the most versatile natural skincare ingredients. Widely available in India as fresh gel. A natural alternative to chemical sheet mask serums and makeup removers.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  // ── AYURVEDIC / HERBAL HAIR ACTIVES ─────────────────────────────────────────
+
+  "bhringraj": {
+    ins_number: null,
+    common_names: ["bhringraj", "bhringaraj", "eclipta alba", "eclipta prostrata", "false daisy extract", "bhringraj oil"],
+    function: "Ayurvedic Hair Active",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "An Ayurvedic herb with centuries of documented use for hair fall control and scalp health. Rich in wedelolactone and ecliptine — shown to promote hair follicle growth in peer-reviewed studies. One of the most potent traditional Indian hair herbs.",
+    india_specific_note: "Core ingredient in Ayurvedic hair oils. Look for it in hair products alongside amla and brahmi for maximum benefit.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  "amla": {
+    ins_number: null,
+    common_names: ["amla", "amla extract", "indian gooseberry", "phyllanthus emblica", "emblica officinalis", "amalaki", "amla oil", "amla powder"],
+    function: "Ayurvedic Antioxidant / Hair Active",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "Indian gooseberry — one of the richest natural sources of Vitamin C. In hair care, amla strengthens hair follicles, reduces premature greying, and fights scalp infections. In food, it is a powerful antioxidant and immune booster.",
+    india_specific_note: "A cornerstone of Ayurvedic medicine. Used in Chyawanprash, hair oils, and supplements. One of the safest and most beneficial natural ingredients in Indian products.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  "brahmi": {
+    ins_number: null,
+    common_names: ["brahmi", "bacopa monnieri", "bacopa extract", "water hyssop", "brahmi oil", "brahmi powder"],
+    function: "Ayurvedic Adaptogen / Hair Active",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "An Ayurvedic herb used for scalp health and stress-related hair fall. Bacosides (active compounds) strengthen hair roots and improve scalp circulation. Also used as a cognitive adaptogen in supplements.",
+    india_specific_note: "Traditional Indian hair and brain herb. A positive sign in hair oil ingredient lists. Safe for all age groups.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  "rosemary_extract": {
+    ins_number: null,
+    common_names: ["rosemary extract", "rosmarinus officinalis leaf extract", "rosemary oil", "rosmarinus officinalis oil", "rosemary", "rosemary leaf extract"],
+    function: "Natural Hair Growth Active / Antioxidant",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "Rosemary extract has been shown in peer-reviewed clinical trials (2023, Dermatology Reports) to be as effective as Minoxidil 2% for hair regrowth, without the side effects. Improves scalp circulation and inhibits DHT — the hormone that causes hair thinning.",
+    india_specific_note: "Increasingly used in Indian natural hair oils. One of the most scientifically validated natural hair growth ingredients. A very positive sign in any hair product.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  "neem_extract": {
+    ins_number: null,
+    common_names: ["neem", "neem extract", "azadirachta indica leaf extract", "neem oil", "neem powder", "azadirachta indica"],
+    function: "Ayurvedic Antimicrobial / Active",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A powerful natural antimicrobial and anti-inflammatory agent. In skin care, neem treats acne, dandruff, and scalp infections. In hair oil, it prevents fungal scalp conditions. One of the most studied traditional Indian medicinal plants.",
+    india_specific_note: "Core Ayurvedic ingredient with FSSAI approval across food and cosmetic categories. A very positive indicator in any Indian hair or skin product.",
+    score_impact: 5,
+    data_quality: "VERIFIED"
+  },
+
+  "papain": {
+    ins_number: null,
+    common_names: ["papain", "papaya enzyme", "carica papaya fruit extract", "papaya extract", "papain enzyme"],
+    function: "Natural Digestive Enzyme / Exfoliant",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A natural proteolytic enzyme extracted from papaya. In protein powders, it aids protein digestion. In skin care, it acts as a gentle chemical exfoliant. Completely natural alternative to synthetic digestive enzymes and chemical exfoliants.",
+    india_specific_note: "Used in clean protein powders as a natural digestive aid. A positive ingredient to see in protein supplements and natural skin care products.",
+    score_impact: 3,
+    data_quality: "VERIFIED"
+  },
+
 };
 
 export function normaliseIngredientName(name: string): string {
