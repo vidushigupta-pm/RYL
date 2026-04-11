@@ -159,6 +159,27 @@ interface Profile {
   updatedAt?: any;
 }
 
+// ── Per-user daily scan rate limiter (localStorage) ───────────────────────────
+// Protects free-tier Gemini quota during beta. Limit: 15 AI calls/user/day.
+// Cache hits (products already in Firestore) don't count — they're free.
+const DAILY_SCAN_LIMIT = 15;
+const RATE_LIMIT_KEY = 'ryl_daily_scans';
+function getRateLimitData(): { date: string; count: number } {
+  try {
+    const raw = localStorage.getItem(RATE_LIMIT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { date: '', count: 0 };
+}
+function checkAndIncrementRateLimit(): { allowed: boolean; remaining: number } {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const data = getRateLimitData();
+  const count = data.date === today ? data.count : 0; // reset on new day
+  if (count >= DAILY_SCAN_LIMIT) return { allowed: false, remaining: 0 };
+  localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify({ date: today, count: count + 1 }));
+  return { allowed: true, remaining: DAILY_SCAN_LIMIT - count - 1 };
+}
+
 const DEFAULT_PROFILES: Profile[] = [
   {
     id: 'default_self',
@@ -2806,6 +2827,11 @@ export default function App() {
 
   const handleAnalyse = async (files: { front: File | null, back: File }) => {
     setIsSearch(false);
+    const rateCheck = checkAndIncrementRateLimit();
+    if (!rateCheck.allowed) {
+      setAppError(`You've reached today's scan limit (${DAILY_SCAN_LIMIT} scans/day). Come back tomorrow!`);
+      return;
+    }
     setPhase('processing');
     try {
       const backBase64 = await fileToBase64(files.back);
@@ -2888,6 +2914,11 @@ export default function App() {
   const handleSearch = async (name: string) => {
     setIsSearch(true);
     setSearchQuery(name);
+    const rateCheck = checkAndIncrementRateLimit();
+    if (!rateCheck.allowed) {
+      setAppError(`You've reached today's scan limit (${DAILY_SCAN_LIMIT} scans/day). Come back tomorrow!`);
+      return;
+    }
     setPhase('processing');
     try {
       const analysis = await searchProductByName(name);
