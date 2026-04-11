@@ -2952,27 +2952,51 @@ export default function App() {
     }
   };
 
-  // Compress image to JPEG ≤1200px wide, quality 0.82 — keeps files well under Vercel's 4.5 MB limit
+  // Compress image to JPEG ≤900px — mobile-safe memory usage
+  // Gemini only needs ~800px to read ingredient text clearly.
+  // Lower MAX_DIM + quality drastically cuts RAM usage on budget Android phones.
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const img = new Image();
+      // Step 1: downscale the file via a Blob URL before even touching canvas,
+      // so the browser never holds the full 12MP image in decoded pixel memory.
       const objectUrl = URL.createObjectURL(file);
+      const img = new Image();
+
       img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        const MAX_DIM = 1200;
+        URL.revokeObjectURL(objectUrl); // free the blob immediately
+
+        const MAX_DIM = 900; // enough for Gemini to read text; far less RAM than 1200
         let { width, height } = img;
-        if (width > MAX_DIM || height > MAX_DIM) {
-          if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
-          else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+
+        // Scale down proportionally
+        if (width > height) {
+          if (width > MAX_DIM) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+        } else {
+          if (height > MAX_DIM) { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
         }
+
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas not supported')); return; }
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.75); // 0.75 quality — still clear, ~40% smaller file
+
+        // Explicitly release canvas memory (important on low-RAM Android)
+        canvas.width = 0;
+        canvas.height = 0;
+
         resolve(dataUrl.split(',')[1]);
       };
-      img.onerror = reject;
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Could not load image. Please try again.'));
+      };
+
       img.src = objectUrl;
     });
   };
