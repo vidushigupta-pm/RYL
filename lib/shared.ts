@@ -55,15 +55,22 @@ export async function callGemini<T>(
     const isTransient = msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('500');
 
     if (isQuota && retries > 0) {
+      // Try next API key first — different key may not be rate-limited yet
       const nextKeyIndex = keyIndex + 1;
       if (nextKeyIndex < keys.length) {
         console.log(`[Gemini] Key ${keyIndex} quota exceeded → rotating to key ${nextKeyIndex}`);
         return callGemini(fn, nextKeyIndex, retries - 1, delay);
       }
-      // All keys exhausted — wait then retry from key 0
-      console.log(`[Gemini] All keys quota exceeded, waiting ${delay}ms before retry`);
-      await new Promise(r => setTimeout(r, delay));
-      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, 15000));
+
+      // All keys exhausted — read the retryDelay hint from the API response if present
+      // Google API returns e.g. "retryDelay":"26s" in the error body
+      const retryDelayMatch = msg.match(/"retryDelay"\s*:\s*"(\d+)s"/);
+      const apiHintMs = retryDelayMatch ? parseInt(retryDelayMatch[1], 10) * 1000 : 0;
+      // Wait at least what the API tells us, or our own backoff — whichever is larger
+      const waitMs = Math.max(apiHintMs, delay);
+      console.log(`[Gemini] All keys quota exceeded, waiting ${waitMs}ms (API hint: ${apiHintMs}ms)`);
+      await new Promise(r => setTimeout(r, waitMs));
+      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, 60_000));
     }
 
     if (isTransient && retries > 0) {
