@@ -2140,7 +2140,7 @@ const ResultScreen = ({
         </div>
 
         {/* FitTuber-style Truth Alerts */}
-        {(result.top_ingredient_warning || result.maida_alert || (result.hidden_sugar_count >= 2) || result.serving_size_trick) && (
+        {(result.top_ingredient_warning || result.maida_alert || (result.hidden_sugar_count >= 2) || result.serving_size_trick || result.no_msg_deception) && (
           <div className="space-y-2">
             <div className="flex items-center gap-2 px-1">
               <AlertCircle className="w-4 h-4 text-[#D94F3D]" />
@@ -2177,6 +2177,15 @@ const ResultScreen = ({
                   <div>
                     <p className="text-sm font-bold text-[#E07B2A]">Tiny serving size used</p>
                     <p className="text-xs text-gray-500 mt-1">The nutrition numbers are shown for a very small serving ({result.serving_size_g}g). Actual consumption is usually much more — multiply accordingly.</p>
+                  </div>
+                </div>
+              )}
+              {result.no_msg_deception && (
+                <div className="p-4 flex gap-3 items-start">
+                  <span className="text-lg leading-none">🧪</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#D94F3D]">"No MSG" — but contains something worse</p>
+                    <p className="text-xs text-gray-500 mt-1">This product likely says "No MSG" on the front but contains INS 627, 631, or 635 — excitotoxins that are 10× more potent than MSG. They hijack your brain's fullness signal and spike uric acid levels.</p>
                   </div>
                 </div>
               )}

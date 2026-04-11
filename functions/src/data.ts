@@ -216,31 +216,32 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
   "ins_627": {
     ins_number: "627",
     common_names: ["ins 627", "disodium guanylate", "sodium guanylate", "e627"],
-    function: "Flavour Enhancer",
-    safety_tier: "CAUTION",
+    function: "Excitotoxin / Flavour Enhancer",
+    safety_tier: "AVOID",
     fssai_status: "PERMITTED",
     condition_flags: [
-      { condition: "gout", impact: "HIGH", reason: "Purine-based compound — can trigger gout attacks", source: "ICMR-NIN 2024" },
-      { condition: "children", impact: "LOW", reason: "Not recommended for infants under 12 weeks", source: "FSSAI" }
+      { condition: "gout", impact: "HIGH", reason: "Purine-based — violently spikes uric acid, can trigger acute gout attacks and joint crystals", source: "ICMR-NIN 2024" },
+      { condition: "children", impact: "HIGH", reason: "Not recommended for children — overstimulates taste receptors and disrupts appetite signals", source: "FSSAI" }
     ],
-    plain_explanation: "A flavour enhancer often used with MSG. Made from fish or yeast. People with gout should avoid this as it's purine-based.",
-    india_specific_note: "Common in chips and instant snacks. Usually appears alongside INS 621.",
-    score_impact: -3,
+    plain_explanation: "An excitotoxin used instead of MSG — companies print 'No MSG' on the front while adding this. When combined with INS 631 or 635, the effect is 10× stronger than MSG. Spikes uric acid and can trigger gout attacks.",
+    india_specific_note: "The 'No MSG' trick: after public backlash against MSG (INS 621), companies replaced it with INS 627+631 or INS 635. These are harder to recognise but more potent. Found in Lay's, Kurkure, and most Indian chips and noodles.",
+    score_impact: -8,
     data_quality: "VERIFIED"
   },
 
   "ins_631": {
     ins_number: "631",
     common_names: ["ins 631", "disodium inosinate", "sodium inosinate", "e631"],
-    function: "Flavour Enhancer",
-    safety_tier: "CAUTION",
+    function: "Excitotoxin / Flavour Enhancer",
+    safety_tier: "AVOID",
     fssai_status: "PERMITTED",
     condition_flags: [
-      { condition: "gout", impact: "HIGH", reason: "Purine-based — same concern as INS 627 for gout sufferers", source: "ICMR-NIN 2024" }
+      { condition: "gout", impact: "HIGH", reason: "Purine-based — triggers uric acid spikes and acute gout; worse than MSG alone", source: "ICMR-NIN 2024" },
+      { condition: "children", impact: "HIGH", reason: "Overstimulates taste receptors in children, suppresses fullness signals", source: "FSSAI" }
     ],
-    plain_explanation: "A flavour enhancer typically paired with INS 621 and 627. Often derived from meat or fish. People with gout or uric acid issues should avoid.",
-    india_specific_note: null,
-    score_impact: -3,
+    plain_explanation: "An excitotoxin paired with INS 627 as the hidden replacement for MSG. Bypasses the brain's fullness signal so you keep eating. When combined with INS 627, it is significantly more potent than MSG.",
+    india_specific_note: "Part of the 'No MSG' deception. Found in chips, noodles, and namkeen. Often listed together with INS 627 or INS 635.",
+    score_impact: -8,
     data_quality: "VERIFIED"
   },
 
@@ -264,16 +265,17 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
   "ins_635": {
     ins_number: "635",
     common_names: ["ins 635", "disodium 5'-ribonucleotides", "disodium ribonucleotides", "ribonucleotides", "e635", "sodium 5'-ribonucleotides"],
-    function: "Flavour Enhancer",
-    safety_tier: "CAUTION",
+    function: "Excitotoxin / Flavour Enhancer",
+    safety_tier: "AVOID",
     fssai_status: "PERMITTED",
     condition_flags: [
-      { condition: "gout", impact: "HIGH", reason: "Contains purines — can trigger gout attacks in susceptible individuals", source: "ICMR-NIN 2024" },
-      { condition: "aspirin_sensitivity", impact: "MODERATE", reason: "May cause urticaria in aspirin-sensitive individuals", source: "EFSA 2010" }
+      { condition: "gout", impact: "HIGH", reason: "A combination of INS 627+631 — doubles the uric acid spike and gout risk", source: "ICMR-NIN 2024" },
+      { condition: "aspirin_sensitivity", impact: "HIGH", reason: "Causes severe urticaria and skin reactions in aspirin-sensitive individuals", source: "EFSA 2010" },
+      { condition: "children", impact: "HIGH", reason: "Suppresses brain's fullness signal — children eat more without feeling full", source: "FSSAI" }
     ],
-    plain_explanation: "A flavour enhancer that combines INS 627 and INS 631. Used to boost savoury/umami taste in instant noodles and snacks. Typically derived from yeast extract or fish. Those with gout should avoid it.",
-    india_specific_note: "Widely used in Indian instant noodles and namkeen. Often paired with INS 621 (MSG). FSSAI permits it in processed foods.",
-    score_impact: -3,
+    plain_explanation: "The most potent excitotoxin — it is literally a combination of INS 627 and INS 631 together. The 'No MSG' replacement that is 10× stronger than MSG. Companies use it in weight-loss snacks despite it driving overconsumption.",
+    india_specific_note: "The single ingredient companies use to replace MSG while still printing 'No MSG'. Found in chips, diet snacks, and instant noodles. Regulators classify it as a flavour enhancer but independent research links it to overconsumption and gout.",
+    score_impact: -10,
     data_quality: "VERIFIED"
   },
 
@@ -560,17 +562,33 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
 
   "trans_fat": {
     ins_number: null,
-    common_names: ["trans fat", "partially hydrogenated oil", "hydrogenated vegetable fat", "vanaspati", "dalda"],
-    function: "Fat",
+    common_names: ["trans fat", "partially hydrogenated oil", "hydrogenated vegetable fat", "hydrogenated oil", "edible vegetable fat", "edible hydrogenated fat", "vanaspati", "dalda", "partially hydrogenated vegetable oil", "hydrogenated palm oil"],
+    function: "Trans Fat (Hydrogenated Oil)",
     safety_tier: "AVOID",
     fssai_status: "RESTRICTED",
     condition_flags: [
-      { condition: "heart_disease", impact: "HIGH", reason: "WHO recommends complete elimination — increases LDL and decreases HDL cholesterol", source: "WHO REPLACE Initiative 2018" },
+      { condition: "heart_disease", impact: "HIGH", reason: "Solidifies in arteries like cement — WHO recommends complete elimination from diet", source: "WHO REPLACE Initiative 2018" },
       { condition: "diabetes", impact: "HIGH", reason: "Linked to insulin resistance and increased Type 2 diabetes risk", source: "ICMR-NIN 2024" }
     ],
-    plain_explanation: "Partially hydrogenated oils — the worst type of fat. WHO recommends eliminating them completely. They raise bad cholesterol and lower good cholesterol simultaneously. FSSAI has set limits but not a complete ban.",
-    india_specific_note: "Vanaspati (Dalda) is a traditional Indian trans fat still used in some commercial foods and restaurants. FSSAI limit is 2g/100g but WHO recommends zero.",
-    score_impact: -8,
+    plain_explanation: "'Edible Vegetable Fat' is a deceptive label name for hydrogenated oil — a cheap lab-made fat created by forcing hydrogen into vegetable oil. It solidifies in your arteries and is a major trigger for premature heart attacks. WHO recommends zero intake.",
+    india_specific_note: "Companies deliberately use the term 'Edible Vegetable Fat' instead of 'Hydrogenated Oil' to hide this ingredient. Found in biscuits, popcorn, namkeen, and peanut butter. FSSAI limits it to 2g/100g but WHO says zero is the only safe amount.",
+    score_impact: -15,
+    data_quality: "VERIFIED"
+  },
+
+  "polysorbate_80": {
+    ins_number: "433",
+    common_names: ["polysorbate 80", "ins 433", "e433", "tween 80", "polyoxyethylene sorbitan monooleate"],
+    function: "Emulsifier",
+    safety_tier: "AVOID",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "ibs", impact: "HIGH", reason: "Strips the protective mucus layer of intestines — linked to leaky gut syndrome and IBS", source: "Nature 2015 (Chassaing et al.)" },
+      { condition: "gut_issues", impact: "HIGH", reason: "Acts like a detergent in the gut, disrupting the intestinal microbiome", source: "Nature 2015" }
+    ],
+    plain_explanation: "An emulsifier that keeps oil and water mixed. Once in the gut, it acts like dishwashing detergent — stripping the thin protective mucus layer of intestines. This allows harmful bacteria to directly contact the gut wall, causing leaky gut syndrome. UK and EU food agencies monitor it closely.",
+    india_specific_note: "Common in commercial ice creams, coconut milk products, and liquid spices. Hidden under the code INS 433. FSSAI permits it but EU regulators have raised concerns about gut health impacts at regular consumption levels.",
+    score_impact: -10,
     data_quality: "VERIFIED"
   },
 
@@ -594,16 +612,17 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
 
   "maltodextrin": {
     ins_number: null,
-    common_names: ["maltodextrin", "corn maltodextrin", "modified starch"],
-    function: "Bulking Agent / Filler",
+    common_names: ["maltodextrin", "corn maltodextrin", "modified starch", "maltodextrine"],
+    function: "Hidden High-GI Sugar / Bulking Agent",
     safety_tier: "CAUTION",
     fssai_status: "PERMITTED",
     condition_flags: [
-      { condition: "diabetes", impact: "MODERATE", reason: "Very high glycaemic index (GI 85-105) — spikes blood sugar faster than table sugar", source: "ICMR-NIN 2024" }
+      { condition: "diabetes", impact: "HIGH", reason: "GI of 85–105 — spikes blood sugar twice as fast as regular sugar (GI 65). Yet classified as a carbohydrate, not sugar.", source: "ICMR-NIN 2024" },
+      { condition: "ibs", impact: "MODERATE", reason: "Acts as a binding agent for harmful gut bacteria including E. coli and Salmonella", source: "PLOS ONE 2012" }
     ],
-    plain_explanation: "A highly processed starch used as a filler. Has a higher glycaemic index than table sugar — meaning it raises blood sugar faster. Often hides in products that claim to be low in sugar.",
-    india_specific_note: "Common in Indian health drinks, protein powders, and instant foods.",
-    score_impact: -3,
+    plain_explanation: "A cheap lab-made powder that spikes blood sugar faster than refined sugar — yet a legal loophole lets companies classify it as a 'carbohydrate', not 'sugar'. This means products packed with maltodextrin can legally print 'Zero Added Sugar' on the front.",
+    india_specific_note: "The 'Zero Sugar' trick: FSSAI classifies maltodextrin as a carbohydrate, not a sugar. Brands exploit this to label products as sugar-free while loading them with this high-GI powder. Common in 'diet' biscuits, health drinks, protein powders, and weight-loss snacks.",
+    score_impact: -5,
     data_quality: "VERIFIED"
   },
 

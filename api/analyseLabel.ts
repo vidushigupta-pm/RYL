@@ -49,7 +49,8 @@ TASK — do all of the following in one response:
    b) MAIDA ALERT: If "Wheat Flour" (not "Whole Wheat Flour" or "Atta") appears in the top 3 ingredients, set maida_alert to true. "Wheat Flour" in India = refined maida, not atta.
    c) TOP INGREDIENT WARNING: If the #1 or #2 ingredient (by weight) is sugar, maida/wheat flour, or palm oil, set top_ingredient_warning to a plain-English sentence like "Sugar is the #1 ingredient by weight — this product is more sugar than anything else."
    d) SERVING SIZE TRICK: If a serving_size is printed AND it is less than 30g for a solid food, set serving_size_trick to true — companies use tiny serving sizes to make nutrition numbers look better.
-   e) FRONT CLAIM CHECKS: If a front label image is provided, check each marketing claim against the actual ingredients. Flag if "multigrain" product has maida as #1, "no added sugar" has artificial sweeteners, "natural" has artificial flavours, "healthy" or "nutritious" but is HFSS, etc.
+   e) NO MSG DECEPTION: If the product contains INS 627, INS 631, or INS 635 (with or without MSG/INS 621), set no_msg_deception to true. These are excitotoxins used as MSG replacements — often combined on a product that proudly says "No MSG" on the front.
+   f) FRONT CLAIM CHECKS: If a front label image is provided, check each marketing claim against the actual ingredients. Flag if "multigrain" product has maida as #1, "no added sugar" has artificial sweeteners or maltodextrin, "natural" has artificial flavours, "No MSG" but contains INS 627/631/635, "healthy" or "nutritious" but is HFSS, etc.
 
 4. WRITE a verdict:
    - summary: 2-3 punchy sentences like a consumer champion would write — name the specific concerning ingredients, be direct. E.g. "Sugar is the first ingredient. It contains 3 different forms of sugar totalling X% of the product. The 'multigrain' claim is misleading as refined wheat flour (maida) makes up most of the product."
@@ -74,6 +75,7 @@ Return ONLY this JSON (no markdown, no explanation outside the JSON):
   "maida_alert": boolean,
   "top_ingredient_warning": "string|null",
   "serving_size_trick": boolean,
+  "no_msg_deception": boolean,
   "summary": "string",
   "india_context": "string",
   "is_upf": boolean,
