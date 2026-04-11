@@ -2913,6 +2913,8 @@ export default function App() {
       trackEvent('scan_complete', { category: analysis.category, score: analysis.overall_score });
 
       if (user) {
+        const scanTs = Timestamp.now();
+        // User's personal history
         await addDoc(collection(db, `users/${user.uid}/scans`), {
           productName: analysis.product_name,
           brand: analysis.brand,
@@ -2921,8 +2923,18 @@ export default function App() {
           summary: analysis.summary,
           resultJson: JSON.stringify(analysis),
           userId: user.uid,
-          timestamp: Timestamp.now()
+          timestamp: scanTs,
         });
+        // Global analytics for admin dashboard
+        await addDoc(collection(db, 'scan_events'), {
+          product_name: analysis.product_name,
+          brand: analysis.brand || '',
+          category: analysis.category || 'FOOD',
+          overall_score: analysis.overall_score,
+          user_id: user.uid,
+          scanned_at: scanTs,
+          source: 'scan',
+        }).catch(() => {}); // non-blocking — don't fail the scan if this errors
       }
     } catch (error: any) {
       console.error("Scan error:", error);
@@ -2999,6 +3011,8 @@ export default function App() {
       trackEvent('search_complete', { product: name, score: analysis.overall_score });
 
       if (user) {
+        const searchTs = Timestamp.now();
+        // User's personal history
         await addDoc(collection(db, `users/${user.uid}/scans`), {
           productName: analysis.product_name,
           brand: analysis.brand,
@@ -3007,8 +3021,18 @@ export default function App() {
           summary: analysis.summary,
           resultJson: JSON.stringify(analysis),
           userId: user.uid,
-          timestamp: Timestamp.now()
+          timestamp: searchTs,
         });
+        // Global analytics for admin dashboard
+        await addDoc(collection(db, 'scan_events'), {
+          product_name: analysis.product_name,
+          brand: analysis.brand || '',
+          category: analysis.category || 'FOOD',
+          overall_score: analysis.overall_score,
+          user_id: user.uid,
+          scanned_at: searchTs,
+          source: 'search',
+        }).catch(() => {}); // non-blocking — don't fail the search if this errors
       }
     } catch (error: any) {
       console.error("Search error:", error);
