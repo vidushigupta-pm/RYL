@@ -10,34 +10,44 @@ import {
 // No Google Search grounding — too slow for Vercel Hobby 60s limit.
 // Gemini's training data covers all major Indian & global brands accurately.
 const searchPrompt = (productName: string) =>
-  `You are a product safety analyst for Indian consumers.
+  `You are a product safety analyst for Indian consumers — think FitTuber meets a food scientist. Uncover what's really inside the product, in plain language any Indian consumer can understand.
 
-TASK: Provide a complete safety analysis for the product "${productName}" sold in India.
+TASK: Provide a complete safety analysis for "${productName}" sold in India.
 
 INSTRUCTIONS:
-1. If "${productName}" is a brand name, resolve to the flagship product (e.g. "Maggi" → "Maggi 2-Minute Masala Noodles", "Nutella" → "Nutella Hazelnut Spread with Cocoa").
-2. Use your training knowledge of the product's official label. If you don't know the exact ingredients, use the most commonly listed formulation for India.
+1. Resolve brand names to the flagship India product (e.g. "Maggi" → "Maggi 2-Minute Masala Noodles").
+2. Use your training knowledge of the product's official India label ingredients list.
 3. ALL ingredient names in ENGLISH only.
-4. Nutrition values from official India label per 100g/100ml. Use null if unknown — never use 0 as placeholder.
-5. safety_tier: SAFE | CAUTION | AVOID | BANNED_IN_INDIA — use established FSSAI/WHO/EFSA evidence only.
+4. Nutrition values per 100g/100ml from India label. Use null if unknown — never use 0 as placeholder.
+5. safety_tier: SAFE | CAUTION | AVOID | BANNED_IN_INDIA — use FSSAI/WHO/EFSA evidence only.
 6. plain_explanation: one factual sentence citing source (FSSAI, WHO, ICMR-NIN etc.).
 7. flag_for: conditions with confirmed clinical evidence only.
-8. summary: 2-3 sentences on what the data shows.
+8. summary: 2-3 punchy sentences like a consumer champion — name specific concerning ingredients, be direct.
 9. india_context: one sentence citing a real FSSAI/CDSCO regulation.
 10. suggestions: product TYPES only — never specific brand names.
 11. is_upf: true only if Nova Group 4 criteria met.
 12. If you genuinely have no information about this product, set not_found: true.
 
-Return ONLY valid JSON matching this exact structure:
+DETECT these specific Indian consumer concerns:
+a) HIDDEN SUGAR: List ALL sugar-type ingredients (sugar, glucose, dextrose, maltodextrin, corn syrup, fructose, sucrose, jaggery, honey, etc.). If 2+ are present, set hidden_sugar_count and hidden_sugar_names — companies split sugar into multiple names to push it down the list.
+b) MAIDA ALERT: If "Wheat Flour" (not "Whole Wheat Flour"/"Atta") is in the top 3 ingredients, set maida_alert: true. "Wheat Flour" in India = refined maida, not atta.
+c) TOP INGREDIENT WARNING: If the #1 or #2 ingredient by weight is sugar, maida/wheat flour, or palm oil — set top_ingredient_warning to a plain sentence like "Sugar is the #1 ingredient by weight."
+d) INGREDIENT POSITIONS: Set position (1-based) for each ingredient — 1 = highest by weight.
+
+Return ONLY valid JSON:
 {
-  "product_name": "full product name",
-  "brand": "brand name",
+  "product_name": "string",
+  "brand": "string",
   "category": "FOOD|COSMETIC|PERSONAL_CARE|SUPPLEMENT|HOUSEHOLD|PET_FOOD",
   "nutrition": { "energy_kcal": number|null, "sugar_g": number|null, "sodium_mg": number|null, "protein_g": number|null, "fat_g": number|null, "saturated_fat_g": number|null, "trans_fat_g": number|null, "fibre_g": number|null },
   "raw_ingredients": ["string"],
   "ingredients_analysis": [
-    { "name": "string", "plain_name": "string", "function": "string", "safety_tier": "SAFE|CAUTION|AVOID|BANNED_IN_INDIA", "plain_explanation": "string", "flag_for": ["string"] }
+    { "name": "string", "plain_name": "string", "function": "string", "safety_tier": "SAFE|CAUTION|AVOID|BANNED_IN_INDIA", "plain_explanation": "string", "flag_for": ["string"], "position": number }
   ],
+  "hidden_sugar_count": number,
+  "hidden_sugar_names": ["string"],
+  "maida_alert": boolean,
+  "top_ingredient_warning": "string|null",
   "summary": "string",
   "india_context": "string",
   "is_upf": boolean,

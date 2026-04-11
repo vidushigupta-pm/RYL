@@ -2139,6 +2139,51 @@ const ResultScreen = ({
           </p>
         </div>
 
+        {/* FitTuber-style Truth Alerts */}
+        {(result.top_ingredient_warning || result.maida_alert || (result.hidden_sugar_count >= 2) || result.serving_size_trick) && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 px-1">
+              <AlertCircle className="w-4 h-4 text-[#D94F3D]" />
+              <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Truth Check</h3>
+            </div>
+            <div className="bg-white rounded-[32px] border border-[#E8DDD0] overflow-hidden divide-y divide-[#FDF6EE]">
+              {result.top_ingredient_warning && (
+                <div className="p-4 flex gap-3 items-start">
+                  <span className="text-lg leading-none">⚠️</span>
+                  <p className="text-sm text-[#1B3D2F] font-medium leading-snug">{result.top_ingredient_warning}</p>
+                </div>
+              )}
+              {result.hidden_sugar_count >= 2 && (
+                <div className="p-4 flex gap-3 items-start">
+                  <span className="text-lg leading-none">🍬</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#D94F3D]">Sugar listed {result.hidden_sugar_count} times under different names</p>
+                    <p className="text-xs text-gray-500 mt-1">Companies split sugar into multiple ingredients to push it down the list: <span className="font-medium text-[#1B3D2F]">{(result.hidden_sugar_names || []).join(', ')}</span></p>
+                  </div>
+                </div>
+              )}
+              {result.maida_alert && (
+                <div className="p-4 flex gap-3 items-start">
+                  <span className="text-lg leading-none">🌾</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#E07B2A]">"Wheat Flour" = Maida, not Atta</p>
+                    <p className="text-xs text-gray-500 mt-1">In India, "Wheat Flour" on a label means refined maida (white flour), not whole wheat atta. Look for "Whole Wheat Flour" for the real thing.</p>
+                  </div>
+                </div>
+              )}
+              {result.serving_size_trick && (
+                <div className="p-4 flex gap-3 items-start">
+                  <span className="text-lg leading-none">📏</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#E07B2A]">Tiny serving size used</p>
+                    <p className="text-xs text-gray-500 mt-1">The nutrition numbers are shown for a very small serving ({result.serving_size_g}g). Actual consumption is usually much more — multiply accordingly.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Claim Unmasker */}
         {(result.claim_checks || []).length > 0 && (
           <div className="space-y-3">
