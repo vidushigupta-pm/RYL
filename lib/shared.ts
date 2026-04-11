@@ -38,11 +38,14 @@ export function getAI(keyIndex = 0): GoogleGenAI {
 }
 
 // fn receives the ai client; the model is fixed at the call site.
+// MAX_WAIT_MS: cap any single retry sleep so we never blow Vercel's 60s function limit.
+const MAX_WAIT_MS = 8_000;
+
 export async function callGemini<T>(
   fn: (ai: GoogleGenAI) => Promise<T>,
   keyIndex = 0,
-  retries = 6,
-  delay = 2000
+  retries = 3,   // reduced from 6 — fail fast when quota is truly exhausted
+  delay = 1500
 ): Promise<T> {
   const keys = getApiKeys();
   const ai = getAI(keyIndex);
@@ -62,19 +65,19 @@ export async function callGemini<T>(
         return callGemini(fn, nextKeyIndex, retries - 1, delay);
       }
 
-      // All keys exhausted — read the retryDelay hint from the API response if present
-      // Google API returns e.g. "retryDelay":"26s" in the error body
+      // All keys exhausted — read the retryDelay hint but cap it so we don't timeout
       const retryDelayMatch = msg.match(/"retryDelay"\s*:\s*"(\d+)s"/);
       const apiHintMs = retryDelayMatch ? parseInt(retryDelayMatch[1], 10) * 1000 : 0;
-      // Wait at least what the API tells us, or our own backoff — whichever is larger
-      const waitMs = Math.max(apiHintMs, delay);
-      console.log(`[Gemini] All keys quota exceeded, waiting ${waitMs}ms (API hint: ${apiHintMs}ms)`);
+      // Cap the wait — Vercel functions have a 60s hard limit
+      const waitMs = Math.min(Math.max(apiHintMs, delay), MAX_WAIT_MS);
+      console.log(`[Gemini] All keys quota exceeded, waiting ${waitMs}ms (API hint: ${apiHintMs}ms, capped at ${MAX_WAIT_MS}ms)`);
       await new Promise(r => setTimeout(r, waitMs));
-      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, 60_000));
+      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, MAX_WAIT_MS));
     }
 
     if (isTransient && retries > 0) {
-      await new Promise(r => setTimeout(r, delay));
+      const waitMs = Math.min(delay, MAX_WAIT_MS);
+      await new Promise(r => setTimeout(r, waitMs));
       return callGemini(fn, keyIndex, retries - 1, delay * 2);
     }
 
@@ -83,18 +86,19 @@ export async function callGemini<T>(
 }
 
 // ── Sanitise cached verdict ───────────────────────────────────────────────────
-// When a cached product is returned, validate that score_breakdown sums to
-// overall_score (within ±3). If not, strip the breakdown to avoid showing
-// numbers that don't add up on screen.
+// Ensures score_breakdown and overall_score are consistent.
+// If they differ (stale cache from old scoring engine), reconcile by recomputing
+// overall_score from the breakdown so the "WHY THIS SCORE?" maths always adds up.
 export function sanitiseCachedVerdict(verdict: any): any {
   if (!verdict || !Array.isArray(verdict.score_breakdown) || verdict.score_breakdown.length === 0) return verdict;
   const overall = Number(verdict.overall_score) || 0;
   const sumOfImpacts = verdict.score_breakdown.reduce((s: number, item: any) => s + (Number(item.impact) || 0), 0);
   const derivedScore = Math.max(0, Math.min(100, 100 + sumOfImpacts));
   if (Math.abs(derivedScore - overall) > 3) {
-    // Breakdown is inconsistent with score — strip it to prevent misleading display
-    console.log(`[sanitise] Stripping inconsistent breakdown: derivedScore=${derivedScore} vs overall=${overall}`);
-    return { ...verdict, score_breakdown: [] };
+    // Reconcile: use the breakdown-derived score so the maths is always consistent.
+    // Stale caches (from scoring engine updates) cause this — show correct breakdown.
+    console.log(`[sanitise] Reconciling stale cache: breakdown derivedScore=${derivedScore} vs stored overall=${overall} → using ${derivedScore}`);
+    return { ...verdict, overall_score: derivedScore };
   }
   return verdict;
 }

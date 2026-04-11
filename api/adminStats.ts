@@ -50,6 +50,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     });
 
+    // Prevent browser/Vercel edge from caching this response (was causing 304 stale responses)
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     return res.status(200).json({ events, products });
 
   } catch (error: any) {

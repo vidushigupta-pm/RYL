@@ -1,11 +1,30 @@
 // api/searchProductByName.ts — Vercel serverless function
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { initAdmin } from '../lib/adminInit';
+import { initAdmin, FIRESTORE_DB_ID } from '../lib/adminInit';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import {
   callGemini, withTimeout, setCors,
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
   ragLookup, saveProductToCache, sanitiseCachedVerdict
 } from '../lib/shared';
+
+// Write a scan event via Admin SDK — bypasses Firestore client rules
+async function writeScanEvent(result: any, userId: string, source: string) {
+  try {
+    const db = getFirestore(FIRESTORE_DB_ID);
+    await db.collection('scan_events').add({
+      product_name: result.product_name || '',
+      brand: result.brand || '',
+      category: result.category || 'FOOD',
+      overall_score: result.overall_score ?? 0,
+      user_id: userId || 'guest',
+      source,
+      scanned_at: FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    console.error('[scan_event] write failed (non-blocking):', e);
+  }
+}
 
 // No Google Search grounding — too slow for Vercel Hobby 60s limit.
 // Gemini's training data covers all major Indian & global brands accurately.
@@ -61,10 +80,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { productName } = req.body ?? {};
+  const { productName, userId } = req.body ?? {};
   if (!productName || typeof productName !== 'string') {
     return res.status(400).json({ error: 'productName is required.' });
   }
+  const userIdStr = typeof userId === 'string' && userId ? userId : 'guest';
 
   try {
     initAdmin();
@@ -72,7 +92,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // STEP 1: RAG cache check — instant return if previously searched/scanned
     const ragCacheResult = await ragLookup({ productName });
     if (ragCacheResult.layer === 1) {
-      return res.status(200).json(sanitiseCachedVerdict(ragCacheResult.cached_verdict));
+      const sanitised = sanitiseCachedVerdict(ragCacheResult.cached_verdict);
+      // Fire-and-forget scan_event (Admin SDK, bypasses Firestore rules)
+      writeScanEvent(sanitised, userIdStr, 'search_cache');
+      return res.status(200).json(sanitised);
     }
 
     // STEP 2: Gemini call using training knowledge (no Google Search = much faster)
@@ -124,8 +147,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // STEP 4: Score + build result
     const result = buildResult(product_name, brand, category, nutrition, finalVerified, rawIngredients, geminiData);
 
-    // STEP 5: Cache for future requests
-    await saveProductToCache(result);
+    // STEP 5: Cache and log scan event (both via Admin SDK)
+    await Promise.all([
+      saveProductToCache(result),
+      writeScanEvent(result, userIdStr, 'search'),
+    ]);
 
     return res.status(200).json(result);
 

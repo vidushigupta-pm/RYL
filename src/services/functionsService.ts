@@ -35,13 +35,14 @@ export async function analyseLabel(
   frontImageBase64?: string,
   frontMimeType?: string
 ): Promise<any> {
+  const userId = auth.currentUser?.uid || 'guest';
   try {
     if (IS_DEV) {
       const fn = httpsCallable(functions, 'analyseLabel');
       const result = await fn({ backImageBase64, backMimeType, frontImageBase64, frontMimeType });
       return result.data;
     }
-    return await callApi('/api/analyseLabel', { backImageBase64, backMimeType, frontImageBase64, frontMimeType });
+    return await callApi('/api/analyseLabel', { backImageBase64, backMimeType, frontImageBase64, frontMimeType, userId });
   } catch (error: any) {
     const msg = error?.message || String(error);
     console.error('❌ analyseLabel failed:', msg);
@@ -51,13 +52,14 @@ export async function analyseLabel(
 
 // ── searchProductByName ───────────────────────────────────────────────────────
 export async function searchProductByName(productName: string): Promise<any> {
+  const userId = auth.currentUser?.uid || 'guest';
   try {
     if (IS_DEV) {
       const fn = httpsCallable(functions, 'searchProductByName');
       const result = await fn({ productName });
       return result.data;
     }
-    return await callApi('/api/searchProductByName', { productName });
+    return await callApi('/api/searchProductByName', { productName, userId });
   } catch (error: any) {
     const msg = error?.message || String(error);
     console.error('❌ searchProductByName failed:', msg);

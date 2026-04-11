@@ -1736,9 +1736,9 @@ const Processing = ({ isSearch = false, onBack }: { isSearch?: boolean, onBack: 
   const steps = isSearch ? searchSteps : scanSteps;
 
   useEffect(() => {
-    // Cycle through steps every 6s — loops back to keep UI active for 30–60s responses
+    // Advance through steps every 6s — stops at the last step (no looping)
     const timer = setInterval(() => {
-      setStep(s => (s + 1) % steps.length);
+      setStep(s => Math.min(s + 1, steps.length - 1));
     }, 6000);
     return () => clearInterval(timer);
   }, [steps.length]);
