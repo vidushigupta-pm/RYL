@@ -21,7 +21,9 @@ async function callApi(path: string, body: Record<string, unknown>, requiresAuth
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data?.error || `Request failed with status ${res.status}`);
+    // Use the human-friendly message when the API provides one (e.g. quota errors)
+    const message = data?.friendly || data?.error || `Request failed with status ${res.status}`;
+    throw new Error(message);
   }
   return data;
 }

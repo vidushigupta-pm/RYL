@@ -121,6 +121,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error: any) {
     console.error('[searchProductByName] Error:', error?.message || error);
+    const msg = String(error?.message || error);
+    const isQuota = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota');
+    if (isQuota) {
+      return res.status(429).json({ error: 'QUOTA_EXCEEDED', friendly: 'Our AI is temporarily busy due to high demand. Please try again in a minute.' });
+    }
     return res.status(500).json({ error: error?.message || 'Internal server error' });
   }
 }
