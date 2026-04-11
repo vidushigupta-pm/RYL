@@ -18,25 +18,60 @@ export function setCors(res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
-// ── Gemini client ─────────────────────────────────────────────────────────────
-export function getAI(): GoogleGenAI {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error('GEMINI_API_KEY env variable is not set.');
+// ── Gemini client with key rotation ──────────────────────────────────────────
+// Supports up to 3 API keys: GEMINI_API_KEY, GEMINI_API_KEY_2, GEMINI_API_KEY_3
+// When one key hits quota (429), automatically rotates to the next key.
+// Add extra keys in Vercel env vars to multiply your daily quota.
+function getApiKeys(): string[] {
+  const keys = [
+    process.env.GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_2,
+    process.env.GEMINI_API_KEY_3,
+  ].filter(Boolean) as string[];
+  if (keys.length === 0) throw new Error('No GEMINI_API_KEY env variable is set.');
+  return keys;
+}
+
+export function getAI(keyIndex = 0): GoogleGenAI {
+  const keys = getApiKeys();
+  const key = keys[keyIndex % keys.length];
   return new GoogleGenAI({ apiKey: key });
 }
 
-// ── Retry wrapper ─────────────────────────────────────────────────────────────
-export async function callGemini<T>(fn: () => Promise<T>, retries = 4, delay = 3000): Promise<T> {
+// ── Retry wrapper with key rotation on 429 ────────────────────────────────────
+export async function callGemini<T>(
+  fn: (ai: GoogleGenAI) => Promise<T>,
+  keyIndex = 0,
+  retries = 6,
+  delay = 2000
+): Promise<T> {
+  const keys = getApiKeys();
+  const ai = getAI(keyIndex);
   try {
-    return await fn();
+    return await fn(ai);
   } catch (error: any) {
-    const msg = JSON.stringify(error);
-    const retryable = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED') ||
-                      msg.includes('503') || msg.includes('UNAVAILABLE');
-    if (retryable && retries > 0) {
+    const msg = JSON.stringify(error) + String(error?.message || '');
+    const isQuota = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED');
+    const isTransient = msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('500');
+
+    if (isQuota && retries > 0) {
+      const nextKeyIndex = keyIndex + 1;
+      if (nextKeyIndex < keys.length) {
+        // Try next API key immediately before giving up
+        console.log(`[Gemini] Key ${keyIndex} quota exceeded, rotating to key ${nextKeyIndex}`);
+        return callGemini(fn, nextKeyIndex, retries - 1, delay);
+      }
+      // All keys exhausted — wait and retry from key 0
+      console.log(`[Gemini] All keys quota exceeded, waiting ${delay}ms before retry`);
       await new Promise(r => setTimeout(r, delay));
-      return callGemini(fn, retries - 1, delay * 2);
+      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, 15000));
     }
+
+    if (isTransient && retries > 0) {
+      await new Promise(r => setTimeout(r, delay));
+      return callGemini(fn, keyIndex, retries - 1, delay * 2);
+    }
+
     throw error;
   }
 }

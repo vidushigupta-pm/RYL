@@ -2,7 +2,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { initAdmin } from '../lib/adminInit';
 import {
-  getAI, callGemini, withTimeout, setCors,
+  callGemini, withTimeout, setCors,
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
   ragLookup, saveProductToCache
 } from '../lib/shared';
@@ -78,7 +78,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     initAdmin();
-    const ai = getAI();
 
     // ── STEP 1: Gemini single-pass extract + analyse ──────────────────────────
     const imageParts: any[] = [
@@ -89,7 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     imageParts.push({ text: singlePassPrompt });
 
-    const singlePassResult = await withTimeout(callGemini(() => ai.models.generateContent({
+    const singlePassResult = await withTimeout(callGemini((ai) => ai.models.generateContent({
       model: 'gemini-2.0-flash',
       contents: [{ parts: imageParts }],
       config: { responseMimeType: 'application/json' },
