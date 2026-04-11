@@ -549,7 +549,9 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
   const [showTips, setShowTips] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const backInputRef = useRef<HTMLInputElement>(null);
+  const backCameraRef = useRef<HTMLInputElement>(null);
   const frontInputRef = useRef<HTMLInputElement>(null);
+  const frontCameraRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'front' | 'back') => {
     const file = e.target.files?.[0];
@@ -635,15 +637,17 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                   <p className="text-[9px] text-[#8E9299] leading-tight max-w-[150px]">Ingredients, contents or nutritional label</p>
                 </div>
                 <div className="flex gap-1.5">
-                  <button 
-                    onClick={() => backInputRef.current?.click()}
-                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
+                  <button
+                    onClick={() => backCameraRef.current?.click()}
+                    className="w-7 h-7 rounded-full bg-[#1B3D2F] border border-[#1B3D2F] flex items-center justify-center text-white active:scale-95 transition-all shadow-sm"
+                    title="Take photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
                   </button>
-                  <button 
+                  <button
                     onClick={() => backInputRef.current?.click()}
                     className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
+                    title="Choose from gallery"
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
                   </button>
@@ -657,6 +661,9 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                   </button>
                 </div>
               )}
+              {/* Camera capture — opens camera directly on mobile */}
+              <input ref={backCameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileChange(e, 'back')} />
+              {/* Gallery picker — opens photo library */}
               <input ref={backInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'back')} />
             </div>
 
@@ -674,15 +681,17 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                   <p className="text-[9px] text-[#8E9299] leading-tight max-w-[150px]">Front claims, certifications & brand name — unlocks Claim Unmasker</p>
                 </div>
                 <div className="flex gap-1.5">
-                  <button 
-                    onClick={() => frontInputRef.current?.click()}
-                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
+                  <button
+                    onClick={() => frontCameraRef.current?.click()}
+                    className="w-7 h-7 rounded-full bg-[#1B3D2F] border border-[#1B3D2F] flex items-center justify-center text-white active:scale-95 transition-all shadow-sm"
+                    title="Take photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
                   </button>
-                  <button 
+                  <button
                     onClick={() => frontInputRef.current?.click()}
                     className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
+                    title="Choose from gallery"
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
                   </button>
@@ -696,6 +705,9 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                   </button>
                 </div>
               )}
+              {/* Camera capture — opens camera directly on mobile */}
+              <input ref={frontCameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileChange(e, 'front')} />
+              {/* Gallery picker — opens photo library */}
               <input ref={frontInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'front')} />
             </div>
 
@@ -707,8 +719,8 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
             </div>
 
             {/* Barcode Scan Section */}
-            <button 
-              onClick={() => backInputRef.current?.click()}
+            <button
+              onClick={() => backCameraRef.current?.click()}
               className="w-full bg-[#1B3D2F] rounded-xl p-3 flex items-center justify-between group active:scale-[0.98] transition-all shadow-md"
             >
               <div className="flex items-center gap-3">
