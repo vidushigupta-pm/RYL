@@ -372,8 +372,20 @@ const Onboarding = ({ onComplete, onSignIn, onSignUp }: { onComplete: () => void
     >
       <Breadcrumbs phase="onboarding" />
       <div className="flex-1 flex flex-col p-4">
-        <div className="w-10 h-10 bg-[#1B3D2F] rounded-2xl flex items-center justify-center mb-3 shadow-xl shadow-[#1B3D2F]/20">
-          <ShieldCheck className="text-white w-5 h-5" />
+        {/* App Icon — label + magnifying glass, works at all sizes */}
+        <div className="w-12 h-12 bg-[#1B3D2F] rounded-2xl flex items-center justify-center mb-3 shadow-xl shadow-[#1B3D2F]/20">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Label/tag shape */}
+            <rect x="2" y="4" width="16" height="18" rx="2.5" fill="white" fillOpacity="0.15" stroke="white" strokeWidth="1.5"/>
+            {/* Lines on label representing ingredients list */}
+            <line x1="5.5" y1="9" x2="14.5" y2="9" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+            <line x1="5.5" y1="12" x2="12" y2="12" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+            <line x1="5.5" y1="15" x2="13.5" y2="15" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+            {/* Magnifying glass overlay */}
+            <circle cx="18" cy="18" r="5" fill="#1B3D2F" stroke="white" strokeWidth="1.5"/>
+            <circle cx="17.2" cy="17.2" r="2.2" stroke="white" strokeWidth="1.3"/>
+            <line x1="19" y1="19" x2="21.2" y2="21.2" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
         </div>
         <h1 className="font-display text-2xl font-bold text-[#1B3D2F] mb-1 leading-tight">
           Read Your Labels. <br />
@@ -396,13 +408,39 @@ const Onboarding = ({ onComplete, onSignIn, onSignUp }: { onComplete: () => void
           ))}
         </div>
         
-        <div className="mt-1">
+        <div className="mt-1 mb-4">
           <p className="text-[9px] text-gray-400 font-medium uppercase tracking-widest">
             Grounded in FSSAI · ICMR-NIN · CDSCO · BIS · EWG
           </p>
         </div>
+
+        {/* Trust metrics */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {[
+            { value: '500+', label: 'Products\nAnalysed' },
+            { value: '12K+', label: 'Ingredients\nin Database' },
+            { value: '6', label: 'Categories\nCovered' },
+          ].map((stat, i) => (
+            <div key={i} className="bg-[#F5EFE8] rounded-2xl p-3 text-center">
+              <div className="text-base font-bold text-[#1B3D2F]">{stat.value}</div>
+              <div className="text-[9px] text-[#8E9299] font-medium uppercase tracking-wide leading-tight whitespace-pre-line mt-0.5">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* What you can scan */}
+        <div>
+          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-2">What you can scan</p>
+          <div className="flex flex-wrap gap-1.5">
+            {['🥗 Food', '💄 Cosmetics', '💊 Supplements', '🐾 Pet Food', '🧴 Personal Care', '🏠 Household'].map((cat, i) => (
+              <span key={i} className="text-[11px] font-medium bg-white border border-[#E8DDD0] text-[#4A4A4A] px-2.5 py-1 rounded-full">
+                {cat}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
-      
+
       <div className="mt-auto space-y-2 p-4">
         <div className="space-y-1">
           <Button onClick={() => setShowDisclaimer(true)} className="w-full flex flex-col items-center justify-center py-3 h-auto bg-[#1B3D2F] text-white rounded-2xl shadow-lg active:scale-95 transition-all">
