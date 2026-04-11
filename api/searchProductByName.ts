@@ -100,7 +100,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // STEP 2: Gemini call using training knowledge (no Google Search = much faster)
     const searchResult = await withTimeout(callGemini((ai) => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash-preview-04-17',
       contents: [{ parts: [{ text: searchPrompt(productName) }] }],
       config: { responseMimeType: 'application/json' },
     })));

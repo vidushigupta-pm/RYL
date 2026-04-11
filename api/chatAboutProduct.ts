@@ -65,7 +65,7 @@ CONVERSATION_HISTORY: ${JSON.stringify(history ?? [])}
 USER QUESTION: ${userMessage}`;
 
     const result = await withTimeout(callGemini((ai) => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash-preview-04-17',
       contents: [{ parts: [{ text: prompt }] }],
       config: { systemInstruction },
     })));
