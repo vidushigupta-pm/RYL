@@ -18,13 +18,9 @@ export function setCors(res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token');
 }
 
-// ── Gemini client with key + model rotation ───────────────────────────────────
+// ── Gemini client with API key rotation ──────────────────────────────────────
 // Supports up to 3 API keys: GEMINI_API_KEY, GEMINI_API_KEY_2, GEMINI_API_KEY_3
-// On 429, rotates through all keys, then falls back to the next model.
-// Each model has its own separate 1500 RPD free-tier quota pool.
-// Keys × Models = total daily capacity: 3 keys × 3 models = 9× quota.
-const MODEL_FALLBACKS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
-
+// On 429, rotates to the next key. Each key has its own 1500 RPD free quota.
 function getApiKeys(): string[] {
   const keys = [
     process.env.GEMINI_API_KEY,
@@ -41,48 +37,38 @@ export function getAI(keyIndex = 0): GoogleGenAI {
   return new GoogleGenAI({ apiKey: key });
 }
 
-// fn receives (ai, model) so it can substitute the model dynamically
+// fn receives the ai client; the model is fixed at the call site.
 export async function callGemini<T>(
-  fn: (ai: GoogleGenAI, model: string) => Promise<T>,
+  fn: (ai: GoogleGenAI) => Promise<T>,
   keyIndex = 0,
-  modelIndex = 0,
-  retries = 10,
-  delay = 1000
+  retries = 6,
+  delay = 2000
 ): Promise<T> {
   const keys = getApiKeys();
-  const model = MODEL_FALLBACKS[modelIndex % MODEL_FALLBACKS.length];
   const ai = getAI(keyIndex);
 
   try {
-    return await fn(ai, model);
+    return await fn(ai);
   } catch (error: any) {
     const msg = JSON.stringify(error) + String(error?.message || '');
     const isQuota = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED');
     const isTransient = msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('500');
 
     if (isQuota && retries > 0) {
-      // 1. Try next API key (same model)
       const nextKeyIndex = keyIndex + 1;
       if (nextKeyIndex < keys.length) {
-        console.log(`[Gemini] Key ${keyIndex}/${model} quota exceeded → rotating to key ${nextKeyIndex}`);
-        return callGemini(fn, nextKeyIndex, modelIndex, retries - 1, delay);
+        console.log(`[Gemini] Key ${keyIndex} quota exceeded → rotating to key ${nextKeyIndex}`);
+        return callGemini(fn, nextKeyIndex, retries - 1, delay);
       }
-      // 2. All keys for this model exhausted → try next model with key 0
-      const nextModelIndex = modelIndex + 1;
-      if (nextModelIndex < MODEL_FALLBACKS.length) {
-        const nextModel = MODEL_FALLBACKS[nextModelIndex];
-        console.log(`[Gemini] All keys exhausted for ${model} → falling back to ${nextModel}`);
-        return callGemini(fn, 0, nextModelIndex, retries - 1, delay);
-      }
-      // 3. All keys AND all models exhausted → wait, then restart from beginning
-      console.log(`[Gemini] All keys & models quota exceeded, waiting ${delay}ms before retry`);
+      // All keys exhausted — wait then retry from key 0
+      console.log(`[Gemini] All keys quota exceeded, waiting ${delay}ms before retry`);
       await new Promise(r => setTimeout(r, delay));
-      return callGemini(fn, 0, 0, retries - 1, Math.min(delay * 2, 30000));
+      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, 15000));
     }
 
     if (isTransient && retries > 0) {
       await new Promise(r => setTimeout(r, delay));
-      return callGemini(fn, keyIndex, modelIndex, retries - 1, delay * 2);
+      return callGemini(fn, keyIndex, retries - 1, delay * 2);
     }
 
     throw error;
