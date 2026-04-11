@@ -65,14 +65,11 @@ export async function callGemini<T>(
         return callGemini(fn, nextKeyIndex, retries - 1, delay);
       }
 
-      // All keys exhausted — read the retryDelay hint but cap it so we don't timeout
-      const retryDelayMatch = msg.match(/"retryDelay"\s*:\s*"(\d+)s"/);
-      const apiHintMs = retryDelayMatch ? parseInt(retryDelayMatch[1], 10) * 1000 : 0;
-      // Cap the wait — Vercel functions have a 60s hard limit
-      const waitMs = Math.min(Math.max(apiHintMs, delay), MAX_WAIT_MS);
-      console.log(`[Gemini] All keys quota exceeded, waiting ${waitMs}ms (API hint: ${apiHintMs}ms, capped at ${MAX_WAIT_MS}ms)`);
-      await new Promise(r => setTimeout(r, waitMs));
-      return callGemini(fn, 0, retries - 1, Math.min(delay * 2, MAX_WAIT_MS));
+      // All keys exhausted — fail immediately instead of waiting and retrying.
+      // This caps API calls to exactly N (one per key) when all are quota-limited,
+      // and avoids the 8s sleep that was burning extra quota + delaying the error.
+      console.log(`[Gemini] All ${keys.length} keys quota exceeded — failing fast. No retry.`);
+      throw error;
     }
 
     if (isTransient && retries > 0) {
