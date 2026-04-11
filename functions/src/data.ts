@@ -1092,7 +1092,8 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
     india_specific_note: "India has not yet banned phosphates in detergents unlike EU/US. Surf Excel, Ariel India still contain phosphates. An environmental concern for Indian rivers.",
     score_impact: -5,
     data_quality: "VERIFIED"
-  }
+  },
+
   // ── COAL-TAR DYES (cosmetics) ────────────────────────────────────────────────
 
   "coal_tar_dye": {
