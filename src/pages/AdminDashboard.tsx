@@ -1,10 +1,8 @@
 /**
  * AdminDashboard — standalone page at /admin
- * Lightweight password protection + Firestore analytics dashboard
+ * Lightweight password protection + server-side analytics dashboard
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { collection, getDocs, query, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { db } from '../firebase';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,7 +11,7 @@ interface ScanEvent {
   brand: string;
   category: string;
   overall_score: number;
-  scanned_at: Timestamp;
+  scanned_at: number; // milliseconds from Admin SDK .toMillis()
   user_id: string;
 }
 
@@ -21,7 +19,6 @@ interface ProductDoc {
   product_name: string;
   brand: string;
   data_source: string;
-  verdict_computed_at?: Timestamp;
 }
 
 interface DashboardMetrics {
@@ -207,25 +204,26 @@ function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch scan_events (up to 500, newest first)
-      const scanSnap = await getDocs(
-        query(collection(db, 'scan_events'), orderBy('scanned_at', 'desc'), limit(500))
-      );
-      const scans: ScanEvent[] = scanSnap.docs.map((d) => d.data() as ScanEvent);
+      // 1. Fetch via server-side Admin SDK endpoint (bypasses Firestore rules)
+      const resp = await fetch('/api/adminStats', {
+        method: 'GET',
+        headers: { 'x-admin-token': 'ryl2025admin' },
+      });
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        throw new Error(body.error || `Server returned ${resp.status}`);
+      }
+      const { events: scans, products }: { events: ScanEvent[]; products: ProductDoc[] } = await resp.json();
 
-      // 2. Fetch products (up to 200)
-      const productSnap = await getDocs(
-        query(collection(db, 'products'), limit(200))
-      );
-      const products: ProductDoc[] = productSnap.docs.map((d) => d.data() as ProductDoc);
-
-      // 3. Compute all metrics client-side
+      // 2. Compute all metrics client-side
       const now = new Date();
       const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+      // scanned_at is already in ms (from Admin SDK .toMillis())
       const toDate = (ts: any): Date => {
         if (!ts) return new Date(0);
+        if (typeof ts === 'number') return new Date(ts);
         if (ts.toDate) return ts.toDate();
         if (ts.seconds) return new Date(ts.seconds * 1000);
         return new Date(ts);
