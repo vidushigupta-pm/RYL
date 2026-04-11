@@ -4,7 +4,7 @@ import { initAdmin } from '../lib/adminInit';
 import {
   callGemini, withTimeout, setCors,
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
-  ragLookup, saveProductToCache
+  ragLookup, saveProductToCache, sanitiseCachedVerdict
 } from '../lib/shared';
 
 // No Google Search grounding — too slow for Vercel Hobby 60s limit.
@@ -62,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // STEP 1: RAG cache check — instant return if previously searched/scanned
     const ragCacheResult = await ragLookup({ productName });
     if (ragCacheResult.layer === 1) {
-      return res.status(200).json(ragCacheResult.cached_verdict);
+      return res.status(200).json(sanitiseCachedVerdict(ragCacheResult.cached_verdict));
     }
 
     // STEP 2: Gemini call using training knowledge (no Google Search = much faster)

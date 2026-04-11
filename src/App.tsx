@@ -1793,7 +1793,14 @@ const BreakdownItem = ({ label, explanation, impact, impactColor }: { label: str
   );
 };
 
-const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakdown }: any) => {
+const ScoreBreakdown = ({ score, concerns, profileName, productBreakdown }: any) => {
+  // Compute baseScore from the breakdown items so the displayed maths is always
+  // self-consistent: Starting Score (100) + Σ impacts = Base Product Score.
+  const items: any[] = productBreakdown || [];
+  const derivedBase = Math.max(0, Math.min(100,
+    100 + items.reduce((sum: number, item: any) => sum + (Number(item.impact) || 0), 0)
+  ));
+
   return (
     <div className="space-y-6 p-1 max-h-[60vh] overflow-y-auto no-scrollbar">
       {/* Product Level Breakdown */}
@@ -1808,12 +1815,12 @@ const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakd
           <span className="font-mono font-bold text-gray-400">100</span>
         </div>
 
-        {(!productBreakdown || productBreakdown.length === 0) && (
+        {items.length === 0 && (
           <div className="py-3 px-4 bg-[#FDF6EE] rounded-2xl border border-dashed border-[#E8DDD0]">
             <p className="text-xs text-gray-500 leading-relaxed">No specific deductions or bonuses were identified — score reflects the baseline for this product category.</p>
           </div>
         )}
-        {(productBreakdown || []).map((item: any, i: number) => (
+        {items.map((item: any, i: number) => (
           <React.Fragment key={i}>
             <BreakdownItem label={item.label} explanation={item.explanation} impact={item.impact} />
           </React.Fragment>
@@ -1821,7 +1828,7 @@ const ScoreBreakdown = ({ score, concerns, baseScore, profileName, productBreakd
 
         <div className="flex justify-between items-center pt-3 border-t border-gray-100">
           <span className="text-sm font-bold text-[#1B3D2F]">Base Product Score</span>
-          <span className="font-mono font-bold text-[#1B3D2F] text-lg">{baseScore}</span>
+          <span className="font-mono font-bold text-[#1B3D2F] text-lg">{derivedBase}</span>
         </div>
       </div>
 
@@ -2002,13 +2009,12 @@ const ResultScreen = ({
       result.category || 'FOOD'
     );
 
-    return { 
-      score: verdict.profile_score, 
-      concerns: verdict.concerns.map(c => ({ 
-        ...c, 
-        impact: typeof c.impact === 'number' ? c.impact : (c.severity === 'HIGH' ? -15 : c.severity === 'MODERATE' ? -8 : -3) 
-      })), 
-      baseScore: result.overall_score 
+    return {
+      score: verdict.profile_score,
+      concerns: verdict.concerns.map(c => ({
+        ...c,
+        impact: typeof c.impact === 'number' ? c.impact : (c.severity === 'HIGH' ? -15 : c.severity === 'MODERATE' ? -8 : -3)
+      }))
     };
   };
 
@@ -2548,10 +2554,9 @@ const ResultScreen = ({
                 </button>
               </div>
 
-              <ScoreBreakdown 
-                score={currentVerdict.score} 
-                concerns={currentVerdict.concerns} 
-                baseScore={currentVerdict.baseScore}
+              <ScoreBreakdown
+                score={currentVerdict.score}
+                concerns={currentVerdict.concerns}
                 profileName={activeProfile?.name ?? 'You'}
                 productBreakdown={result.score_breakdown}
               />

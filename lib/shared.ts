@@ -75,6 +75,23 @@ export async function callGemini<T>(
   }
 }
 
+// ── Sanitise cached verdict ───────────────────────────────────────────────────
+// When a cached product is returned, validate that score_breakdown sums to
+// overall_score (within ±3). If not, strip the breakdown to avoid showing
+// numbers that don't add up on screen.
+export function sanitiseCachedVerdict(verdict: any): any {
+  if (!verdict || !Array.isArray(verdict.score_breakdown) || verdict.score_breakdown.length === 0) return verdict;
+  const overall = Number(verdict.overall_score) || 0;
+  const sumOfImpacts = verdict.score_breakdown.reduce((s: number, item: any) => s + (Number(item.impact) || 0), 0);
+  const derivedScore = Math.max(0, Math.min(100, 100 + sumOfImpacts));
+  if (Math.abs(derivedScore - overall) > 3) {
+    // Breakdown is inconsistent with score — strip it to prevent misleading display
+    console.log(`[sanitise] Stripping inconsistent breakdown: derivedScore=${derivedScore} vs overall=${overall}`);
+    return { ...verdict, score_breakdown: [] };
+  }
+  return verdict;
+}
+
 // ── Timeout wrapper ───────────────────────────────────────────────────────────
 export function withTimeout<T>(promise: Promise<T>, ms = 58_000): Promise<T> {
   return Promise.race([

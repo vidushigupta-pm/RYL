@@ -4,7 +4,7 @@ import { initAdmin } from '../lib/adminInit';
 import {
   callGemini, withTimeout, setCors,
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
-  ragLookup, saveProductToCache
+  ragLookup, saveProductToCache, sanitiseCachedVerdict
 } from '../lib/shared';
 
 const singlePassPrompt = `You are a product safety analyst for Indian consumers. Your output is displayed directly to users — accuracy is critical. Never guess or hallucinate.
@@ -125,7 +125,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // ── STEP 2: RAG cache check ───────────────────────────────────────────────
     const ragResult = await ragLookup({ productName: product_name, extractedIngredients: rawIngredients, nutrition, productCategory: category });
-    if (ragResult.layer === 1) return res.status(200).json(ragResult.cached_verdict);
+    if (ragResult.layer === 1) return res.status(200).json(sanitiseCachedVerdict(ragResult.cached_verdict));
 
     // ── STEP 3: Merge DB + Gemini analysis ───────────────────────────────────
     const finalVerified = buildFinalIngredients(rawIngredients, ingredientsAnalysis);
