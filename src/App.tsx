@@ -603,7 +603,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
     <div className="flex flex-col h-screen overflow-hidden bg-[#FDF6EE]">
       <Breadcrumbs phase="home" />
       
-      <div className="flex-1 px-5 overflow-y-auto no-scrollbar pb-28">
+      <div className="flex-1 px-5 overflow-y-auto no-scrollbar pb-40">
         {/* Header matching screenshot */}
         <header className="py-1 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -617,7 +617,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
             )}
             <div>
               <h2 className="font-serif text-[20px] font-bold text-[#1B3D2F] leading-none">ReadYourLabels</h2>
-              <p className="text-[#8E9299] text-[7px] font-medium mt-0.5">India's honest ingredient truth-teller</p>
+              <p className="text-[#8E9299] text-[10px] font-medium mt-0.5">India's honest ingredient truth-teller</p>
             </div>
           </div>
           <button 
@@ -625,7 +625,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
             className="flex flex-col items-center justify-center w-8 h-12 rounded-full bg-[#F3F4F6] border border-[#E8DDD0] shadow-sm active:scale-95 transition-all"
           >
             <div className="relative mb-0.5">
-              <div className="w-5 h-5 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-[8px] font-bold border-2 border-white">
+              <div className="w-5 h-5 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-[11px] font-bold border-2 border-white">
                 V
               </div>
             </div>
@@ -660,14 +660,14 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => backCameraRef.current?.click()}
-                    className="w-7 h-7 rounded-full bg-[#1B3D2F] border border-[#1B3D2F] flex items-center justify-center text-white active:scale-95 transition-all shadow-sm"
+                    className="w-9 h-9 rounded-full bg-[#1B3D2F] border border-[#1B3D2F] flex items-center justify-center text-white active:scale-95 transition-all shadow-sm"
                     title="Take photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => backInputRef.current?.click()}
-                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
+                    className="w-9 h-9 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
                     title="Choose from gallery"
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
@@ -677,7 +677,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
               {backFile && (
                 <div className="relative aspect-video rounded-lg overflow-hidden border border-[#E8DDD0]">
                   <img src={URL.createObjectURL(backFile)} className="w-full h-full object-cover" />
-                  <button onClick={(e) => { e.stopPropagation(); setBackFile(null); }} className="absolute top-1 right-1 w-5 h-5 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <button onClick={(e) => { e.stopPropagation(); setBackFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
                     <X className="w-3 h-3" />
                   </button>
                 </div>
@@ -704,14 +704,14 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => frontCameraRef.current?.click()}
-                    className="w-7 h-7 rounded-full bg-[#1B3D2F] border border-[#1B3D2F] flex items-center justify-center text-white active:scale-95 transition-all shadow-sm"
+                    className="w-9 h-9 rounded-full bg-[#1B3D2F] border border-[#1B3D2F] flex items-center justify-center text-white active:scale-95 transition-all shadow-sm"
                     title="Take photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => frontInputRef.current?.click()}
-                    className="w-7 h-7 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
+                    className="w-9 h-9 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center text-[#1B3D2F] active:scale-95 transition-all shadow-sm"
                     title="Choose from gallery"
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
@@ -721,7 +721,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
               {frontFile && (
                 <div className="relative aspect-video rounded-lg overflow-hidden border border-[#E8DDD0]">
                   <img src={URL.createObjectURL(frontFile)} className="w-full h-full object-cover" />
-                  <button onClick={(e) => { e.stopPropagation(); setFrontFile(null); }} className="absolute top-1 right-1 w-5 h-5 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <button onClick={(e) => { e.stopPropagation(); setFrontFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-sm">
                     <X className="w-3 h-3" />
                   </button>
                 </div>
@@ -735,7 +735,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
             {/* OR Separator */}
             <div className="flex items-center gap-3 px-2 py-0.5">
               <div className="h-[1px] bg-white/40 flex-1"></div>
-              <span className="text-[7px] font-bold text-[#8E9299] uppercase tracking-widest">OR</span>
+              <span className="text-[10px] font-bold text-[#8E9299] uppercase tracking-widest">OR</span>
               <div className="h-[1px] bg-white/40 flex-1"></div>
             </div>
 
@@ -750,7 +750,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                 </div>
                 <div className="text-left">
                   <h3 className="text-white font-bold text-xs">Scan Barcode</h3>
-                  <p className="text-white/60 text-[8px] font-medium">Identify product instantly</p>
+                  <p className="text-white/60 text-[11px] font-medium">Identify product instantly</p>
                 </div>
               </div>
               <div className="bg-white text-[#1B3D2F] px-2.5 py-1 rounded-full text-[9px] font-bold shadow-sm group-hover:bg-[#FDF6EE] transition-colors">
@@ -767,7 +767,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
             >
               <div className="flex items-center gap-2">
                 <Camera className="w-2.5 h-2.5 text-[#2E7D4F]" />
-                <h4 className="text-[7px] font-bold text-[#2E7D4F] uppercase tracking-widest">Scanning Tips</h4>
+                <h4 className="text-[10px] font-bold text-[#2E7D4F] uppercase tracking-widest">Scanning Tips</h4>
               </div>
               <ChevronRight className={`w-2.5 h-2.5 text-[#2E7D4F] transition-transform ${showTips ? 'rotate-90' : ''}`} />
             </button>
@@ -788,7 +788,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                       { id: '04', text: "Works on food, cosmetics, supplements, household products and pet food" }
                     ].map((tip) => (
                       <div key={tip.id} className="flex gap-2 items-start">
-                        <span className="font-mono text-[8px] font-bold text-[#2E7D4F] mt-0.5">{tip.id}</span>
+                        <span className="font-mono text-[11px] font-bold text-[#2E7D4F] mt-0.5">{tip.id}</span>
                         <p className="text-[10px] text-[#1B3D2F] font-medium leading-tight">{tip.text}</p>
                       </div>
                     ))}
@@ -802,7 +802,7 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
           <div className="pt-2 border-t border-[#E8DDD0]">
             <div className="mb-1">
               <h3 className="font-serif text-[14px] font-bold text-[#1B3D2F] mb-0.5">Know the product name?</h3>
-              <p className="text-[#8E9299] text-[8px] font-medium">Search by name — we'll find the ingredients and give you an honest verdict.</p>
+              <p className="text-[#8E9299] text-[11px] font-medium">Search by name — we'll find the ingredients and give you an honest verdict.</p>
             </div>
             <form onSubmit={handleSearchSubmit} className="mb-0.5">
               <div className="relative group">
@@ -820,34 +820,34 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
         </div>
       </div>
 
-      {/* Bottom Action and Nav - Changed to absolute to stay within the app frame */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-[#E8DDD0] z-20">
+      {/* Bottom Action and Nav — fixed so always reachable on mobile, safe-area for iPhone */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8DDD0] z-20"
+           style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <div className="px-6 py-3">
-          <button 
+          <button
             disabled={!isContinueEnabled}
             onClick={handleContinue}
             className={`w-full py-4 rounded-full font-bold transition-all active:scale-95 text-sm ${
-              isContinueEnabled 
-                ? 'bg-[#1B3D2F] text-white shadow-lg shadow-[#1B3D2F]/20' 
+              isContinueEnabled
+                ? 'bg-[#1B3D2F] text-white shadow-lg shadow-[#1B3D2F]/20'
                 : 'bg-[#E8DDD0] text-[#8E9299] cursor-not-allowed'
             }`}
           >
             {backFile ? 'Analyse Label' : searchQuery.trim() ? 'Search Product' : 'Add label or search to continue'}
           </button>
         </div>
-        
-        <nav className="flex justify-around items-center py-1.5 pb-3 border-t border-[#FDF6EE]">
-          <button className="flex flex-col items-center gap-1 text-[#1B3D2F] min-w-[64px]">
+        <nav className="flex justify-around items-center border-t border-[#FDF6EE]">
+          <button className="flex flex-col items-center gap-1 text-[#1B3D2F] min-w-[64px] py-3">
             <Home className="w-5 h-5" />
-            <span className="text-[9px] font-bold uppercase tracking-tighter">Home</span>
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Home</span>
           </button>
-          <button onClick={onHistoryClick} className="flex flex-col items-center gap-1 text-[#8E9299] min-w-[64px]">
+          <button onClick={onHistoryClick} className="flex flex-col items-center gap-1 text-[#8E9299] min-w-[64px] py-3">
             <History className="w-5 h-5" />
-            <span className="text-[9px] font-bold uppercase tracking-tighter">History</span>
+            <span className="text-[10px] font-bold uppercase tracking-tighter">History</span>
           </button>
-          <button onClick={onProfileClick} className="flex flex-col items-center gap-1 text-[#8E9299] min-w-[64px]">
+          <button onClick={onProfileClick} className="flex flex-col items-center gap-1 text-[#8E9299] min-w-[64px] py-3">
             <User className="w-5 h-5" />
-            <span className="text-[9px] font-bold uppercase tracking-tighter">Profiles</span>
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Profiles</span>
           </button>
         </nav>
       </div>

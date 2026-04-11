@@ -9,6 +9,22 @@
 @layer base {
   body {
     @apply bg-[#FDF6EE] text-[#1A1A1A] font-sans;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Safe area for iPhone notch / home indicator */
+  #root {
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Prevent iOS zoom on input focus — must be 16px+ */
+  input, textarea, select {
+    font-size: 16px;
+    -webkit-appearance: none;
   }
 }
 
@@ -29,13 +45,12 @@
   animation: ryl-pulse 0.9s infinite;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar — with iOS momentum scroll */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
