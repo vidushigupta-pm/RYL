@@ -1150,7 +1150,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
                 <div>
                   <h4 className="font-bold text-[#1B3D2F]">{p.name} {p.isDefault && <span className="text-[10px] bg-[#E6F4EC] text-[#2E7D4F] px-1.5 py-0.5 rounded ml-1 uppercase">You</span>}</h4>
                   <p className="text-[10px] text-[#8E9299] font-medium uppercase tracking-widest mt-0.5">
-                    {p.gender} · {AGE_GROUPS.find(g => g.id === p.age_group)?.label || p.age_group} · {p.activity_level}
+                    {p.gender?.replace(/_/g, ' ')} · {AGE_GROUPS.find(g => g.id === p.age_group)?.label || p.age_group} · {ACTIVITY_LEVELS.find(a => a.id === p.activity_level)?.label || p.activity_level?.replace(/_/g, ' ')}
                   </p>
                 </div>
               </div>
@@ -1838,7 +1838,11 @@ const ScoreBreakdown = ({ score, concerns, profileName, productBreakdown }: any)
 
         {items.length === 0 && (
           <div className="py-3 px-4 bg-[#FDF6EE] rounded-2xl border border-dashed border-[#E8DDD0]">
-            <p className="text-xs text-gray-500 leading-relaxed">No specific deductions or bonuses were identified — score reflects the baseline for this product category.</p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              {score < 90
+                ? '⚠️ Detailed breakdown unavailable for this cached result. Scan or search this product again for a full score breakdown.'
+                : 'No specific deductions or bonuses were identified — score reflects the baseline for this product category.'}
+            </p>
           </div>
         )}
         {items.map((item: any, i: number) => (
