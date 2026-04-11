@@ -653,6 +653,17 @@ const HomeScreen = ({ onAnalyse, onProfileClick, onHistoryClick, onBack, profile
                 <ChevronLeft className="w-3.5 h-3.5 text-[#1B3D2F]" />
               </button>
             )}
+            <div className="w-8 h-8 bg-[#1B3D2F] rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+              <svg width="18" height="18" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="4" width="16" height="18" rx="2.5" fill="white" fillOpacity="0.15" stroke="white" strokeWidth="1.5"/>
+                <line x1="5.5" y1="9" x2="14.5" y2="9" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+                <line x1="5.5" y1="12" x2="12" y2="12" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+                <line x1="5.5" y1="15" x2="13.5" y2="15" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+                <circle cx="18" cy="18" r="5" fill="#1B3D2F" stroke="white" strokeWidth="1.5"/>
+                <circle cx="17.2" cy="17.2" r="2.2" stroke="white" strokeWidth="1.3"/>
+                <line x1="19" y1="19" x2="21.2" y2="21.2" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </div>
             <div>
               <h2 className="font-serif text-[20px] font-bold text-[#1B3D2F] leading-none">ReadYourLabels</h2>
               <p className="text-[#8E9299] text-[10px] font-medium mt-0.5">India's honest ingredient truth-teller</p>
@@ -2103,9 +2114,20 @@ const ResultScreen = ({
       <Breadcrumbs phase="result" />
       <header className="sticky top-0 z-10 bg-[#1B3D2F] text-white p-6 pb-8 rounded-b-[40px] shadow-xl">
         <div className="flex justify-between items-center mb-6">
-          <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <svg width="20" height="20" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="4" width="16" height="18" rx="2.5" fill="white" fillOpacity="0.15" stroke="white" strokeWidth="1.5"/>
+              <line x1="5.5" y1="9" x2="14.5" y2="9" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+              <line x1="5.5" y1="12" x2="12" y2="12" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+              <line x1="5.5" y1="15" x2="13.5" y2="15" stroke="white" strokeWidth="1.3" strokeLinecap="round"/>
+              <circle cx="18" cy="18" r="5" fill="#1B3D2F" stroke="white" strokeWidth="1.5"/>
+              <circle cx="17.2" cy="17.2" r="2.2" stroke="white" strokeWidth="1.3"/>
+              <line x1="19" y1="19" x2="21.2" y2="21.2" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </div>
           <div className="flex gap-2">
             {profiles.length > 0 && profiles.map(p => (
               <button 
