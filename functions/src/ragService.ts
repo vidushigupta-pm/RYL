@@ -99,19 +99,9 @@ export async function checkProductCache(
       return cached;
     }
 
-    // Fuzzy fallback: match on individual word tokens
-    const tokens = normName.split(/\s+/).filter((t: string) => t.length > 2);
-    if (tokens.length > 0) {
-      const fuzzySnap = await getDb().collection('products')
-        .where('name_aliases', 'array-contains-any', tokens.slice(0, 10))
-        .limit(1)
-        .get();
-      if (!fuzzySnap.empty) {
-        const d = fuzzySnap.docs[0];
-        return { id: d.id, ...d.data() } as CachedProduct;
-      }
-    }
-
+    // Fuzzy fallback intentionally removed — token-level matching (e.g. "face", "wash")
+    // caused wrong product verdicts to be returned for different brands.
+    // A cache miss is always better than a wrong result.
     return null;
   } catch (error) {
     console.error('Product cache lookup failed:', error);
