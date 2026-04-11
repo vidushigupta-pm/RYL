@@ -1818,7 +1818,7 @@ export function calculateAllFamilyVerdicts(
 
 export function getProfileType(profile: FamilyProfile): string {
   const age = profile.age_group;
-  const conds = profile.health_conditions;
+  const conds = Array.isArray(profile.health_conditions) ? profile.health_conditions : [];
 
   if (['INFANT_0_2', 'CHILD_3_7', 'CHILD_8_12'].includes(age)) return 'CHILD';
   if (conds.includes('DIABETES_T2') || conds.includes('DIABETES_T1')) return 'DIABETIC';

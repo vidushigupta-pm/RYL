@@ -2004,10 +2004,10 @@ const ResultScreen = ({
       avatar_emoji: '👤',
       age_group: profile.age_group,
       activity_level: profile.activity_level,
-      health_conditions: profile.conditions || [],
-      allergens: profile.allergens || [],
+      health_conditions: Array.isArray(profile.conditions) ? profile.conditions : [],
+      allergens: Array.isArray(profile.allergens) ? profile.allergens : [],
       dietary_preference: profile.dietary_preference || 'NO_RESTRICTION',
-      health_goals: profile.health_goals || []
+      health_goals: Array.isArray(profile.health_goals) ? profile.health_goals : []
     };
 
     // Normalise ingredients to the shape profileScoringEngine expects
@@ -2362,7 +2362,7 @@ const ResultScreen = ({
                         <p className="mt-3 text-sm text-gray-600 leading-relaxed">
                           {ing.plain_explanation}
                         </p>
-                        {ing.flag_for?.length > 0 && (
+                        {Array.isArray(ing.flag_for) && ing.flag_for.length > 0 && (
                           <div className="mt-3 flex flex-wrap gap-2">
                             {ing.flag_for.map((f: string, j: number) => (
                               <span key={j} className="text-[10px] font-bold bg-[#FDECEA] text-[#D94F3D] px-2 py-0.5 rounded-md">
@@ -2398,7 +2398,7 @@ const ResultScreen = ({
         </div>
 
         {/* Smarter Switch */}
-        {result.suggestions && result.suggestions.length > 0 && (
+        {Array.isArray(result.suggestions) && result.suggestions.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 px-1">
               <Sparkles className="w-4 h-4 text-[#D4871E]" />
@@ -3186,8 +3186,18 @@ export default function App() {
                 scans={scans}
                 onBack={() => setPhase('home')} 
                 onSelectScan={(scan) => {
-                  setResult(JSON.parse(scan.resultJson));
-                  setPhase('result');
+                  try {
+                    const parsed = JSON.parse(scan.resultJson);
+                    setResult({
+                      ...parsed,
+                      suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
+                      ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : [],
+                      score_breakdown: Array.isArray(parsed.score_breakdown) ? parsed.score_breakdown : [],
+                    });
+                    setPhase('result');
+                  } catch (e) {
+                    console.error('Failed to parse scan result:', e);
+                  }
                 }}
               />
             </motion.div>
