@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { PRODUCT_CATEGORIES } from './services/geminiService';
 import { analyseLabel, searchProductByName, chatAboutProduct } from './services/functionsService';
+import { generateAnalysisPDF } from './utils/pdfGenerator';
 import { recordScanEvent, normaliseProductId, detectSubCategory } from './services/swapService';
 import { calculateProfileVerdict } from './services/profileScoringEngine';
 import { 
@@ -2197,9 +2198,10 @@ const ResultScreen = ({
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
         {/* Summary */}
-        <div className="bg-[#E8DDD0]/30 p-6 rounded-[32px] border border-[#E8DDD0] shadow-sm">
-          <p className="text-[#1B3D2F] font-medium leading-relaxed italic">
-            "{result.summary}"
+        <div className="bg-[#E8DDD0]/30 p-6 rounded-[32px] border border-[#E8DDD0] shadow-sm space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#1B3D2F]/50">In Plain English</p>
+          <p className="text-[#1B3D2F] font-medium leading-relaxed text-sm">
+            {result.summary}
           </p>
         </div>
 
@@ -2308,7 +2310,13 @@ const ResultScreen = ({
                   {
                     label: 'Sugar',
                     val: n!.sugar_g != null ? `${n!.sugar_g}g` : '—',
-                    sub: (n!.sugar_g || 0) > 20 ? 'Very High' : (n!.sugar_g || 0) > 10 ? 'High' : 'OK',
+                    sub: (() => {
+                      if (n!.sugar_g == null) return 'OK';
+                      const tsp = n!.sugar_g / 4;
+                      const tspStr = tsp < 0.5 ? '< ½ tsp' : `≈${+(tsp.toFixed(1))} tsp`;
+                      const level = n!.sugar_g > 20 ? 'Very High' : n!.sugar_g > 10 ? 'High' : 'OK';
+                      return `${tspStr} · ${level}`;
+                    })(),
                     color: (n!.sugar_g || 0) > 10 ? 'bg-[#FDECEA] text-[#D94F3D]' : 'bg-white',
                     icon: '🍬'
                   },
@@ -2554,6 +2562,16 @@ const ResultScreen = ({
             </div>
           </div>
         )}
+
+        <button
+          onClick={() => generateAnalysisPDF(result, activeProfile ? getProfileVerdict(activeProfile) : null)}
+          className="w-full py-3 mb-3 flex items-center justify-center gap-2 rounded-[20px] border-2 border-[#1B3D2F] text-[#1B3D2F] font-bold text-sm active:scale-95 transition-all bg-white"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" />
+          </svg>
+          Download Full Report (PDF)
+        </button>
 
         <Button onClick={onBack} className="w-full py-4">
           Scan Another Product
@@ -3011,7 +3029,14 @@ export default function App() {
       }
     } catch (error: any) {
       console.error("Scan error:", error);
-      setAppError(error?.message || "Analysis failed. Please try again.");
+      const msg = error?.message || '';
+      const isTimeout = msg.toLowerCase().includes('timeout') ||
+        msg.toLowerCase().includes('timed out') ||
+        msg.includes('524') ||
+        msg.includes('5800');
+      setAppError(isTimeout
+        ? "The analysis took too long. This happens with complex labels — please try again, it usually works on the second attempt."
+        : (msg || "Analysis failed. Please try again."));
       setPhase('home');
     }
   };

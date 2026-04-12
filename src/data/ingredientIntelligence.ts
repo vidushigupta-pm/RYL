@@ -649,6 +649,60 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
     india_specific_note: "FSSAI requires the type of oil to be declared, but 'vegetable oil' still appears on many labels — a compliance issue.",
     score_impact: -3,
     data_quality: "VERIFIED"
+  },
+
+  // ── COSMETIC INGREDIENTS ─────────────────────────────────────────────────────
+
+  "fragrance": {
+    ins_number: null,
+    common_names: ["fragrance", "parfum", "perfume", "aroma", "fragrance (parfum)", "parfum (fragrance)"],
+    function: "Fragrance / Masking Agent",
+    safety_tier: "CAUTION",
+    fssai_status: "NOT_APPLICABLE",
+    condition_flags: [
+      { condition: "sensitive_skin", impact: "HIGH", reason: "Fragrance is the leading cause of contact allergy in cosmetics — EU Scientific Committee on Consumer Safety 2012", source: "SCCS Opinion SCCS/1459/11" },
+      { condition: "asthma", impact: "MODERATE", reason: "Volatile fragrance compounds can trigger respiratory symptoms in sensitive individuals", source: "EFSA 2009" },
+      { condition: "eczema", impact: "HIGH", reason: "Fragrance is the #1 trigger for eczema flare-ups in adults and children", source: "CDSCO Cosmetics Rules 2020" },
+      { condition: "pregnancy", impact: "MODERATE", reason: "Some fragrance compounds (musks, phthalates) are endocrine disruptors — dermatologists recommend fragrance-free products during pregnancy", source: "EWG Skin Deep" }
+    ],
+    plain_explanation: "A single word that can hide a blend of hundreds of undisclosed chemicals. Cosmetic companies are not required to list individual fragrance compounds. It is the #1 cause of cosmetic contact allergy. People with sensitive skin, eczema, or rosacea should choose fragrance-free products.",
+    india_specific_note: "CDSCO Cosmetics Rules 2020 require allergen disclosure for 26 specific fragrance allergens, but most Indian products do not yet comply. EWG rates fragrance as a high-concern ingredient.",
+    score_impact: -10,
+    data_quality: "VERIFIED"
+  },
+
+  "sodium_laureth_sulfate": {
+    ins_number: null,
+    common_names: ["sodium laureth sulfate", "sodium laureth sulphate", "sles", "sodium lauryl ether sulfate", "sodium lauryl ether sulphate", "sodium laureth sulfate (sles)", "ammonium laureth sulfate"],
+    function: "Surfactant, Cleansing Agent",
+    safety_tier: "CAUTION",
+    fssai_status: "NOT_APPLICABLE",
+    condition_flags: [
+      { condition: "sensitive_skin", impact: "HIGH", reason: "SLES strips the skin's natural lipid barrier, leading to dryness and increased sensitivity with repeated use", source: "CDSCO Cosmetics Rules 2020" },
+      { condition: "eczema", impact: "HIGH", reason: "Compromises the skin barrier — significantly worsens eczema and dermatitis with daily use", source: "British Journal of Dermatology 2003" },
+      { condition: "dry_skin", impact: "MODERATE", reason: "Removes natural moisturising factors from skin surface, accelerating water loss", source: "EFSA Cosmetic Ingredient Safety" }
+    ],
+    plain_explanation: "A foaming agent used in shampoos, face washes, and body washes. While milder than SLS (Sodium Lauryl Sulphate), SLES still disrupts the skin's natural moisture barrier with regular use. Dermatologists recommend avoiding it for sensitive, dry, or eczema-prone skin. The 'ethoxylation' process used to make SLES can introduce 1,4-dioxane — a potential carcinogen.",
+    india_specific_note: "Present in the majority of Indian shampoos, face washes, and body washes. Look for sulfate-free alternatives if you have sensitive or dry scalp/skin.",
+    score_impact: -8,
+    data_quality: "VERIFIED"
+  },
+
+  "sodium_lauryl_sulfate": {
+    ins_number: null,
+    common_names: ["sodium lauryl sulfate", "sodium lauryl sulphate", "sls", "sodium dodecyl sulfate", "sodium dodecyl sulphate"],
+    function: "Surfactant, Cleansing Agent",
+    safety_tier: "AVOID",
+    fssai_status: "NOT_APPLICABLE",
+    condition_flags: [
+      { condition: "sensitive_skin", impact: "HIGH", reason: "SLS is significantly more irritating than SLES — causes measurable skin barrier disruption even at low concentrations", source: "Contact Dermatitis Journal 2005" },
+      { condition: "eczema", impact: "HIGH", reason: "Clinical studies show SLS exacerbates eczema — dermatologists universally advise avoidance", source: "British Journal of Dermatology 2003" },
+      { condition: "oral_sensitivity", impact: "MODERATE", reason: "SLS in toothpaste linked to increased frequency of mouth ulcers (aphthous stomatitis)", source: "Journal of Clinical Periodontology 1996" }
+    ],
+    plain_explanation: "A harsh surfactant that creates lather in shampoos, toothpastes, and body washes. More irritating than SLES — causes measurable skin barrier damage even in a single wash. Dermatologists recommend avoiding SLS for anyone with sensitive, dry, or compromised skin.",
+    india_specific_note: "Still found in many budget Indian personal care products. Sulfate-free alternatives are widely available and significantly gentler.",
+    score_impact: -12,
+    data_quality: "VERIFIED"
   }
 };
 
