@@ -3030,12 +3030,13 @@ export default function App() {
     } catch (error: any) {
       console.error("Scan error:", error);
       const msg = error?.message || '';
-      const isTimeout = msg.toLowerCase().includes('timeout') ||
+      const isTimeout = msg === '__TIMEOUT__' ||
+        msg.toLowerCase().includes('timeout') ||
         msg.toLowerCase().includes('timed out') ||
         msg.includes('524') ||
-        msg.includes('5800');
+        msg.includes('504');
       setAppError(isTimeout
-        ? "The analysis took too long. This happens with complex labels — please try again, it usually works on the second attempt."
+        ? "The label is taking longer than usual to analyse. Please try again — it usually works on the second attempt."
         : (msg || "Analysis failed. Please try again."));
       setPhase('home');
     }

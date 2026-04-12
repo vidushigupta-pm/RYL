@@ -18,7 +18,18 @@ async function callApi(path: string, body: Record<string, unknown>, requiresAuth
   }
 
   const res = await fetch(path, { method: 'POST', headers, body: JSON.stringify(body) });
-  const data = await res.json();
+
+  // Vercel returns a plain HTML 504 page on timeout — not JSON.
+  // Safely parse, fall back to a timeout message if it fails.
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch {
+    if (res.status === 504 || res.status === 524) {
+      throw new Error('__TIMEOUT__');
+    }
+    throw new Error(`Unexpected response from server (status ${res.status}). Please try again.`);
+  }
 
   if (!res.ok) {
     // Use the human-friendly message when the API provides one (e.g. quota errors)
