@@ -110,19 +110,49 @@ export function withTimeout<T>(promise: Promise<T>, ms = 58_000): Promise<T> {
   ]);
 }
 
-// ── Build merged ingredient list ──────────────────────────────────────────────
+// ── Build merged ingredient list (label order preserved) ─────────────────────
+// rawIngredients is the ORDER MASTER — it reflects the label's printed order
+// (highest to lowest by weight, as required by FSSAI).
+// For each name in rawIngredients we:
+//   1. Check verified DB first (most accurate)
+//   2. Fall back to Gemini analysis
+//   3. Mark as UNVERIFIED if neither has it
 export function buildFinalIngredients(
   rawIngredients: string[],
   ingredientsAnalysis: any[]
 ): Array<{ rawName: string; entry: any }> {
-  const lookup = batchLookupIngredients(rawIngredients);
-  const finalVerified: Array<{ rawName: string; entry: any }> = [...lookup.verified];
-  const dbVerifiedNames = new Set(lookup.verified.map(v => v.rawName.toLowerCase()));
-
+  // Build a fast lookup map from Gemini analysis keyed by lowercase name
+  const geminiMap = new Map<string, any>();
   for (const ing of ingredientsAnalysis) {
-    if (!dbVerifiedNames.has((ing.name || '').toLowerCase())) {
+    const key = (ing.name || '').toLowerCase().trim();
+    if (key) geminiMap.set(key, ing);
+  }
+
+  // Build a fast lookup map from DB keyed by lowercase rawName
+  const lookup = batchLookupIngredients(rawIngredients);
+  const dbMap = new Map<string, any>();
+  for (const v of lookup.verified) {
+    dbMap.set(v.rawName.toLowerCase().trim(), v.entry);
+  }
+
+  // Iterate rawIngredients to preserve label order
+  const finalVerified: Array<{ rawName: string; entry: any }> = [];
+
+  for (const rawName of rawIngredients) {
+    const key = rawName.toLowerCase().trim();
+
+    // Priority 1: verified DB entry
+    const dbEntry = dbMap.get(key);
+    if (dbEntry) {
+      finalVerified.push({ rawName, entry: dbEntry });
+      continue;
+    }
+
+    // Priority 2: Gemini-analysed entry
+    const ing = geminiMap.get(key);
+    if (ing) {
       finalVerified.push({
-        rawName: ing.name,
+        rawName: ing.name || rawName,
         entry: {
           common_names: [ing.plain_name || ing.name],
           function: ing.function || 'Unknown',
@@ -139,8 +169,27 @@ export function buildFinalIngredients(
           india_specific_note: null,
         }
       });
+      continue;
     }
+
+    // Priority 3: ingredient exists on label but no data at all — still show it
+    finalVerified.push({
+      rawName,
+      entry: {
+        common_names: [rawName],
+        function: 'Unknown',
+        safety_tier: 'UNVERIFIED',
+        plain_explanation: '',
+        condition_flags: [],
+        score_impact: 0,
+        data_quality: 'LLM_GENERATED',
+        fssai_status: 'UNKNOWN',
+        ins_number: null,
+        india_specific_note: null,
+      }
+    });
   }
+
   return finalVerified;
 }
 
