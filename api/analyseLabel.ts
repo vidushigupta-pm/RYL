@@ -2,11 +2,57 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { initAdmin, FIRESTORE_DB_ID } from '../lib/adminInit';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { createHash } from 'crypto';
 import {
   callGemini, withTimeout, setCors,
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
   ragLookup, saveProductToCache, sanitiseCachedVerdict
 } from '../lib/shared';
+
+// ── Image hash cache: check BEFORE calling Gemini ────────────────────────────
+// Same photo file = same hash = instant result without any Gemini call.
+function computeImageHash(backBase64: string, frontBase64?: string): string {
+  return createHash('sha256')
+    .update(backBase64.slice(0, 5000))   // first 5000 chars is enough for uniqueness
+    .update(String(backBase64.length))
+    .update(frontBase64 ? frontBase64.slice(0, 1000) : '')
+    .digest('hex')
+    .slice(0, 32);                        // 32 hex chars is plenty
+}
+
+async function checkImageCache(hash: string): Promise<any | null> {
+  try {
+    const db = getFirestore(FIRESTORE_DB_ID);
+    const snap = await db.collection('image_cache').doc(hash).get();
+    if (snap.exists) {
+      const data = snap.data();
+      // TTL: reject if older than 90 days
+      const cachedAt = data?.cached_at?.toMillis?.() ?? 0;
+      if (Date.now() - cachedAt < 90 * 86_400_000) {
+        console.log('[ImageCache] HIT for hash:', hash);
+        return data?.verdict ?? null;
+      }
+    }
+    return null;
+  } catch (e) {
+    console.error('[ImageCache] lookup failed (non-blocking):', e);
+    return null;
+  }
+}
+
+async function saveImageCache(hash: string, verdict: any): Promise<void> {
+  try {
+    const db = getFirestore(FIRESTORE_DB_ID);
+    await db.collection('image_cache').doc(hash).set({
+      verdict,
+      product_name: verdict.product_name || '',
+      cached_at: FieldValue.serverTimestamp(),
+    });
+    console.log('[ImageCache] Saved hash:', hash);
+  } catch (e) {
+    console.error('[ImageCache] save failed (non-blocking):', e);
+  }
+}
 
 // Write a scan event via Admin SDK — bypasses Firestore client rules
 async function writeScanEvent(result: any, userId: string, source: string) {
@@ -116,6 +162,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     initAdmin();
 
+    // ── STEP 0: Image hash cache check (before ANY Gemini call) ──────────────
+    // Same photo file → same hash → instant return, zero API cost.
+    const imageHash = computeImageHash(backImageBase64, frontImageBase64);
+    const cachedByImage = await checkImageCache(imageHash);
+    if (cachedByImage) {
+      writeScanEvent(cachedByImage, userIdStr, 'image_cache');
+      return res.status(200).json(cachedByImage);
+    }
+
     // ── STEP 1: Gemini single-pass extract + analyse ──────────────────────────
     const imageParts: any[] = [
       { inlineData: { data: backImageBase64, mimeType: backMimeType } }
@@ -178,6 +233,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await Promise.all([
       saveProductToCache(result),
       writeScanEvent(result, userIdStr, 'scan'),
+      saveImageCache(imageHash, result),   // ← so next scan of same photo is instant
     ]);
 
     return res.status(200).json(result);
