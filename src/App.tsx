@@ -961,6 +961,12 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
   const [isAdding, setIsAdding] = useState(false);
   const [step, setStep] = useState(1);
   const [toast, setToast] = useState<string | null>(null);
+  const stepContentRef = React.useRef<HTMLDivElement>(null);
+
+  // Scroll step content to top whenever the step changes
+  useEffect(() => {
+    stepContentRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [step]);
 
   // Form State
   const [name, setName] = useState('');
@@ -1344,7 +1350,7 @@ const ProfilesScreen = ({ profiles, setProfiles, user, onBack }: { profiles: Pro
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto no-scrollbar px-6 py-6 pb-32">
+              <div ref={stepContentRef} className="flex-1 overflow-y-auto no-scrollbar px-6 py-6 pb-32">
                 {step === 1 && (
                   <div className="space-y-8">
                     {/* Avatar Preview */}
