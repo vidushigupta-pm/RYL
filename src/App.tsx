@@ -1965,12 +1965,98 @@ const ScoreBreakdown = ({ score, concerns, profileName, productBreakdown }: any)
   );
 };
 
-const ResultScreen = ({ 
-  result, 
-  profiles, 
-  onBack, 
-  user, 
-  onSearch, 
+const IngRow = ({
+  ing, globalKey, expandedIng, setExpandedIng, activeProfile, profileHits
+}: {
+  key?: React.Key; ing: any; globalKey: string;
+  expandedIng: string | null; setExpandedIng: (k: string | null) => void;
+  activeProfile: any; profileHits: string[];
+}) => {
+  const isExpanded = expandedIng === globalKey;
+  return (
+    <div
+      onClick={() => setExpandedIng(isExpanded ? null : globalKey)}
+      className={`px-4 py-3.5 cursor-pointer transition-colors ${isExpanded ? 'bg-[#FDF6EE]' : 'hover:bg-[#FDF6EE]/50'}`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-sm text-[#1B3D2F] leading-snug">{ing.ingName}</span>
+            {ing.isPositionConcern && (
+              <span className="text-[9px] font-bold bg-[#FFF3DC] text-[#D4871E] px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                {ORDINALS[ing.originalIndex]} ingredient
+              </span>
+            )}
+            {profileHits.length > 0 && (
+              <span className="text-[9px] font-bold bg-[#FDECEA] text-[#D94F3D] px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                ⚠ {activeProfile?.name ?? 'Your profile'}
+              </span>
+            )}
+          </div>
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mt-0.5">{ing.function}</p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <TierBadge tier={ing.displayTier} />
+          <span className="text-gray-300 text-xs">{isExpanded ? '▲' : '▼'}</span>
+        </div>
+      </div>
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            {ing.positionNote && (
+              <div className="mt-3 p-3 bg-[#FFF3DC] border border-[#E07B2A]/20 rounded-xl">
+                <p className="text-[11px] text-[#D4871E] font-semibold leading-relaxed">⚠ {ing.positionNote}</p>
+              </div>
+            )}
+            {ing.plain_explanation ? (
+              <p className="mt-3 text-sm text-gray-600 leading-relaxed">{ing.plain_explanation}</p>
+            ) : null}
+            {profileHits.length > 0 && (
+              <div className="mt-3 p-3 bg-[#FDECEA] border border-[#D94F3D]/20 rounded-xl">
+                <p className="text-[11px] text-[#D94F3D] font-bold leading-relaxed">
+                  ⚠ Flagged for {activeProfile?.name ?? 'your profile'}: {profileHits.join(', ')}
+                </p>
+              </div>
+            )}
+            {Array.isArray(ing.flag_for) && ing.flag_for.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {ing.flag_for.map((f: string, j: number) => (
+                  <span key={j} className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${profileHits.includes(f) ? 'bg-[#D94F3D] text-white' : 'bg-[#FDECEA] text-[#D94F3D]'}`}>
+                    {profileHits.includes(f) ? '⚠ ' : ''}{f}
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="mt-3 text-[9px] text-gray-300 leading-relaxed">
+              {ing.source === 'DB_VERIFIED'
+                ? '✓ Verified against FSSAI / CDSCO / WHO regulatory database'
+                : '⚠ AI-analysed · not from regulatory database · verify independently'}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const SectionHead = ({ emoji, label, count, color }: { emoji: string; label: string; count: number; color: string }) => (
+  <div className={`flex items-center justify-between px-4 py-2.5 ${color}`}>
+    <span className="text-xs font-bold text-[#1B3D2F] uppercase tracking-widest">{emoji} {label}</span>
+    <span className="text-[10px] font-bold text-gray-400">{count}</span>
+  </div>
+);
+
+const ResultScreen = ({
+  result,
+  profiles,
+  onBack,
+  user,
+  onSearch,
   onProfileClick,
   onSignUp,
   onSignIn,
@@ -2006,7 +2092,7 @@ const ResultScreen = ({
   const [showFamilyNudge, setShowFamilyNudge] = useState(
     profiles.length === 0  // show nudge if user has no profiles
   );
-  const [expandedIng, setExpandedIng] = useState<number | null>(null);
+  const [expandedIng, setExpandedIng] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showSignUpNudge, setShowSignUpNudge] = useState(false);
@@ -2387,102 +2473,117 @@ const ResultScreen = ({
           );
         })()}
 
-        {/* Ingredients */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 px-1">
-            <AlertCircle className="w-4 h-4 text-[#1B3D2F]" />
-            <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Ingredient Breakdown</h3>
-          </div>
-          <div className="bg-white rounded-[32px] border border-[#E8DDD0] overflow-hidden">
-            {(result.ingredients || []).filter((ing: any) => ing && (ing.name || ing.plain_name)).length === 0 ? (
-              <div className="p-6 flex flex-col items-center justify-center text-center gap-3">
-                <AlertCircle className="w-8 h-8 text-gray-300" />
-                <div>
-                  <p className="font-bold text-[#1B3D2F] text-sm">Ingredients Not Readable</p>
-                  <p className="text-xs text-gray-400 mt-1 leading-relaxed">The ingredients list could not be read from this image. Try scanning a clearer photo of the back label, or use the search feature instead.</p>
+        {/* Ingredients — three-tier grouped display */}
+        {(() => {
+          // ── 1. Deduplicate ──────────────────────────────────────────────────
+          const seen = new Set<string>();
+          const allIngs = (result.ingredients || []).filter((ing: any) => {
+            if (!ing || (!ing.name && !ing.plain_name)) return false;
+            const key = (ing.plain_name || ing.name || '').toLowerCase().trim();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          }).map((ing: any, i: number) => {
+            const ingName = ing.plain_name || ing.name || '';
+            const positionKey = getPositionWatchMatch(ingName);
+            const isPositionConcern = i < 3 && !!positionKey;
+            const displayTier = getPositionAwareTier(ingName, i, ing.safety_tier);
+            const positionNote = isPositionConcern
+              ? POSITION_WATCH[positionKey!].replace('{ord}', ORDINALS[i])
+              : null;
+            return { ...ing, ingName, isPositionConcern, displayTier, positionNote, originalIndex: i };
+          });
+
+          if (allIngs.length === 0) {
+            return (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 px-1">
+                  <AlertCircle className="w-4 h-4 text-[#1B3D2F]" />
+                  <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Ingredient Breakdown</h3>
+                </div>
+                <div className="bg-white rounded-[32px] border border-[#E8DDD0] p-6 flex flex-col items-center justify-center text-center gap-3">
+                  <AlertCircle className="w-8 h-8 text-gray-300" />
+                  <div>
+                    <p className="font-bold text-[#1B3D2F] text-sm">Ingredients Not Readable</p>
+                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">Try scanning a clearer photo of the back label, or use the search feature instead.</p>
+                  </div>
                 </div>
               </div>
-            ) : null}
-            {(() => {
-              // Deduplicate by name client-side as a safety net
-              const seen = new Set<string>();
-              return (result.ingredients || []).filter((ing: any) => {
-                if (!ing || (!ing.name && !ing.plain_name)) return false;
-                const key = (ing.plain_name || ing.name || '').toLowerCase().trim();
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-              });
-            })().map((ing: any, i: number) => {
-              const ingName = ing.plain_name || ing.name || '';
-              const positionKey = getPositionWatchMatch(ingName);
-              const isPositionConcern = i < 3 && !!positionKey;
-              const displayTier = getPositionAwareTier(ingName, i, ing.safety_tier);
-              const positionNote = isPositionConcern
-                ? POSITION_WATCH[positionKey!].replace('{ord}', ORDINALS[i])
-                : null;
+            );
+          }
 
-              return (
-                <div
-                  key={i}
-                  onClick={() => setExpandedIng(expandedIng === i ? null : i)}
-                  className={`p-5 transition-colors ${expandedIng === i ? 'bg-[#FDF6EE]' : ''} ${i > 0 ? 'border-t border-[#FDF6EE]' : ''}`}
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-[#1B3D2F]">{ingName}</h4>
-                        {isPositionConcern && (
-                          <span className="text-[9px] font-bold bg-[#FFF3DC] text-[#D4871E] px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
-                            {ORDINALS[i]} ingredient
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{ing.function}</p>
+          // ── 2. Group ────────────────────────────────────────────────────────
+          const concerns  = allIngs.filter(ing => ing.displayTier === 'AVOID' || ing.displayTier === 'BANNED_IN_INDIA' || ing.isPositionConcern);
+          const watchList = allIngs.filter(ing => !concerns.includes(ing) && ing.displayTier === 'CAUTION');
+          const safe      = allIngs.filter(ing => !concerns.includes(ing) && !watchList.includes(ing));
+
+          // ── 3. Profile condition match ─────────────────────────────────────
+          const profileConditions = (activeProfile?.conditions || []).map((c: string) =>
+            c.toLowerCase().replace(/_/g, ' ')
+          );
+          const getProfileFlags = (ing: any): string[] => {
+            const flags: string[] = Array.isArray(ing.flag_for) ? ing.flag_for : [];
+            return flags.filter(f =>
+              profileConditions.some((c: string) => f.toLowerCase().includes(c) || c.includes(f.toLowerCase()))
+            );
+          };
+
+          return (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-1">
+                <AlertCircle className="w-4 h-4 text-[#1B3D2F]" />
+                <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">Ingredient Breakdown</h3>
+                <span className="text-[10px] text-gray-400 ml-auto">{allIngs.length} total · tap any to expand</span>
+              </div>
+
+              <div className="rounded-[32px] border border-[#E8DDD0] overflow-hidden bg-white divide-y divide-[#F5EFE8]">
+
+                {/* 🔴 Concerns */}
+                {concerns.length > 0 && (
+                  <>
+                    <SectionHead emoji="🔴" label="Concerns" count={concerns.length} color="bg-[#FFF0EE]" />
+                    {concerns.map((ing, i) => (
+                      <IngRow key={`concern-${i}`} ing={ing} globalKey={`concern-${i}`}
+                        expandedIng={expandedIng} setExpandedIng={setExpandedIng}
+                        activeProfile={activeProfile} profileHits={getProfileFlags(ing)} />
+                    ))}
+                  </>
+                )}
+
+                {/* 🟡 Watch */}
+                {watchList.length > 0 && (
+                  <>
+                    <SectionHead emoji="🟡" label="Watch" count={watchList.length} color="bg-[#FFFBF0]" />
+                    {watchList.map((ing, i) => (
+                      <IngRow key={`watch-${i}`} ing={ing} globalKey={`watch-${i}`}
+                        expandedIng={expandedIng} setExpandedIng={setExpandedIng}
+                        activeProfile={activeProfile} profileHits={getProfileFlags(ing)} />
+                    ))}
+                  </>
+                )}
+
+                {/* 🟢 Safe — collapsed by default */}
+                {safe.length > 0 && (
+                  <>
+                    <div
+                      className="flex items-center justify-between px-4 py-2.5 bg-[#F0FBF4] cursor-pointer"
+                      onClick={() => setExpandedIng(expandedIng === 'safe-group' ? null : 'safe-group')}
+                    >
+                      <span className="text-xs font-bold text-[#1B3D2F] uppercase tracking-widest">🟢 Safe / Unverified</span>
+                      <span className="text-[10px] font-bold text-[#2E7D4F]">{safe.length} ingredients {expandedIng === 'safe-group' ? '▲' : '▼'}</span>
                     </div>
-                    <TierBadge tier={displayTier} />
-                  </div>
-                  <AnimatePresence>
-                    {expandedIng === i && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                      >
-                        {positionNote && (
-                          <div className="mt-3 p-3 bg-[#FFF3DC] border border-[#E07B2A]/20 rounded-xl">
-                            <p className="text-[11px] text-[#D4871E] font-semibold leading-relaxed">
-                              ⚠ {positionNote}
-                            </p>
-                          </div>
-                        )}
-                        <p className="mt-3 text-sm text-gray-600 leading-relaxed">
-                          {ing.plain_explanation}
-                        </p>
-                        {Array.isArray(ing.flag_for) && ing.flag_for.length > 0 && (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {ing.flag_for.map((f: string, j: number) => (
-                              <span key={j} className="text-[10px] font-bold bg-[#FDECEA] text-[#D94F3D] px-2 py-0.5 rounded-md">
-                                ⚠ {f}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        {/* Data quality indicator */}
-                        <p className="mt-3 text-[9px] text-gray-300 leading-relaxed">
-                          {ing.data_quality === 'LLM_GENERATED'
-                            ? '⚠ AI-analysed · not from regulatory database · verify independently'
-                            : '✓ Verified against FSSAI / CDSCO / WHO regulatory database'}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                    {expandedIng === 'safe-group' && safe.map((ing, i) => (
+                      <IngRow key={`safe-${i}`} ing={ing} globalKey={`safe-${i}`}
+                        expandedIng={expandedIng} setExpandedIng={setExpandedIng}
+                        activeProfile={activeProfile} profileHits={getProfileFlags(ing)} />
+                    ))}
+                  </>
+                )}
+
+              </div>
+            </div>
+          );
+        })()}
 
         {/* India Context */}
         <div className="p-6 bg-[#FFF3DC] rounded-[32px] border border-[#D4871E]/20">
