@@ -803,6 +803,212 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     ingredients: ["Aqua", "Glycerin (21%)", "Petrolatum (Petroleum Jelly)", "Dimethicone", "Stearic Acid", "Cetyl Alcohol", "Glycol Stearate", "Triethanolamine", "Carbomer", "Disodium EDTA", "Parfum", "Methylparaben", "Propylparaben"],
     nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
     front_claims: ["Deep Moisture Serum", "21x Glycerin", "Intensive Care"]
+  },
+
+  // ── SNACKS — CHIPS & EXTRUDED ─────────────────────────────────────────────────
+
+  {
+    product_name: "Doritos Nacho Cheese",
+    brand: "PepsiCo",
+    category: "FOOD",
+    ingredients: ["Corn Flour", "Edible Vegetable Oil (Palm Oil)", "Spices & Condiments (Cheese Powder, Salt, Sugar, Maltodextrin, Acidity Regulators (INS 330, INS 262), Flavour Enhancers (INS 627, INS 631), Artificial Flavour (Cheese Flavour))"],
+    nutrition: { energy_kcal: 524, sugar_g: 3.5, sodium_mg: 680, protein_g: 6.5, fat_g: 28, saturated_fat_g: 12, trans_fat_g: 0, fibre_g: 3.2 },
+    front_claims: ["Nacho Cheese Flavour"]
+  },
+
+  {
+    product_name: "Bingo Tedhe Medhe Achari Masti",
+    brand: "ITC",
+    category: "FOOD",
+    ingredients: ["Rice Meal", "Edible Vegetable Oil (Palm Oil)", "Corn Meal", "Wheat Flour", "Iodised Salt", "Spices (Red Chilli, Coriander)", "Acidity Regulators (INS 330, INS 296)", "Sugar", "Flavour Enhancers (INS 621, INS 635)", "Artificial Flavour"],
+    nutrition: { energy_kcal: 518, sugar_g: 2.8, sodium_mg: 740, protein_g: 5.2, fat_g: 27, saturated_fat_g: 12.5, trans_fat_g: 0, fibre_g: 2.1 },
+    front_claims: ["Tedhe Medhe Shape", "Achari Masti Flavour"]
+  },
+
+  {
+    product_name: "Bingo Original Style Salted",
+    brand: "ITC",
+    category: "FOOD",
+    ingredients: ["Potatoes", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt"],
+    nutrition: { energy_kcal: 536, sugar_g: 0.5, sodium_mg: 480, protein_g: 6.5, fat_g: 34, saturated_fat_g: 15, trans_fat_g: 0, fibre_g: 4.5 },
+    front_claims: ["Real Potato Chips", "Simple Ingredients"]
+  },
+
+  {
+    product_name: "Too Yumm! Multigrain Baked Chips",
+    brand: "RP-SG Group",
+    category: "FOOD",
+    ingredients: ["Multigrain Flour (Rice Flour, Wheat Flour, Corn Flour, Oat Flour)", "Edible Vegetable Oil (Sunflower Oil)", "Iodised Salt", "Spices (Red Chilli, Black Pepper)", "Sugar", "Acidity Regulator (INS 330)"],
+    nutrition: { energy_kcal: 421, sugar_g: 2.2, sodium_mg: 520, protein_g: 7.8, fat_g: 14, saturated_fat_g: 2.1, trans_fat_g: 0, fibre_g: 5.5 },
+    front_claims: ["Baked Not Fried", "Multigrain", "70% Less Fat"]
+  },
+
+  {
+    product_name: "Too Yumm! Veggie Sticks",
+    brand: "RP-SG Group",
+    category: "FOOD",
+    ingredients: ["Potato Starch", "Corn Flour", "Edible Vegetable Oil (Sunflower Oil)", "Spinach Powder", "Carrot Powder", "Tomato Powder", "Iodised Salt", "Spices", "Acidity Regulator (INS 330)"],
+    nutrition: { energy_kcal: 398, sugar_g: 1.8, sodium_mg: 490, protein_g: 4.5, fat_g: 12, saturated_fat_g: 1.8, trans_fat_g: 0, fibre_g: 4.8 },
+    front_claims: ["Baked", "With Real Vegetables", "No MSG"]
+  },
+
+  {
+    product_name: "Yellow Diamond Chips Chatpata",
+    brand: "Vimal Agro",
+    category: "FOOD",
+    ingredients: ["Potatoes", "Edible Vegetable Oil (Palm Oil)", "Spices (Red Chilli, Coriander, Turmeric)", "Iodised Salt", "Sugar", "Dried Mango Powder (Amchur)", "Acidity Regulator (INS 330)", "Flavour Enhancer (INS 621)"],
+    nutrition: { energy_kcal: 528, sugar_g: 3.2, sodium_mg: 560, protein_g: 6.2, fat_g: 32, saturated_fat_g: 14, trans_fat_g: 0, fibre_g: 4.2 },
+    front_claims: ["Chatpata Flavour", "Real Potato"]
+  },
+
+  {
+    product_name: "Pringles Original",
+    brand: "Kellanova",
+    category: "FOOD",
+    ingredients: ["Dehydrated Potatoes", "Vegetable Oil (Palm Oil, Sunflower Oil)", "Wheat Starch", "Corn Flour", "Rice Flour", "Maltodextrin", "Emulsifier (INS 471)", "Salt", "Dextrose"],
+    nutrition: { energy_kcal: 532, sugar_g: 1.5, sodium_mg: 430, protein_g: 5.0, fat_g: 33, saturated_fat_g: 12, trans_fat_g: 0, fibre_g: 3.5 },
+    front_claims: ["Original Salted", "The Original & Best"]
+  },
+
+  {
+    product_name: "Pringles Sour Cream & Onion",
+    brand: "Kellanova",
+    category: "FOOD",
+    ingredients: ["Dehydrated Potatoes", "Vegetable Oil (Palm Oil, Sunflower Oil)", "Wheat Starch", "Corn Flour", "Rice Flour", "Maltodextrin", "Seasoning (Whey Powder, Onion Powder, Yeast Extract, Sour Cream Powder, Flavour Enhancer (INS 635), Natural Flavour)", "Salt", "Emulsifier (INS 471)"],
+    nutrition: { energy_kcal: 535, sugar_g: 2.8, sodium_mg: 520, protein_g: 5.2, fat_g: 33, saturated_fat_g: 12, trans_fat_g: 0, fibre_g: 3.2 },
+    front_claims: ["Sour Cream & Onion Flavour"]
+  },
+
+  {
+    product_name: "Kurkure Naughty Tomatoes",
+    brand: "PepsiCo",
+    category: "FOOD",
+    ingredients: ["Rice Meal", "Corn Meal", "Edible Vegetable Oil (Palm Oil)", "Gram Meal", "Iodised Salt", "Spices (Red Chilli, Coriander, Turmeric)", "Tomato Powder", "Sugar", "Acidity Regulator (INS 330)", "Flavour Enhancers (INS 621, INS 635)", "Colour (INS 160c, INS 150d)", "Artificial Flavour (Tomato)"],
+    nutrition: { energy_kcal: 522, sugar_g: 4.8, sodium_mg: 720, protein_g: 6.8, fat_g: 28, saturated_fat_g: 12.5, trans_fat_g: 0, fibre_g: 3.8 },
+    front_claims: ["Naughty Tomatoes Flavour"]
+  },
+
+  {
+    product_name: "Cornitos Nacho Crisps Cheese & Herbs",
+    brand: "Greendot Health Foods",
+    category: "FOOD",
+    ingredients: ["Corn Flour", "Edible Vegetable Oil (Sunflower Oil)", "Rice Flour", "Cheese Powder", "Herbs (Oregano, Basil)", "Salt", "Acidity Regulator (INS 330)", "Natural Flavour"],
+    nutrition: { energy_kcal: 488, sugar_g: 1.5, sodium_mg: 580, protein_g: 7.5, fat_g: 23, saturated_fat_g: 4.2, trans_fat_g: 0, fibre_g: 4.0 },
+    front_claims: ["Baked Not Fried", "No Artificial Colours", "No MSG", "Sunflower Oil"]
+  },
+
+  {
+    product_name: "Lay's Cream & Onion",
+    brand: "PepsiCo",
+    category: "FOOD",
+    ingredients: ["Potatoes", "Edible Vegetable Oil (Sunflower Oil)", "Seasoning (Whey Powder, Onion Powder, Sugar, Salt, Yeast Extract, Acidity Regulator (INS 330), Natural Flavour (Cream, Onion), Anticaking Agent (INS 551))"],
+    nutrition: { energy_kcal: 536, sugar_g: 2.8, sodium_mg: 540, protein_g: 6.5, fat_g: 34, saturated_fat_g: 8.5, trans_fat_g: 0, fibre_g: 4.2 },
+    front_claims: ["Real Potatoes", "Sunflower Oil"]
+  },
+
+  // ── SNACKS — NAMKEEN & TRADITIONAL ───────────────────────────────────────────
+
+  {
+    product_name: "Bikaji Bikaneri Bhujia",
+    brand: "Bikaji Foods",
+    category: "FOOD",
+    ingredients: ["Moth Bean Flour (Moth Dal)", "Besan (Chickpea Flour)", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt", "Black Pepper", "Red Chilli", "Asafoetida (Hing)"],
+    nutrition: { energy_kcal: 542, sugar_g: 1.2, sodium_mg: 610, protein_g: 19, fat_g: 30, saturated_fat_g: 13, trans_fat_g: 0, fibre_g: 8.5 },
+    front_claims: ["Original Bikaneri", "Pure Ghee Taste"]
+  },
+
+  {
+    product_name: "Haldiram's Khatta Meetha",
+    brand: "Haldiram's",
+    category: "FOOD",
+    ingredients: ["Edible Vegetable Oil (Palm Oil)", "Corn Flakes", "Besan (Chickpea Flour)", "Peanuts", "Wheat Flour", "Sugar", "Salt", "Spices (Red Chilli, Coriander, Turmeric)", "Acidity Regulator (INS 330)", "Raisins"],
+    nutrition: { energy_kcal: 522, sugar_g: 12.5, sodium_mg: 440, protein_g: 12, fat_g: 28, saturated_fat_g: 12, trans_fat_g: 0, fibre_g: 5.8 },
+    front_claims: ["Sweet & Tangy Mix"]
+  },
+
+  {
+    product_name: "Haldiram's Punjabi Tadka",
+    brand: "Haldiram's",
+    category: "FOOD",
+    ingredients: ["Besan (Chickpea Flour)", "Edible Vegetable Oil (Palm Oil)", "Puffed Rice", "Peanuts", "Corn Flakes", "Iodised Salt", "Spices (Red Chilli, Cumin, Coriander, Turmeric)", "Dried Mango Powder", "Sugar"],
+    nutrition: { energy_kcal: 518, sugar_g: 3.5, sodium_mg: 520, protein_g: 14, fat_g: 28, saturated_fat_g: 11.5, trans_fat_g: 0, fibre_g: 6.5 },
+    front_claims: ["Punjabi Style", "Crunchy Mix"]
+  },
+
+  {
+    product_name: "Bikano Khatta Meetha",
+    brand: "Bikano",
+    category: "FOOD",
+    ingredients: ["Edible Vegetable Oil (Palm Oil)", "Sev (Besan, Salt)", "Corn Flakes", "Puffed Rice", "Peanuts", "Sugar", "Salt", "Spices (Red Chilli, Coriander)", "Acidity Regulator (INS 330)", "Raisins", "Sesame Seeds"],
+    nutrition: { energy_kcal: 510, sugar_g: 14, sodium_mg: 420, protein_g: 11, fat_g: 26, saturated_fat_g: 11, trans_fat_g: 0, fibre_g: 5.2 },
+    front_claims: ["Sweet & Sour Mix", "Traditional Taste"]
+  },
+
+  // ── SNACKS — POPCORN ──────────────────────────────────────────────────────────
+
+  {
+    product_name: "Act II Cheese Burst Popcorn",
+    brand: "DS Group",
+    category: "FOOD",
+    ingredients: ["Corn", "Edible Vegetable Oil (Palm Oil)", "Seasoning (Cheese Powder, Maltodextrin, Salt, Sugar, Acidity Regulator (INS 330), Flavour Enhancer (INS 635), Artificial Flavour (Cheese), Colour (INS 160c))"],
+    nutrition: { energy_kcal: 465, sugar_g: 3.8, sodium_mg: 640, protein_g: 8.5, fat_g: 22, saturated_fat_g: 9.5, trans_fat_g: 0, fibre_g: 9.2 },
+    front_claims: ["Cheese Burst Flavour", "Real Popcorn"]
+  },
+
+  // ── SNACKS — HEALTHY / PROTEIN BARS ──────────────────────────────────────────
+
+  {
+    product_name: "Yoga Bar Millet & Nut Bar Choco Almond",
+    brand: "ITC (Yoga Bar)",
+    category: "FOOD",
+    ingredients: ["Date Paste", "Almonds", "Rolled Oats", "Millet Flakes (Finger Millet, Pearl Millet)", "Dark Chocolate Chips (Cocoa Mass, Sugar, Cocoa Butter, Emulsifier (INS 322))", "Cocoa Powder", "Honey", "Natural Flavour (Almond)"],
+    nutrition: { energy_kcal: 398, sugar_g: 22, sodium_mg: 42, protein_g: 9.5, fat_g: 14, saturated_fat_g: 4.5, trans_fat_g: 0, fibre_g: 6.5 },
+    front_claims: ["No Refined Sugar", "High Protein", "No Preservatives", "Millets"]
+  },
+
+  {
+    product_name: "RiteBite Max Protein Bar Choco Berry",
+    brand: "NutroActive",
+    category: "FOOD",
+    ingredients: ["Whey Protein Concentrate", "Soy Crisps (Soy Protein Isolate, Tapioca Starch)", "Dark Chocolate Compound (Sugar, Cocoa Butter, Cocoa Powder, Emulsifier (INS 476))", "Sugar", "Glycerine", "Glucose Syrup", "Strawberry Flavour (Artificial)", "Salt", "Acidity Regulator (INS 330)"],
+    nutrition: { energy_kcal: 362, sugar_g: 18, sodium_mg: 185, protein_g: 27, fat_g: 9, saturated_fat_g: 4.2, trans_fat_g: 0, fibre_g: 3.5 },
+    front_claims: ["27g Protein", "High Protein Bar", "Low Fat"]
+  },
+
+  {
+    product_name: "Unibic Oatmeal Cookies",
+    brand: "Unibic Foods",
+    category: "FOOD",
+    ingredients: ["Whole Wheat Flour", "Rolled Oats (18%)", "Sugar", "Edible Vegetable Oil (Palm Oil)", "Invert Syrup", "Skimmed Milk Powder", "Raisins", "Leavening Agents (INS 500, INS 503)", "Iodised Salt", "Natural Flavour"],
+    nutrition: { energy_kcal: 462, sugar_g: 21, sodium_mg: 280, protein_g: 7.5, fat_g: 18, saturated_fat_g: 8.5, trans_fat_g: 0, fibre_g: 4.8 },
+    front_claims: ["Whole Wheat", "Oatmeal", "Real Raisins"]
+  },
+
+  {
+    product_name: "Britannia NutriChoice Digestive Biscuits",
+    brand: "Britannia",
+    category: "FOOD",
+    ingredients: ["Whole Wheat Flour (50%)", "Sugar", "Edible Vegetable Oil (Palm Oil)", "Wheat Bran", "Skimmed Milk Powder", "Invert Syrup", "Iodised Salt", "Raising Agents (INS 500, INS 450)", "Emulsifier (INS 322)"],
+    nutrition: { energy_kcal: 458, sugar_g: 18, sodium_mg: 310, protein_g: 8.5, fat_g: 19, saturated_fat_g: 9, trans_fat_g: 0, fibre_g: 5.5 },
+    front_claims: ["50% Whole Wheat", "Source of Fibre", "No Maida"]
+  },
+
+  {
+    product_name: "Parle Musst Stix Masala",
+    brand: "Parle",
+    category: "FOOD",
+    ingredients: ["Wheat Flour (Maida)", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt", "Spices (Red Chilli, Coriander, Cumin, Turmeric)", "Sugar", "Acidity Regulator (INS 330)", "Flavour Enhancer (INS 621)", "Artificial Flavour (Masala)"],
+    nutrition: { energy_kcal: 508, sugar_g: 3.5, sodium_mg: 680, protein_g: 6.5, fat_g: 24, saturated_fat_g: 10.5, trans_fat_g: 0, fibre_g: 2.2 },
+    front_claims: ["Masala Stix", "Crunchy Snack"]
+  },
+
+  {
+    product_name: "Haldiram's Chatpata Murmura",
+    brand: "Haldiram's",
+    category: "FOOD",
+    ingredients: ["Puffed Rice (Murmura)", "Edible Vegetable Oil (Sunflower Oil)", "Iodised Salt", "Spices (Red Chilli, Turmeric, Coriander)", "Dried Mango Powder (Amchur)", "Sugar", "Roasted Peanuts"],
+    nutrition: { energy_kcal: 385, sugar_g: 4.5, sodium_mg: 420, protein_g: 8.5, fat_g: 11, saturated_fat_g: 2.5, trans_fat_g: 0, fibre_g: 2.8 },
+    front_claims: ["Light Snack", "Sunflower Oil"]
   }
 
 ];

@@ -688,6 +688,396 @@ export const INGREDIENT_DB: Record<string, IngredientEntry> = {
     data_quality: "VERIFIED"
   },
 
+  // ── SNACK INGREDIENTS ────────────────────────────────────────────────────────
+
+  "maida": {
+    ins_number: null,
+    common_names: ["maida", "refined wheat flour", "refined flour", "white flour", "wheat flour (refined)", "all purpose flour"],
+    function: "Base / Flour",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "HIGH", reason: "Glycaemic Index of 70–85 — spikes blood glucose almost as fast as pure sugar", source: "ICMR-NIN 2024" },
+      { condition: "gluten_intolerance", impact: "HIGH", reason: "Contains gluten — unsafe for coeliac disease and NCGS", source: "FSSAI Allergen Rules 2021" },
+      { condition: "weight_management", impact: "MODERATE", reason: "Highly refined with minimal fibre — low satiety, easy to overeat", source: "ICMR-NIN 2024" }
+    ],
+    plain_explanation: "Maida is refined wheat flour with the bran and germ stripped out — leaving mostly starch. It has very little fibre or nutrition and a very high glycaemic index (it behaves like sugar in your body). When maida is the #1 ingredient, the product is essentially a starch delivery vehicle.",
+    india_specific_note: "Maida is the base of most Indian biscuits, namkeens, and bakery products. FSSAI has no restriction on its use but ICMR-NIN advises choosing whole grain alternatives whenever possible.",
+    score_impact: -5,
+    data_quality: "VERIFIED"
+  },
+
+  "glucose_syrup": {
+    ins_number: null,
+    common_names: ["glucose syrup", "corn syrup", "liquid glucose", "glucose-fructose syrup", "dextrose syrup"],
+    function: "Sweetener / Binder",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "HIGH", reason: "Rapidly absorbed glucose — high GI, causes sharp blood sugar spike", source: "Diabetes Care 2020" },
+      { condition: "dental_health", impact: "MODERATE", reason: "Fermentable sugar that feeds oral bacteria and promotes tooth decay", source: "WHO Oral Health Guidelines" }
+    ],
+    plain_explanation: "A liquid sugar derived from starch (usually corn or wheat). It has a very high glycaemic index and is used in confectionery, biscuits, and snacks to add sweetness and a chewy texture. When listed early in ingredients, the product has a high sugar load.",
+    india_specific_note: "Common in Indian sweets, biscuits, and glucose-fortified products. Often unlabelled as 'sugar' making it easy to miss.",
+    score_impact: -5,
+    data_quality: "VERIFIED"
+  },
+
+  "invert_sugar": {
+    ins_number: null,
+    common_names: ["invert sugar", "invert syrup", "inverted sugar syrup", "trimoline"],
+    function: "Sweetener",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "HIGH", reason: "Contains free fructose and glucose — rapidly absorbed, high GI", source: "ICMR-NIN 2024" }
+    ],
+    plain_explanation: "Inverted sugar is table sugar broken down into its components (glucose + fructose). It's sweeter than regular sugar, stays moist longer, and is widely used in biscuits and confectionery. Nutritionally identical to sugar — if it's high in the ingredient list, the product has a high sugar content.",
+    india_specific_note: "Used extensively in Indian biscuits like Parle-G. Often listed separately from 'sugar' which artificially pushes both lower on the ingredient list.",
+    score_impact: -4,
+    data_quality: "VERIFIED"
+  },
+
+  "dextrose": {
+    ins_number: null,
+    common_names: ["dextrose", "dextrose monohydrate", "d-glucose", "corn sugar"],
+    function: "Sweetener",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "HIGH", reason: "Dextrose is pure glucose — GI of 100, the highest possible. Causes the fastest blood sugar spike of any sugar", source: "Glycaemic Index Foundation" }
+    ],
+    plain_explanation: "Dextrose is pure glucose — the simplest form of sugar with a glycaemic index of 100 (the maximum). It's used to add bulk, browning, and sweetness. For diabetics or those managing blood sugar, products with dextrose high in the ingredient list are particularly concerning.",
+    india_specific_note: "Common in Indian sports drinks, biscuits, and packaged namkeens as a cheap sweetener.",
+    score_impact: -4,
+    data_quality: "VERIFIED"
+  },
+
+  "sunflower_oil": {
+    ins_number: null,
+    common_names: ["sunflower oil", "refined sunflower oil", "sunflower seed oil", "high oleic sunflower oil"],
+    function: "Fat / Oil",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A neutral-tasting vegetable oil higher in unsaturated fats than palm oil. Preferable to palm oil or hydrogenated fats. High oleic variants (used in premium snacks) are particularly stable and heart-friendly.",
+    india_specific_note: "Increasingly used as a healthier alternative to palm oil in premium Indian snacks. Still calorie-dense — 9 kcal per gram.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "groundnut_oil": {
+    ins_number: null,
+    common_names: ["groundnut oil", "peanut oil", "arachis oil", "refined groundnut oil"],
+    function: "Fat / Oil",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "peanut_allergy", impact: "HIGH", reason: "Refined groundnut oil typically has no detectable protein but cold-pressed versions can trigger reactions", source: "FSSAI Allergen Rules 2021" }
+    ],
+    plain_explanation: "A traditional Indian cooking oil with a good balance of mono- and polyunsaturated fats. Widely used in authentic Indian namkeens and snacks. Generally a healthier choice than palm oil.",
+    india_specific_note: "The traditional frying medium for Indian namkeens like sev and chakli. Rajasthan and Gujarat use groundnut oil extensively.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "hydrogenated_vegetable_oil": {
+    ins_number: null,
+    common_names: ["hydrogenated vegetable oil", "partially hydrogenated oil", "hydrogenated fat", "vanaspati", "dalda", "vegetable shortening"],
+    function: "Fat",
+    safety_tier: "AVOID",
+    fssai_status: "RESTRICTED",
+    condition_flags: [
+      { condition: "heart_disease", impact: "HIGH", reason: "Contains industrial trans fats — WHO recommends complete elimination. Raises LDL and lowers HDL simultaneously", source: "WHO REPLACE 2018" },
+      { condition: "diabetes", impact: "HIGH", reason: "Industrial trans fats linked to insulin resistance and increased T2DM risk", source: "Diabetes Care Journal 2001" }
+    ],
+    plain_explanation: "When vegetable oil is partially hydrogenated, it creates artificial trans fats — the worst type of dietary fat. WHO recommends eliminating them completely from the food supply. If you see 'hydrogenated' or 'vanaspati' in the ingredients, this product likely contains trans fat even if labelled 0g (FSSAI allows rounding down).",
+    india_specific_note: "Vanaspati (Dalda) is still used in cheap Indian biscuits, street food, and some restaurant cooking. FSSAI restricts it to 2g/100g but the WHO limit is zero.",
+    score_impact: -15,
+    data_quality: "VERIFIED"
+  },
+
+  "rice_flour": {
+    ins_number: null,
+    common_names: ["rice flour", "rice powder", "white rice flour", "fine rice flour"],
+    function: "Base / Flour",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "MODERATE", reason: "White rice flour has a high GI (70–80) — moderate blood sugar impact", source: "ICMR-NIN 2024" }
+    ],
+    plain_explanation: "A gluten-free flour made from ground rice. Lighter and crispier than wheat flour, making it popular in Indian rice-based snacks (murukku, chakli). Naturally gluten-free but not particularly high in fibre or nutrition.",
+    india_specific_note: "The base of South Indian snacks like murukku and rice papads. A safer option for gluten-sensitive individuals.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "corn_flour": {
+    ins_number: null,
+    common_names: ["corn flour", "cornmeal", "maize flour", "corn starch", "cornstarch", "corn powder"],
+    function: "Base / Thickener",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "MODERATE", reason: "Refined corn flour has moderate-high GI (70–90) depending on processing", source: "Glycaemic Index Foundation" }
+    ],
+    plain_explanation: "A starch derived from corn, used as a base in chips, coatings, and snacks. Lighter than wheat flour and naturally gluten-free. The base ingredient in most corn-based chips (Kurkure, Bingo rings). Moderate nutritional value.",
+    india_specific_note: "The main ingredient in most Indian corn-based extruded snacks. Often mixed with pulses or rice flour.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "potato_starch": {
+    ins_number: null,
+    common_names: ["potato starch", "potato flour", "dehydrated potato", "potato flakes", "potato granules", "dried potato"],
+    function: "Base / Thickener",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "diabetes", impact: "MODERATE", reason: "High GI when processed — dehydrated potato can spike blood sugar faster than fresh potato", source: "ICMR-NIN" }
+    ],
+    plain_explanation: "Processed potato used as the base ingredient in potato chips and stacked chip products. Nutritionally similar to potato but with most fibre removed during processing. High in carbohydrates.",
+    india_specific_note: "Used in Pringles-style stacked chips and many Indian potato snacks. Indian potato chips from real sliced potatoes are slightly less processed.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "cheese_powder": {
+    ins_number: null,
+    common_names: ["cheese powder", "cheddar cheese powder", "processed cheese powder", "dairy solids (cheese)", "cheese flavour (real cheese)"],
+    function: "Flavour / Dairy",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "hypertension", impact: "MODERATE", reason: "Cheese powder is typically very high in sodium (2000–5000mg/100g)", source: "ICMR-NIN 2024" },
+      { condition: "dairy_allergy", impact: "HIGH", reason: "Derived from milk — contains milk proteins and lactose", source: "FSSAI Allergen Rules" }
+    ],
+    plain_explanation: "Dehydrated cheese used in snacks for its strong cheesy flavour. Very concentrated — extremely high in sodium and saturated fat. Products claiming 'real cheese' use this; products using artificial cheese flavour skip it entirely.",
+    india_specific_note: "Found in premium Indian cheese-flavoured chips. Contributes significantly to the high sodium content of cheese snacks.",
+    score_impact: -3,
+    data_quality: "VERIFIED"
+  },
+
+  "yeast_extract": {
+    ins_number: null,
+    common_names: ["yeast extract", "autolysed yeast extract", "hydrolysed yeast", "yeast extract powder"],
+    function: "Flavour Enhancer",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "migraine", impact: "MODERATE", reason: "Contains glutamates — a known migraine trigger in sensitive individuals", source: "Cephalalgia Journal 2016" },
+      { condition: "hypertension", impact: "MODERATE", reason: "High in naturally occurring sodium and glutamates", source: "ICMR-NIN" }
+    ],
+    plain_explanation: "A concentrated flavour from yeast cells. It's a natural source of MSG-like glutamates and is used as a 'clean label' alternative to MSG. Gives snacks a deep savoury taste. Not harmful for most people but can trigger migraines in sensitive individuals.",
+    india_specific_note: "Used in premium Indian snacks as a 'no added MSG' flavour enhancer. Functionally similar to MSG but from a natural source.",
+    score_impact: -2,
+    data_quality: "VERIFIED"
+  },
+
+  "skimmed_milk_powder": {
+    ins_number: null,
+    common_names: ["skimmed milk powder", "skim milk powder", "non-fat dry milk", "milk solids (non-fat)", "smp"],
+    function: "Dairy / Protein Source",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "dairy_allergy", impact: "HIGH", reason: "Contains milk proteins (casein, whey) — a major allergen", source: "FSSAI Allergen Rules 2021" },
+      { condition: "lactose_intolerance", impact: "MODERATE", reason: "Contains lactose — may cause digestive issues", source: "ICMR-NIN" }
+    ],
+    plain_explanation: "Dried skim milk — fat removed, protein and calcium retained. Used in biscuits and snacks to add protein, improve texture, and provide dairy flavour. A nutritionally useful ingredient that also acts as an allergen.",
+    india_specific_note: "Common in Indian cream biscuits and dairy-based snacks. Adds mild nutritional value compared to pure starches.",
+    score_impact: 2,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_150d": {
+    ins_number: "INS 150d",
+    common_names: ["ins 150d", "caramel colour iv", "caramel colour class iv", "sulphite ammonia caramel", "caramel color iv", "150d"],
+    function: "Colour",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "cancer_risk", impact: "MODERATE", reason: "Contains 4-methylimidazole (4-MEI), a probable carcinogen — classified Group 2B by IARC", source: "IARC Monographs 2012 · California Prop 65" },
+      { condition: "children", impact: "HIGH", reason: "California requires cancer warning labels on products with >29mcg 4-MEI per day", source: "California Prop 65 · CSPI" }
+    ],
+    plain_explanation: "The darkest caramel colour used in colas, sauces, and dark-coloured snacks. Contains trace amounts of 4-methylimidazole (4-MEI), a chemical classified as a possible carcinogen by WHO's IARC. California requires products with significant amounts to carry cancer warning labels. FSSAI permits it but limits are under review.",
+    india_specific_note: "Found in dark colas (Pepsi, Coca-Cola), soy sauce, Worcestershire sauce, and some Indian snacks with dark coatings. FSSAI has not set a 4-MEI limit despite WHO concerns.",
+    score_impact: -4,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_160c": {
+    ins_number: "INS 160c",
+    common_names: ["ins 160c", "paprika extract", "capsanthin", "capsorubin", "paprika colour", "160c"],
+    function: "Natural Colour",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "A natural orange-red colour extracted from paprika (red pepper). One of the safest food colours — derived from a spice rather than synthesised from petroleum. Used in chips, snacks, and spiced products to give a rich red-orange appearance.",
+    india_specific_note: "Common in Indian masala chips and flavoured snacks. A far safer alternative to artificial red and orange colours like INS 110.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_635": {
+    ins_number: "INS 635",
+    common_names: ["ins 635", "disodium ribonucleotides", "5'-ribonucleotides", "disodium 5'-ribonucleotides", "635"],
+    function: "Flavour Enhancer",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "gout", impact: "HIGH", reason: "Ribonucleotides metabolise to purines — significantly raises uric acid, dangerous for gout sufferers", source: "Arthritis & Rheumatology Journal" },
+      { condition: "asthma", impact: "MODERATE", reason: "Can trigger asthma attacks in aspirin-sensitive individuals", source: "EFSA 2010" },
+      { condition: "children", impact: "MODERATE", reason: "Not recommended for infants and young children under 12 weeks", source: "EFSA Scientific Opinion 2010" }
+    ],
+    plain_explanation: "A powerful flavour enhancer — up to 10× stronger than MSG. It's often used in combination with MSG (INS 621) to dramatically amplify savoury taste. Found in Maggi, instant noodles, and many masala chips. A major concern for gout sufferers as it metabolises to purines that raise uric acid levels.",
+    india_specific_note: "Present in Maggi Masala and many Indian instant noodles and masala chips. Often not highlighted on labels despite its potency. Gout is prevalent in 1–2% of Indian adults.",
+    score_impact: -5,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_476": {
+    ins_number: "INS 476",
+    common_names: ["ins 476", "pgpr", "polyglycerol polyricinoleate", "476"],
+    function: "Emulsifier",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "PGPR is an emulsifier derived from castor oil used in chocolate products. It was introduced by confectionery companies as a cheap substitute for cocoa butter — it reduces the amount of cocoa butter needed, lowering costs. While not harmful at approved doses, its presence indicates cost-cutting in the recipe.",
+    india_specific_note: "Present in most Indian mass-market chocolates. Absent in premium European chocolate. Its use is one way to identify cheaper chocolate formulations.",
+    score_impact: -2,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_450": {
+    ins_number: "INS 450",
+    common_names: ["ins 450", "sodium pyrophosphate", "disodium diphosphate", "diphosphates", "pyrophosphate", "450"],
+    function: "Raising Agent / Leavening",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "kidney_disease", impact: "HIGH", reason: "Phosphate additives are poorly filtered by damaged kidneys — accumulate and cause cardiovascular complications", source: "KDIGO Guidelines 2017" },
+      { condition: "bone_health", impact: "MODERATE", reason: "High phosphate intake can interfere with calcium absorption and bone density over time", source: "EFSA 2012" }
+    ],
+    plain_explanation: "A leavening agent used to make baked snacks and biscuits rise. Safe for healthy people in normal snack quantities, but a concern for anyone with kidney disease since damaged kidneys struggle to excrete excess phosphate.",
+    india_specific_note: "Common in Indian biscuits and bakery products. One of several phosphate additives — the cumulative effect from multiple processed foods is worth watching.",
+    score_impact: -2,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_472e": {
+    ins_number: "INS 472e",
+    common_names: ["ins 472e", "datem", "diacetyl tartaric acid esters", "diacetyl tartaric acid ester of mono and diglycerides", "472e"],
+    function: "Emulsifier",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "DATEM is an emulsifier used in bread, biscuits, and snacks to improve dough strength and shelf life. It's derived from fats and tartaric acid. Generally considered safe by regulators, but is an indicator of heavily processed food (UPF marker).",
+    india_specific_note: "Found in Indian packaged breads, biscuits, and some snacks. Harmless in isolation but contributes to the overall ultra-processed nature of the product.",
+    score_impact: -2,
+    data_quality: "VERIFIED"
+  },
+
+  "ins_551": {
+    ins_number: "INS 551",
+    common_names: ["ins 551", "silicon dioxide", "silica", "amorphous silica", "551"],
+    function: "Anti-Caking Agent",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "Silicon dioxide (silica) is the same compound as sand, used in powdered snacks and spice mixes to prevent clumping. In the tiny amounts used in food it is completely safe and passes through the body unabsorbed.",
+    india_specific_note: "Common in Indian masala powders, chips seasonings, and powdered snack mixes. No known health concerns.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "artificial_flavour": {
+    ins_number: null,
+    common_names: ["artificial flavour", "artificial flavoring", "artificial flavouring", "nature identical flavour", "nature-identical flavouring", "synthetic flavour"],
+    function: "Artificial Flavour",
+    safety_tier: "CAUTION",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "children", impact: "MODERATE", reason: "Artificial flavours are generally not recommended for young children — cumulative exposure unknown", source: "ICMR-NIN Paediatric Guidelines" }
+    ],
+    plain_explanation: "A catch-all term for synthetic chemical compounds that mimic natural flavours. 'Artificial flavour' can represent hundreds of different chemicals — companies are not required to disclose which ones. Generally safe in regulated quantities but provides no nutritional value and is a UPF marker.",
+    india_specific_note: "Extremely common in Indian chips, instant noodles, biscuits, and confectionery. The vagueness of the label means you cannot know exactly what chemical is being used.",
+    score_impact: -2,
+    data_quality: "VERIFIED"
+  },
+
+  "natural_flavour": {
+    ins_number: null,
+    common_names: ["natural flavour", "natural flavouring", "natural flavoring", "natural flavours", "nature flavour"],
+    function: "Natural Flavour",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "Flavouring compounds derived from natural sources (plants, animals, fermentation). Safer than artificial flavours but the term is loosely defined — a 'natural flavour' can still be highly processed. Better than artificial but not equivalent to real food ingredients.",
+    india_specific_note: "Increasingly used by Indian snack brands moving away from artificial flavours as consumers become more ingredient-aware.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "spice_extract": {
+    ins_number: null,
+    common_names: ["spice extract", "spice extractives", "oleoresin", "oleoresin paprika", "oleoresin turmeric", "oleoresin chilli", "natural spice extract"],
+    function: "Natural Colour / Flavour",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "Concentrated extracts from natural spices used for colour and flavour. Far safer than synthetic dyes — these are just concentrated spice compounds. Turmeric extract, paprika extract, and chilli extract are all beneficial in small amounts.",
+    india_specific_note: "Common in authentic Indian masala snacks. Their presence indicates the product is using natural rather than artificial colourings — a positive sign.",
+    score_impact: 0,
+    data_quality: "VERIFIED"
+  },
+
+  "cocoa_powder": {
+    ins_number: null,
+    common_names: ["cocoa powder", "cocoa solids", "cocoa mass", "natural cocoa", "dutch processed cocoa", "alkalized cocoa"],
+    function: "Flavour / Natural Ingredient",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [],
+    plain_explanation: "Cocoa powder is made from cocoa beans and contains flavonoids — plant compounds linked to cardiovascular benefits. However, its benefits in biscuits and snacks are largely offset by the large amounts of sugar and fat surrounding it. More cocoa percentage generally means more beneficial compounds.",
+    india_specific_note: "Present in Indian chocolate biscuits and spreads. Dark chocolate with high cocoa content (>70%) retains the most benefits; milk chocolate biscuits have negligible amounts.",
+    score_impact: 2,
+    data_quality: "VERIFIED"
+  },
+
+  "hazelnuts": {
+    ins_number: null,
+    common_names: ["hazelnuts", "hazelnut", "hazel nut", "hazelnut paste", "hazelnut pieces", "chopped hazelnuts"],
+    function: "Nut Ingredient",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "tree_nut_allergy", impact: "HIGH", reason: "Hazelnuts are a top tree nut allergen — can cause severe anaphylaxis", source: "FSSAI Allergen Declaration Rules 2021" }
+    ],
+    plain_explanation: "Hazelnuts are a whole food ingredient providing healthy monounsaturated fats, vitamin E, and fibre. A genuinely beneficial ingredient in spreads and confectionery. However, even products like Nutella contain only 13% hazelnuts — the rest is sugar and palm oil.",
+    india_specific_note: "Imported and expensive in India. Products containing real hazelnuts (not just hazelnut flavour) provide meaningful nutritional benefit.",
+    score_impact: 4,
+    data_quality: "VERIFIED"
+  },
+
+  "whey_powder": {
+    ins_number: null,
+    common_names: ["whey powder", "whey solids", "sweet whey powder", "dried whey", "whey protein"],
+    function: "Protein / Dairy",
+    safety_tier: "SAFE",
+    fssai_status: "PERMITTED",
+    condition_flags: [
+      { condition: "dairy_allergy", impact: "HIGH", reason: "Whey is a milk protein — a major allergen for milk-allergic individuals", source: "FSSAI Allergen Rules 2021" },
+      { condition: "lactose_intolerance", impact: "MODERATE", reason: "Contains lactose — may cause digestive issues", source: "ICMR-NIN" }
+    ],
+    plain_explanation: "A byproduct of cheese-making, dried into a powder. Rich in high-quality protein and all essential amino acids. Used in biscuits and snacks to boost protein content and improve texture. Nutritionally beneficial for most people.",
+    india_specific_note: "Common in protein biscuits and premium snacks marketed as protein-enriched. A genuine protein source unlike many 'protein' marketing claims.",
+    score_impact: 3,
+    data_quality: "VERIFIED"
+  },
+
+  // ── COSMETIC / PERSONAL CARE (continued) ─────────────────────────────────────
+
   "sodium_lauryl_sulfate": {
     ins_number: null,
     common_names: ["sodium lauryl sulfate", "sodium lauryl sulphate", "sls", "sodium dodecyl sulfate", "sodium dodecyl sulphate"],
