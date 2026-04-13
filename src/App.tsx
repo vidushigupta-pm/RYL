@@ -1836,29 +1836,42 @@ const Processing = ({ isSearch = false, onBack }: { isSearch?: boolean, onBack: 
 );
 };
 
-const BreakdownItem = ({ label, explanation, impact, impactColor }: { label: string; explanation: string; impact?: number | null; impactColor?: string }) => {
+const BreakdownItem = ({ label, explanation, impact, impactColor, source, threshold }: { label: string; explanation: string; impact?: number | null; impactColor?: string; source?: string; threshold?: string }) => {
   const [expanded, setExpanded] = React.useState(false);
-  const isLong = explanation.length > 90;
   return (
-    <div className="flex justify-between items-start gap-4">
-      <div className="flex-1">
-        <h5 className="text-sm font-bold text-[#1B3D2F]">{label}</h5>
-        <p className="text-[11px] text-gray-500 leading-relaxed">
-          {isLong && !expanded ? explanation.slice(0, 90) + '…' : explanation}
-        </p>
-        {isLong && (
-          <button
-            onClick={() => setExpanded(e => !e)}
-            className="text-[10px] font-bold text-[#D4871E] mt-0.5 hover:underline"
-          >
-            {expanded ? 'Show less' : 'Read more'}
-          </button>
+    <div
+      className={`rounded-2xl border transition-all cursor-pointer select-none ${expanded ? 'bg-[#F7F3EE] border-[#E8DDD0]' : 'bg-transparent border-transparent hover:bg-[#FDF6EE]'}`}
+      onClick={() => setExpanded(e => !e)}
+    >
+      <div className="flex justify-between items-start gap-3 px-3 py-2">
+        <div className="flex-1">
+          <h5 className="text-sm font-bold text-[#1B3D2F] leading-snug">{label}</h5>
+          {!expanded && (
+            <p className="text-[11px] text-gray-400 mt-0.5">Tap to see why →</p>
+          )}
+        </div>
+        {impact != null && impact !== 0 && (
+          <span className={`text-xs font-bold font-mono mt-0.5 whitespace-nowrap flex-shrink-0 ${impactColor || (impact < 0 ? 'text-[#D94F3D]' : 'text-[#2E7D4F]')}`}>
+            {impact > 0 ? `+${impact}` : impact}
+          </span>
         )}
       </div>
-      {impact != null && impact !== 0 && (
-        <span className={`text-xs font-bold font-mono mt-1 whitespace-nowrap ${impactColor || (impact < 0 ? 'text-[#D94F3D]' : 'text-[#2E7D4F]')}`}>
-          {impact > 0 ? `+${impact}` : impact}
-        </span>
+      {expanded && (
+        <div className="px-3 pb-3 space-y-2">
+          <p className="text-[12px] text-gray-600 leading-relaxed">{explanation}</p>
+          {threshold && (
+            <div className="flex items-start gap-1.5">
+              <span className="text-[10px] font-bold text-[#1B3D2F] uppercase tracking-widest mt-0.5 flex-shrink-0">Threshold</span>
+              <span className="text-[11px] text-gray-500 font-mono">{threshold}</span>
+            </div>
+          )}
+          {source && (
+            <div className="flex items-start gap-1.5">
+              <span className="text-[10px] font-bold text-[#1B3D2F] uppercase tracking-widest mt-0.5 flex-shrink-0">Source</span>
+              <span className="text-[11px] text-[#D4871E] leading-snug">{source}</span>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
@@ -1897,7 +1910,7 @@ const ScoreBreakdown = ({ score, concerns, profileName, productBreakdown }: any)
         )}
         {items.map((item: any, i: number) => (
           <React.Fragment key={i}>
-            <BreakdownItem label={item.label} explanation={item.explanation} impact={item.impact} />
+            <BreakdownItem label={item.label} explanation={item.explanation} impact={item.impact} source={item.source} threshold={item.threshold} />
           </React.Fragment>
         ))}
 
@@ -1914,32 +1927,33 @@ const ScoreBreakdown = ({ score, concerns, profileName, productBreakdown }: any)
         </div>
 
         {concerns.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {concerns.map((c: any, i: number) => (
               <React.Fragment key={i}>
-                <BreakdownItem label={c.label} explanation={c.detail} impact={c.impact} />
+                <BreakdownItem label={c.label} explanation={c.detail} impact={c.impact} source={c.source} />
               </React.Fragment>
             ))}
           </div>
         ) : (
           <div className="py-4 flex flex-col items-center justify-center text-center gap-2 bg-[#FDF6EE] rounded-2xl border border-dashed border-[#E8DDD0]">
             <CheckCircle2 className="w-6 h-6 text-[#2E7D4F]" />
-            <p className="text-xs font-bold text-[#1B3D2F]">No additional adjustments for this profile.</p>
+            <p className="text-xs font-bold text-[#1B3D2F]">No specific concerns for this profile.</p>
           </div>
         )}
       </div>
 
-      <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm mt-4 sticky bottom-0">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-bold text-[#1B3D2F] uppercase tracking-tight">Final Verdict</span>
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-mono font-bold text-xl ${
-            score >= 70 ? 'bg-[#E6F4EC] text-[#2E7D4F]' : 
-            score >= 40 ? 'bg-[#FFF3DC] text-[#D4871E]' : 
-            'bg-[#FDECEA] text-[#D94F3D]'
-          }`}>
-            {score}
+      <div className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm mt-4 sticky bottom-0">
+        <div className="flex justify-between items-center mb-1">
+          <div>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Product Score</span>
+            <p className="text-lg font-bold text-[#1B3D2F] font-mono">{derivedBase}</p>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Suitability for {profileName}</span>
+            <p className={`text-lg font-bold font-mono ${score >= 70 ? 'text-[#2E7D4F]' : score >= 40 ? 'text-[#D4871E]' : 'text-[#D94F3D]'}`}>{score}</p>
           </div>
         </div>
+        <p className="text-[10px] text-gray-400 leading-relaxed mt-2">Product Score = objective quality (nutrition + ingredients). Suitability = how well it fits {profileName}'s health profile.</p>
       </div>
     </div>
   );

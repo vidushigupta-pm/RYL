@@ -21,6 +21,9 @@ export interface ScoreBreakdownItem {
   label: string;
   impact: number;
   explanation: string;
+  source?: string;     // e.g. "WHO 2015 · ICMR-NIN 2024"
+  threshold?: string;  // e.g. "37g/100g (flagged above 20g/100g)"
+  category?: 'NUTRITION' | 'INGREDIENT' | 'UPF' | 'COSMETIC' | 'HOUSEHOLD';
 }
 
 export interface ScoreResult {

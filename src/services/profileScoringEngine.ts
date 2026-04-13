@@ -1771,9 +1771,13 @@ export function calculateProfileVerdict(
   // ── Step 8: Remove duplicate positives ───────────────────────
   const uniquePositives = [...new Set(positives)];
 
-  // Calculate final score from impacts
+  // Suitability score — starts at 100, only profile-specific deductions applied.
+  // We do NOT add to baseProductScore because the base score already penalises
+  // sugar, sodium, etc. Adding profile penalties on top causes double-counting
+  // (e.g. Biscoff: base 81 − diabetic sugar penalty − refined carb penalty = 1).
+  // Instead: profile_score answers "how suitable is this for YOUR profile?" (0–100).
   const totalImpact = concerns.reduce((acc, c) => acc + c.impact, 0);
-  const finalScore = cap(baseProductScore + totalImpact);
+  const finalScore = cap(100 + totalImpact);
 
   return {
     profile,
