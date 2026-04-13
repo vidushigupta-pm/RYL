@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { getAlsoScanned, AlsoScannedProduct } from '../services/swapService';
 
 const ScoreChip = ({ score }: { score: number }) => {
-  const color = score >= 70 ? '#2E7D4F' : score >= 40 ? '#E07B2A' : '#D94F3D';
-  const bg = score >= 70 ? '#E6F4EC' : score >= 40 ? '#FFF0E0' : '#FDECEA';
+  const color = score >= 80 ? '#2E7D4F' : score >= 60 ? '#E07B2A' : score >= 40 ? '#D4871E' : '#D94F3D';
+  const bg   = score >= 80 ? '#E6F4EC'  : score >= 60 ? '#FFF0E0'  : score >= 40 ? '#FFF3DC'  : '#FDECEA';
+  const label = score >= 80 ? 'Good' : score >= 60 ? 'Occasional' : score >= 40 ? 'Caution' : 'Avoid';
   return (
     <span style={{ color, background: bg }}
-      className="font-mono font-bold text-xs px-2 py-0.5 rounded-lg">
-      {score}/100
+      className="font-mono font-bold text-xs px-2 py-0.5 rounded-lg whitespace-nowrap">
+      {score} · {label}
     </span>
   );
 };

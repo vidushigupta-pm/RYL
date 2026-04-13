@@ -2185,17 +2185,17 @@ const ResultScreen = ({
               )}
             </div>
           </div>
-          <div className="flex flex-col items-center">
-            <button 
+          <div className="flex flex-col items-center gap-1">
+            <button
               onClick={() => setShowBreakdown(true)}
               className="relative w-20 h-20 flex items-center justify-center active:scale-95 transition-all group"
             >
               <svg className="absolute inset-0 w-full h-full -rotate-90">
                 <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                <circle 
-                  cx="40" cy="40" r="36" fill="none" 
-                  stroke={currentVerdict.score >= 70 ? '#2E7D4F' : currentVerdict.score >= 40 ? '#E07B2A' : '#D94F3D'} 
-                  strokeWidth="8" 
+                <circle
+                  cx="40" cy="40" r="36" fill="none"
+                  stroke={currentVerdict.score >= 80 ? '#2E7D4F' : currentVerdict.score >= 60 ? '#E07B2A' : currentVerdict.score >= 40 ? '#D4871E' : '#D94F3D'}
+                  strokeWidth="8"
                   strokeDasharray={`${2 * Math.PI * 36}`}
                   strokeDashoffset={`${2 * Math.PI * 36 * (1 - currentVerdict.score / 100)}`}
                   strokeLinecap="round"
@@ -2206,9 +2206,19 @@ const ResultScreen = ({
                 <Info className="w-3 h-3" />
               </div>
             </button>
-            <button 
+            <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+              currentVerdict.score >= 80 ? 'bg-[#2E7D4F]/20 text-[#2E7D4F]' :
+              currentVerdict.score >= 60 ? 'bg-[#E07B2A]/20 text-[#E07B2A]' :
+              currentVerdict.score >= 40 ? 'bg-[#D4871E]/20 text-[#D4871E]' :
+              'bg-[#D94F3D]/20 text-[#D94F3D]'
+            }`}>
+              {currentVerdict.score >= 80 ? 'Good' :
+               currentVerdict.score >= 60 ? 'Occasional' :
+               currentVerdict.score >= 40 ? 'Caution' : 'Avoid'}
+            </span>
+            <button
               onClick={() => setShowBreakdown(true)}
-              className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-60 hover:opacity-100 transition-opacity underline underline-offset-2"
+              className="text-[10px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity underline underline-offset-2"
             >
               WHY THIS SCORE?
             </button>
@@ -2718,6 +2728,20 @@ const ResultScreen = ({
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#1B3D2F] via-[#D4871E] to-[#D94F3D]" />
               
+              {/* Score range legend */}
+              <div className="flex gap-1.5 mb-5 flex-wrap">
+                {[
+                  { range: '80–100', label: 'Good', color: '#2E7D4F', bg: '#E6F4EC' },
+                  { range: '60–79',  label: 'Occasional', color: '#E07B2A', bg: '#FFF0E0' },
+                  { range: '40–59',  label: 'Caution', color: '#D4871E', bg: '#FFF3DC' },
+                  { range: '0–39',   label: 'Avoid', color: '#D94F3D', bg: '#FDECEA' },
+                ].map(({ range, label, color, bg }) => (
+                  <span key={label} style={{ color, background: bg }} className="text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                    {range} · {label}
+                  </span>
+                ))}
+              </div>
+
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-[#1B3D2F]">Score Breakdown</h3>
