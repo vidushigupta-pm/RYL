@@ -1949,17 +1949,27 @@ const ScoreBreakdown = ({ score, concerns, profileName, productBreakdown }: any)
       </div>
 
       <div className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm mt-4 sticky bottom-0">
-        <div className="flex justify-between items-center mb-1">
-          <div>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Product Score</span>
-            <p className="text-lg font-bold text-[#1B3D2F] font-mono">{derivedBase}</p>
+        {/* Only show suitability split when a real profile with concerns exists */}
+        {concerns.length > 0 ? (
+          <>
+            <div className="flex justify-between items-center mb-1">
+              <div>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Product Score</span>
+                <p className="text-lg font-bold text-[#1B3D2F] font-mono">{derivedBase}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Suitability for {profileName}</span>
+                <p className={`text-lg font-bold font-mono ${score >= 80 ? 'text-[#2E7D4F]' : score >= 60 ? 'text-[#E07B2A]' : score >= 40 ? 'text-[#D4871E]' : 'text-[#D94F3D]'}`}>{score}</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-400 leading-relaxed mt-2">Product Score = objective quality. Suitability = how well it fits {profileName}'s health conditions.</p>
+          </>
+        ) : (
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-bold text-[#1B3D2F]">Product Score</span>
+            <span className={`text-xl font-bold font-mono ${derivedBase >= 80 ? 'text-[#2E7D4F]' : derivedBase >= 60 ? 'text-[#E07B2A]' : derivedBase >= 40 ? 'text-[#D4871E]' : 'text-[#D94F3D]'}`}>{derivedBase}</span>
           </div>
-          <div className="text-right">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Suitability for {profileName}</span>
-            <p className={`text-lg font-bold font-mono ${score >= 70 ? 'text-[#2E7D4F]' : score >= 40 ? 'text-[#D4871E]' : 'text-[#D94F3D]'}`}>{score}</p>
-          </div>
-        </div>
-        <p className="text-[10px] text-gray-400 leading-relaxed mt-2">Product Score = objective quality (nutrition + ingredients). Suitability = how well it fits {profileName}'s health profile.</p>
+        )}
       </div>
     </div>
   );
@@ -2280,27 +2290,27 @@ const ResultScreen = ({
                 <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
                 <circle
                   cx="40" cy="40" r="36" fill="none"
-                  stroke={currentVerdict.score >= 80 ? '#2E7D4F' : currentVerdict.score >= 60 ? '#E07B2A' : currentVerdict.score >= 40 ? '#D4871E' : '#D94F3D'}
+                  stroke={result.overall_score >= 80 ? '#2E7D4F' : result.overall_score >= 60 ? '#E07B2A' : result.overall_score >= 40 ? '#D4871E' : '#D94F3D'}
                   strokeWidth="8"
                   strokeDasharray={`${2 * Math.PI * 36}`}
-                  strokeDashoffset={`${2 * Math.PI * 36 * (1 - currentVerdict.score / 100)}`}
+                  strokeDashoffset={`${2 * Math.PI * 36 * (1 - result.overall_score / 100)}`}
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="font-mono text-2xl font-bold">{currentVerdict.score}</span>
+              <span className="font-mono text-2xl font-bold">{result.overall_score}</span>
               <div className="absolute -bottom-1 -right-1 bg-white text-[#1B3D2F] rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
                 <Info className="w-3 h-3" />
               </div>
             </button>
             <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-              currentVerdict.score >= 80 ? 'bg-[#2E7D4F]/20 text-[#2E7D4F]' :
-              currentVerdict.score >= 60 ? 'bg-[#E07B2A]/20 text-[#E07B2A]' :
-              currentVerdict.score >= 40 ? 'bg-[#D4871E]/20 text-[#D4871E]' :
+              result.overall_score >= 80 ? 'bg-[#2E7D4F]/20 text-[#2E7D4F]' :
+              result.overall_score >= 60 ? 'bg-[#E07B2A]/20 text-[#E07B2A]' :
+              result.overall_score >= 40 ? 'bg-[#D4871E]/20 text-[#D4871E]' :
               'bg-[#D94F3D]/20 text-[#D94F3D]'
             }`}>
-              {currentVerdict.score >= 80 ? 'Good' :
-               currentVerdict.score >= 60 ? 'Occasional' :
-               currentVerdict.score >= 40 ? 'Caution' : 'Avoid'}
+              {result.overall_score >= 80 ? 'Good' :
+               result.overall_score >= 60 ? 'Occasional' :
+               result.overall_score >= 40 ? 'Caution' : 'Avoid'}
             </span>
             <button
               onClick={() => setShowBreakdown(true)}
