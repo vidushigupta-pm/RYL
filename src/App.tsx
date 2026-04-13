@@ -2103,6 +2103,7 @@ const ResultScreen = ({
     profiles.length === 0  // show nudge if user has no profiles
   );
   const [expandedIng, setExpandedIng] = useState<string | null>(null);
+  const [safeGroupOpen, setSafeGroupOpen] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showSignUpNudge, setShowSignUpNudge] = useState(false);
@@ -2572,17 +2573,17 @@ const ResultScreen = ({
                   </>
                 )}
 
-                {/* 🟢 Safe — collapsed by default */}
+                {/* 🟢 Safe — collapsed by default, independent toggle */}
                 {safe.length > 0 && (
                   <>
                     <div
                       className="flex items-center justify-between px-4 py-2.5 bg-[#F0FBF4] cursor-pointer"
-                      onClick={() => setExpandedIng(expandedIng === 'safe-group' ? null : 'safe-group')}
+                      onClick={() => setSafeGroupOpen(o => !o)}
                     >
                       <span className="text-xs font-bold text-[#1B3D2F] uppercase tracking-widest">🟢 Safe / Unverified</span>
-                      <span className="text-[10px] font-bold text-[#2E7D4F]">{safe.length} ingredients {expandedIng === 'safe-group' ? '▲' : '▼'}</span>
+                      <span className="text-[10px] font-bold text-[#2E7D4F]">{safe.length} ingredients {safeGroupOpen ? '▲' : '▼'}</span>
                     </div>
-                    {expandedIng === 'safe-group' && safe.map((ing, i) => (
+                    {safeGroupOpen && safe.map((ing, i) => (
                       <IngRow key={`safe-${i}`} ing={ing} globalKey={`safe-${i}`}
                         expandedIng={expandedIng} setExpandedIng={setExpandedIng}
                         activeProfile={activeProfile} profileHits={getProfileFlags(ing)} />
