@@ -7,6 +7,12 @@ import {
   VALID_CATEGORIES, buildFinalIngredients, buildResult, dedup,
   ragLookup, saveProductToCache, sanitiseCachedVerdict
 } from '../lib/shared';
+import {
+  searchOFF, parseOFFIngredients, mapOFFNutrition,
+  mapOFFCategory, mapOFFAllergens, isOFFProductUsable,
+  detectHiddenSugars, detectMaidaAlert, detectTopIngredientWarning,
+  detectHFSS, generateSummary, getIndiaContext,
+} from '../lib/openFoodFacts';
 
 // Write a scan event via Admin SDK — bypasses Firestore client rules
 async function writeScanEvent(result: any, userId: string, source: string) {
@@ -96,6 +102,65 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Fire-and-forget scan_event (Admin SDK, bypasses Firestore rules)
       writeScanEvent(sanitised, userIdStr, 'search_cache');
       return res.status(200).json(sanitised);
+    }
+
+    // STEP 1.5: Open Food Facts lookup — free, no quota, ~800k Indian products
+    // Falls through silently to Gemini on any error or insufficient data.
+    try {
+      const offProduct = await searchOFF(productName);
+
+      if (offProduct && isOFFProductUsable(offProduct)) {
+        const rawIngredients = parseOFFIngredients(offProduct);
+        const nutrition     = mapOFFNutrition(offProduct.nutriments);
+        const category      = mapOFFCategory(offProduct.categories_tags ?? []);
+        const product_name  = offProduct.product_name || productName;
+        const brand         = offProduct.brands || '';
+        const is_upf        = offProduct.nova_group === 4;
+        const hfss_status   = detectHFSS(nutrition);
+
+        const hiddenSugars    = detectHiddenSugars(rawIngredients);
+        const maida_alert     = detectMaidaAlert(rawIngredients);
+        const top_ingredient_warning = detectTopIngredientWarning(rawIngredients);
+        const allergens       = mapOFFAllergens(offProduct.allergens_tags ?? []);
+
+        // buildFinalIngredients: DB-first lookup, no Gemini analysis (empty array)
+        const finalVerified = buildFinalIngredients(rawIngredients, []);
+
+        const offGeminiData = {
+          summary:               '',           // filled below after scoring
+          india_context:         getIndiaContext(category),
+          is_upf,
+          hfss_status,
+          suggestions:           [],
+          hidden_sugar_count:    hiddenSugars.count,
+          hidden_sugar_names:    hiddenSugars.names,
+          maida_alert,
+          top_ingredient_warning,
+          allergens,
+        };
+
+        const result = buildResult(product_name, brand, category, nutrition as any, finalVerified, rawIngredients, offGeminiData);
+
+        // Generate a lightweight LLM-free summary using the scored breakdown
+        result.summary = generateSummary(
+          product_name, brand,
+          result.overall_score,
+          result.score_breakdown,
+          is_upf,
+        );
+
+        // Cache and log (non-blocking)
+        await Promise.all([
+          saveProductToCache(result),
+          writeScanEvent(result, userIdStr, 'search_off'),
+        ]);
+
+        return res.status(200).json(result);
+      }
+      // OFF returned nothing usable — fall through to Gemini
+    } catch (offErr) {
+      // Network error, timeout, or parse failure — fall through silently
+      console.warn('[searchProductByName] OFF lookup failed, falling back to Gemini:', (offErr as any)?.message);
     }
 
     // STEP 2: Gemini call using training knowledge (no Google Search = much faster)
