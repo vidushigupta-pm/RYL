@@ -732,6 +732,44 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     front_claims: ["Keratin Actives", "Fibre Actives", "Damage Repair"]
   },
 
+  // ── PERSONAL CARE — DAY 1 GEMINI ADDITIONS ───────────────────────────────────
+
+  {
+    product_name: "Dove Creamy Bathing Beauty Bar",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Cocoyl Isethionate", "Stearic Acid", "Lauric Acid", "Sodium Palmitate", "Water", "Sodium Isethionate", "Sodium Stearate", "Cocamidopropyl Betaine", "Sodium Palm Kernelate", "Glycerin", "Perfume", "Sodium Chloride", "Zinc Oxide", "Tetrasodium EDTA", "Tetrasodium Etidronate", "Alpha-Isomethyl Ionone", "Citronellol", "Coumarin", "Hexyl Cinnamal", "Limonene", "Linalool", "CI 77891"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["1/4 Moisturising Cream", "Soft & Smooth Skin"]
+  },
+
+  {
+    product_name: "Himalaya Herbals Anti-Dandruff Shampoo",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Dimethiconol", "TEA-Dodecylbenzenesulfonate", "Trideceth-10", "Glycol Distearate", "Perfume", "Glycerin", "Sodium Chloride", "Sodium Benzoate", "Carbomer", "Guar Hydroxypropyltrimonium Chloride", "Salicylic Acid", "Melaleuca Alternifolia (Tea Tree) Leaf Oil", "Aloe Barbadensis Leaf Juice", "Rosmarinus Officinalis (Rosemary) Leaf Oil", "Sodium Hydroxide", "Disodium EDTA"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Tea Tree Oil", "Salicylic Acid", "Anti-Dandruff", "Herbal"]
+  },
+
+  {
+    product_name: "Mamaearth Onion Shampoo with Plant Keratin",
+    brand: "Mamaearth",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cocamidopropyl Betaine", "Caprylyl/Capryl Glucoside", "Sodium Methyl Cocoyl Taurate", "Sodium Lauroyl Sarcosinate", "Polyquaternium-7", "Sodium Cocoamphoacetate", "Panthenol", "Allium Cepa (Onion) Bulb Extract", "Plant Keratin", "Glyceryl Oleate", "Coco-Glucoside", "D-Panthenol", "Sodium PCA", "Trigonella Foenum-Graecum (Fenugreek) Seed Extract", "Glycerin", "Potassium Sorbate", "Sodium Benzoate", "IFRA Certified Allergen Free Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["No Sulphate", "No Paraben", "No SLS", "Onion Extract", "Hair Fall Control"]
+  },
+
+  {
+    product_name: "TRESemmé Keratin Smooth Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Behentrimonium Chloride", "Perfume", "Dipropylene Glycol", "Lactic Acid", "Sodium Chloride", "Amodimethicone", "Disodium EDTA", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Phenoxyethanol", "Magnesium Nitrate", "Hydrolyzed Keratin", "Argania Spinosa (Argan) Kernel Oil", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Alpha-Isomethyl Ionone", "Benzyl Alcohol", "Benzyl Salicylate", "Citronellol", "Geraniol", "Hexyl Cinnamal", "Linalool"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Keratin Smooth", "Argan Oil", "Anti-Frizz", "Salon Smooth Hair"]
+  },
+
   // ── COOKING OIL & MORE ────────────────────────────────────────────────────
 
   {
@@ -1009,6 +1047,107 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     ingredients: ["Puffed Rice (Murmura)", "Edible Vegetable Oil (Sunflower Oil)", "Iodised Salt", "Spices (Red Chilli, Turmeric, Coriander)", "Dried Mango Powder (Amchur)", "Sugar", "Roasted Peanuts"],
     nutrition: { energy_kcal: 385, sugar_g: 4.5, sodium_mg: 420, protein_g: 8.5, fat_g: 11, saturated_fat_g: 2.5, trans_fat_g: 0, fibre_g: 2.8 },
     front_claims: ["Light Snack", "Sunflower Oil"]
+  },
+
+  // ── SNACKS — DAY 1 CHATGPT ADDITIONS ─────────────────────────────────────────
+
+  {
+    product_name: "Bikaji Aloo Bhujia",
+    brand: "Bikaji Foods",
+    category: "FOOD",
+    ingredients: ["Potato (30%)", "Besan (Chickpea Flour)", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt", "Spices (Red Chilli, Black Pepper, Coriander)", "Dried Mango Powder (Amchur)", "Asafoetida (Hing)"],
+    nutrition: { energy_kcal: 534, sugar_g: 1.5, sodium_mg: 640, protein_g: 12, fat_g: 31, saturated_fat_g: 14, trans_fat_g: 0, fibre_g: 5.8 },
+    front_claims: ["Crispy Aloo Bhujia", "Traditional Recipe"]
+  },
+
+  {
+    product_name: "Cornitos Nacho Crisps Chilli Lime",
+    brand: "Greendot Health Foods",
+    category: "FOOD",
+    ingredients: ["Corn Flour", "Edible Vegetable Oil (Sunflower Oil)", "Rice Flour", "Iodised Salt", "Spices (Red Chilli)", "Acidity Regulator (INS 330)", "Citric Acid", "Natural Lime Flavour"],
+    nutrition: { energy_kcal: 484, sugar_g: 0.8, sodium_mg: 560, protein_g: 7.2, fat_g: 22, saturated_fat_g: 3.8, trans_fat_g: 0, fibre_g: 4.2 },
+    front_claims: ["Baked Not Fried", "No Artificial Colours", "No MSG", "Sunflower Oil"]
+  },
+
+  {
+    product_name: "DFM Crax Corn Rings Masala",
+    brand: "DFM Foods",
+    category: "FOOD",
+    ingredients: ["Corn Meal", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt", "Sugar", "Spices (Red Chilli, Coriander, Turmeric)", "Acidity Regulator (INS 330)", "Flavour Enhancer (INS 627, INS 631)", "Colour (INS 110)", "Anticaking Agent (INS 551)"],
+    nutrition: { energy_kcal: 545, sugar_g: 5, sodium_mg: 760, protein_g: 5.5, fat_g: 32, saturated_fat_g: 15, trans_fat_g: 0, fibre_g: 2.0 },
+    front_claims: ["Crunchy Corn Rings"]
+  },
+
+  {
+    product_name: "Balaji Wafers Classic Salted",
+    brand: "Balaji Wafers",
+    category: "FOOD",
+    ingredients: ["Potatoes", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt"],
+    nutrition: { energy_kcal: 538, sugar_g: 0.3, sodium_mg: 590, protein_g: 6.2, fat_g: 35, saturated_fat_g: 15.5, trans_fat_g: 0, fibre_g: 4.5 },
+    front_claims: ["Real Potatoes", "Crispy & Crunchy"]
+  },
+
+  {
+    product_name: "Prataap Snacks Yellow Diamond Namkeen Mix",
+    brand: "Prataap Snacks",
+    category: "FOOD",
+    ingredients: ["Edible Vegetable Oil (Palm Oil)", "Besan (Chickpea Flour)", "Corn Flakes", "Puffed Rice", "Peanuts", "Iodised Salt", "Spices (Red Chilli, Coriander, Turmeric)", "Dried Mango Powder", "Sugar", "Citric Acid"],
+    nutrition: { energy_kcal: 512, sugar_g: 4.5, sodium_mg: 510, protein_g: 13, fat_g: 27, saturated_fat_g: 11.5, trans_fat_g: 0, fibre_g: 5.5 },
+    front_claims: ["Crunchy Namkeen Mix"]
+  },
+
+  {
+    product_name: "Tata Soulfull Ragi Bites Chocolate",
+    brand: "Tata Consumer Products",
+    category: "FOOD",
+    ingredients: ["Ragi Flour (Finger Millet) (40%)", "Wheat Flour", "Sugar", "Edible Vegetable Oil (Sunflower Oil)", "Cocoa Powder (3%)", "Skimmed Milk Powder", "Iodised Salt", "Leavening Agents (INS 500, INS 503)", "Emulsifier (INS 322)", "Natural Cocoa Flavour"],
+    nutrition: { energy_kcal: 472, sugar_g: 20, sodium_mg: 310, protein_g: 8.5, fat_g: 16, saturated_fat_g: 4.5, trans_fat_g: 0, fibre_g: 4.8 },
+    front_claims: ["40% Ragi", "No Maida", "Source of Calcium", "Whole Grain"]
+  },
+
+  {
+    product_name: "Yoga Bar Oats & Almonds Breakfast Bar",
+    brand: "ITC (Yoga Bar)",
+    category: "FOOD",
+    ingredients: ["Rolled Oats (30%)", "Date Paste", "Almonds (12%)", "Honey", "Whey Protein Concentrate", "Sunflower Seeds", "Pumpkin Seeds", "Rice Crisps", "Natural Vanilla Flavour", "Salt"],
+    nutrition: { energy_kcal: 388, sugar_g: 18, sodium_mg: 55, protein_g: 11, fat_g: 13, saturated_fat_g: 2.8, trans_fat_g: 0, fibre_g: 5.5 },
+    front_claims: ["No Refined Sugar", "10g Protein", "Whole Grain Oats", "Real Almonds"]
+  },
+
+  {
+    product_name: "RiteBite Max Protein Active Bar Cookies & Cream",
+    brand: "NutroActive",
+    category: "FOOD",
+    ingredients: ["Whey Protein Concentrate", "Soy Protein Isolate", "Dark Chocolate Compound (Sugar, Cocoa Mass, Cocoa Butter, Emulsifier (INS 476))", "Sugar", "Skimmed Milk Powder", "Glycerine", "Oat Flour", "Cocoa Powder", "Glucose Syrup", "Salt", "Acidity Regulator (INS 330)", "Artificial Flavour (Vanilla)"],
+    nutrition: { energy_kcal: 348, sugar_g: 15, sodium_mg: 200, protein_g: 30, fat_g: 8, saturated_fat_g: 3.5, trans_fat_g: 0, fibre_g: 4.0 },
+    front_claims: ["30g Protein", "High Protein", "Low Fat", "Post Workout"]
+  },
+
+  {
+    product_name: "Act II Classic Salted Popcorn",
+    brand: "DS Group",
+    category: "FOOD",
+    ingredients: ["Corn", "Edible Vegetable Oil (Palm Oil)", "Iodised Salt"],
+    nutrition: { energy_kcal: 452, sugar_g: 0.5, sodium_mg: 480, protein_g: 9, fat_g: 20, saturated_fat_g: 9, trans_fat_g: 0, fibre_g: 10.5 },
+    front_claims: ["Classic Salted", "Real Popcorn", "No Artificial Colours"]
+  },
+
+  {
+    product_name: "Roasted Foxnuts (Makhana) Himalayan Salt",
+    brand: "Farmley",
+    category: "FOOD",
+    ingredients: ["Fox Nuts (Makhana) (95%)", "Himalayan Pink Salt", "Edible Vegetable Oil (Sunflower Oil)"],
+    nutrition: { energy_kcal: 347, sugar_g: 0, sodium_mg: 180, protein_g: 9.7, fat_g: 0.5, saturated_fat_g: 0.1, trans_fat_g: 0, fibre_g: 14.5 },
+    front_claims: ["High Protein", "Low Fat", "Gluten Free", "No Artificial Flavour"]
+  },
+
+  {
+    product_name: "Haldiram's Chivda",
+    brand: "Haldiram's",
+    category: "FOOD",
+    ingredients: ["Flattened Rice (Poha)", "Edible Vegetable Oil (Palm Oil)", "Cashew Nuts", "Raisins", "Peanuts", "Coconut (Dry)", "Sugar", "Iodised Salt", "Spices (Turmeric, Red Chilli, Mustard Seeds, Curry Leaves)", "Citric Acid"],
+    nutrition: { energy_kcal: 497, sugar_g: 8, sodium_mg: 390, protein_g: 10, fat_g: 24, saturated_fat_g: 10, trans_fat_g: 0, fibre_g: 3.5 },
+    front_claims: ["Traditional Chivda", "Premium Dry Fruits"]
   }
 
 ];

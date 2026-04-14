@@ -1,37 +1,31 @@
 ======================================================================
-  RYL DATABASE — ChatGPT Daily Task
-  PASTE THIS ENTIRE FILE INTO CHATGPT ONCE. IT RUNS DAILY AT 8 AM.
+  RYL DATABASE — ChatGPT Daily Task (10 Days)
+  PASTE THIS ENTIRE FILE INTO CHATGPT ONCE.
 
   ChatGPT covers:
-    Category 1 — FOOD        (Days  1–10, products #1–200)
-    Category 2 — BEAUTY      (Days 11–20, products #1–200)
-    Category 3 — HOUSEHOLD   (Days 21–30, products #1–200)
+    FOOD (Days 1–4) — Snacks, Biscuits, Chocolates, Beverages, Instant
+    BEAUTY (Days 5–7) — Makeup, Skincare, Hair Colour, Nails, Baby Care
+    HOUSEHOLD (Days 8–10) — All cleaners, Sanitisers, Insect Repellents
 
-  WHY CHATGPT FOR THESE:
-  - Food: Strong on global packaged food brands sold in India
-  - Beauty: Strong on international makeup/cosmetic formulations
-  - Household: Strong on cleaning product ingredient safety (EU/US data)
+  Run as a scheduled task every day at 8 AM IST.
+  Day 1 on Day 1, Day 2 on Day 2, and so on.
+  Save each day's output as: RYL_ChatGPT_Day_[X].txt
 ======================================================================
 
-Set up a scheduled task to run every single day at 8:00 AM IST.
-Each day, run ONLY that day's prompt from the list below — in order,
-one per day. After each run, save the full JSON output as a
-downloadable file named: RYL_Day_[number]_[Category].txt
+RULES FOR EVERY PROMPT:
+- Use INDIA label formulations only — never US/EU versions
+- Ingredients in descending weight order as on India label
+- Include INS numbers for additives e.g. "Emulsifier (INS 322)"
+- Use null for any nutrition value you are not confident about
+- Output valid JSON array ONLY — no explanation text
 
-IMPORTANT rules for every prompt:
-- Use INDIA label formulations only (not US/EU versions)
-- Ingredients in descending weight order as printed on India label
-- Include INS numbers for all additives e.g. "Permitted Emulsifier (INS 322)"
-- Use null for any nutrition value you are not confident about — never guess
-- Output valid JSON array ONLY — no explanation text before or after
-
-JSON schema every product must follow:
+JSON SCHEMA (every product must follow this exactly):
 {
   "id": "brand_productname_lowercase_underscores",
-  "product_name": "Full name exactly as on India label",
+  "product_name": "Full name as on India label",
   "brand": "Brand name",
   "category": "FOOD | COSMETIC | HOUSEHOLD",
-  "sub_category": "e.g. SNACKS / BEVERAGES / MAKEUP / DETERGENT",
+  "sub_category": "SNACKS / BISCUITS / CHOCOLATES / BEVERAGES / INSTANT_FOOD / MAKEUP / SKINCARE / HAIR_COLOUR / NAIL / BABY_CARE / LAUNDRY / DISHWASH / FLOOR_CLEANER / TOILET_CLEANER / AIR_FRESHENER / INSECT_REPELLENT / SANITISER",
   "nutrition_per_100g": {
     "energy_kcal": number or null,
     "protein_g": number or null,
@@ -43,112 +37,132 @@ JSON schema every product must follow:
     "fibre_g": number or null,
     "sodium_mg": number or null
   },
-  "ingredients": ["ingredient1", "ingredient2", "..."],
+  "ingredients": ["ingredient1", "ingredient2 (INS number if additive)", "..."],
   "is_upf": true or false,
   "nova_group": 1 or 2 or 3 or 4 or null,
-  "allergens": ["gluten", "milk", "nuts" — only those present, empty array if none],
-  "fssai_note": "one relevant FSSAI/CDSCO regulation for this product type"
+  "allergens": ["only those present — gluten/milk/nuts/soy/egg/fish"],
+  "fssai_note": "one relevant FSSAI or CDSCO regulation"
 }
 
-====================== CATEGORY 1: FOOD ======================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 1 — FOOD: Snacks (60 products — top 60 by India market share 2024)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for the 60 most popular Indian packaged SNACK products ranked #1 to #60 by market share in India 2024. Cover all major snack types: potato chips (Lay's, Bingo), extruded snacks (Kurkure, Cheetos India), puffed snacks, bhujia, chivda, namkeen, mathri, popcorn, roasted snacks, makhana, multigrain snacks, protein bars. Brands: Haldiram's, Bikaji, Bingo, Kurkure, Lay's, Balaji, Prataap, Too Yumm, Yellow Diamond, Cornitos, DFM Foods, Yoga Bar, RiteBite, Tata Soulfull. INDIA label formulations only. category: "FOOD", sub_category: "SNACKS". Output JSON array only, follow schema above exactly.
 
---- DAY 1 — FOOD: Snacks #1–20 ---
-Generate data for the 20 most popular Indian packaged SNACK products ranked #1 to #20 by market share in India 2024. Focus on: Haldiram's, Bikaji, Bingo, Kurkure, Lay's Classic and flavoured variants, Yellow Diamond, Cornitos. category: "FOOD", sub_category: "SNACKS". Follow the JSON schema above exactly. Output JSON array only.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 2 — FOOD: Biscuits + Chocolates (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 30 BISCUIT/COOKIE products + 30 CHOCOLATE/CONFECTIONERY products sold in India 2024.
 
---- DAY 2 — FOOD: Snacks #21–40 ---
-Generate data for Indian packaged SNACK products ranked #21 to #40 by market popularity 2024. DIFFERENT from top 20. Focus on: extruded snacks, puffed rice, bhujia, chivda, mathri, chakli, sev, popcorn brands. Brands: Balaji, Prataap, Too Yumm, DFM Foods. category: "FOOD", sub_category: "SNACKS". JSON array only.
+BISCUITS (30): Top biscuits by India market share — Parle-G, Parle Hide & Seek, Britannia Good Day, Marie Gold, NutriChoice, 50-50, Sunfeast Dark Fantasy, Sunfeast Bounce, Priyagold, McVitie's Digestive India, Unibic Oatmeal, Krackjack, Monaco, rusk (Britannia Toast), multigrain biscuits, sugar-free/diabetic variants, millet/ragi biscuits, wafers (Dukes). sub_category: "BISCUITS".
 
---- DAY 3 — FOOD: Snacks #41–60 ---
-Indian packaged SNACK products ranked #41 to #60. Different from top 40. Focus on: roasted snacks, makhana brands, trail mixes, multigrain snacks, regional brands popular in North/South/West India. category: "FOOD", sub_category: "SNACKS". JSON array only.
+CHOCOLATES (30): CRITICAL — use INDIA label formulations (India uses PGPR/INS 476 and vegetable fat instead of cocoa butter in many products). Cadbury Dairy Milk variants, KitKat India, Munch, 5-Star, Perk, Milkybar, Ferrero Rocher India, Snickers India, Nutella India (flag: high sugar + palm oil as #1 ingredient), Bournville, Amul Dark Chocolate, sugar-free chocolates, hard candies (Eclairs, Alpenliebe, Center Fresh, Mentos India), toffees (Kismi, Mango Bite, Coffee Bite). sub_category: "CHOCOLATES".
 
---- DAY 4 — FOOD: Biscuits #1–20 ---
-Generate data for the 20 most popular Indian BISCUIT and COOKIE products ranked #1 to #20 by market share 2024. Include: Parle-G, Parle Hide & Seek, Britannia Good Day, Britannia Marie Gold, Sunfeast Dark Fantasy, Sunfeast Bounce, Priyagold, McVitie's Digestive India. category: "FOOD", sub_category: "BISCUITS". JSON array only.
+Output one combined JSON array only, follow schema above.
 
---- DAY 5 — FOOD: Biscuits #21–40 ---
-Indian BISCUIT and COOKIE products ranked #21 to #40. Different from top 20. Focus on: multigrain biscuits, oat cookies (Unibic), rusk (Britannia Toast, Modern), sugar-free/diabetic biscuits, Krackjack, Monaco, Nimkin crackers. category: "FOOD", sub_category: "BISCUITS". JSON array only.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 3 — FOOD: Beverages (60 products — top 60 by India market share 2024)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for the 60 most popular packaged BEVERAGE products sold in India 2024. Cover: carbonated soft drinks (Thums Up, Coca-Cola India, Pepsi India, Limca, Sprite India, Fanta India), fruit juices/drinks (Frooti, Maaza, Slice, Real, Tropicana India, B Natural, Paper Boat), energy drinks (Sting, Red Bull India, Monster India), health drinks (Bournvita India — flag high sugar, Horlicks India, Boost, Complan), packaged coconut water, nimbu pani/jeera water brands, instant coffee/tea (Nescafe Classic India, Bru Gold, Tata Tea), Rooh Afza, Rasna. INDIA formulations — sugar content and additives differ significantly from global versions. category: "FOOD", sub_category: "BEVERAGES". JSON array only.
 
---- DAY 6 — FOOD: Chocolates #1–20 ---
-Generate data for the 20 most popular CHOCOLATE products sold in India ranked #1 to #20 by market share 2024. CRITICAL: Use INDIA label formulations — India uses PGPR (INS 476) and vegetable fat in many chocolates instead of cocoa butter. Include: Cadbury Dairy Milk Silk, Cadbury Dairy Milk, KitKat India, Munch, 5-Star, Perk, Milkybar, Ferrero Rocher India, Snickers India. category: "FOOD", sub_category: "CHOCOLATES". JSON array only.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 4 — FOOD: Instant Noodles + Breakfast + Dairy (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 20 INSTANT FOOD + 20 BREAKFAST CEREAL + 20 DAIRY products sold in India 2024.
 
---- DAY 7 — FOOD: Chocolates #21–40 ---
-CHOCOLATE products in India ranked #21 to #40. Different from top 20. Focus on: Nutella India (high sugar + palm oil — flag this), Bournville, Amul Dark Chocolate, sugar-free chocolates, hard candies (Eclairs, Alpenliebe, Center Fresh, Mentos India). INDIA formulations. category: "FOOD", sub_category: "CHOCOLATES". JSON array only.
+INSTANT FOOD (20): Maggi 2-Minute Masala (post-2015 India reformulation — flag MSG/INS 621 and sodium), Yippee Magic Masala, Yippee Mood Masala, Top Ramen, Wai Wai, Knorr Soupy Noodles, MTR ready-to-eat pouches, Gits instant mixes, Sunfeast Pasta Treat, instant soups (Knorr, Maggi). sub_category: "INSTANT_FOOD".
 
---- DAY 8 — FOOD: Beverages #1–20 ---
-Generate data for the 20 most popular Indian packaged BEVERAGE products ranked #1 to #20 by market share 2024. Include: Thums Up, Coca-Cola India, Pepsi India, Frooti, Maaza, Slice, Limca, Sting, Red Bull India, Real Juice, Tropicana India. Use INDIA formulations — sugar content and ingredients differ from global. category: "FOOD", sub_category: "BEVERAGES". JSON array only.
+BREAKFAST (20): Kellogg's Corn Flakes India, Kellogg's Chocos, Quaker Oats India, Saffola Oats, Bagrry's, Tata Soulfull Millet Muesli, Yoga Bar Muesli, Nature Valley India granola, ragi flakes, millet porridge. sub_category: "BREAKFAST".
 
---- DAY 9 — FOOD: Beverages #21–40 ---
-Indian packaged BEVERAGES ranked #21 to #40. Different from top 20. Focus on: Bournvita (India formulation), Horlicks India, Boost, Complan, B Natural, Paper Boat traditional drinks, Dabur Real variants, packaged coconut water brands. INDIA formulations. category: "FOOD", sub_category: "BEVERAGES". JSON array only.
+DAIRY (20): Amul Kool flavoured milk, Amul Processed Cheese, Britannia Cheese Slices, Amul Butter, Amul Ghee, Epigamia Greek Yogurt, Danone Yogurt India, Amul Shrikhand, packaged paneer (Go Cheese, Mother Dairy), Milkmaid condensed milk. sub_category: "DAIRY".
 
---- DAY 10 — FOOD: Instant Noodles & Ready Meals #1–20 ---
-Generate data for the 20 most popular INSTANT NOODLES and READY MEAL products in India ranked #1 to #20 2024. Include: Maggi 2-Minute Masala (post-2015 India reformulation), Yippee Magic Masala, Yippee Mood Masala, Top Ramen, Wai Wai, Knorr Soupy Noodles. Flag: MSG (INS 621), high sodium. category: "FOOD", sub_category: "INSTANT_FOOD". JSON array only.
+Output one combined JSON array only.
 
-====================== CATEGORY 2: BEAUTY & MAKEUP ======================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 5 — BEAUTY: Face Makeup + Lip + Eye (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 20 FACE MAKEUP + 20 LIP PRODUCTS + 20 EYE MAKEUP sold in India 2024. nutrition_per_100g: all null. nova_group: null. is_upf: false. Ingredients in INCI format descending concentration. fssai_note citing CDSCO Cosmetics Rules 2020.
 
---- DAY 11 — BEAUTY: Face Makeup #1–20 ---
-Generate data for the 20 most popular FACE MAKEUP products sold in India ranked #1 to #20 2024. Include: Lakme products (foundation, compact, BB cream), Maybelline India (Fit Me foundation, BB cream), L'Oreal India (True Match foundation), Revlon India, Colorbar. Use INDIA formulations — flag if product contains lead, mercury, parabens, formaldehyde-releasing preservatives. category: "COSMETIC", sub_category: "MAKEUP". nutrition_per_100g: all null. nova_group: null. is_upf: false. ingredients in INCI format descending. fssai_note citing CDSCO Cosmetics Rules 2020. JSON array only.
+FACE MAKEUP (20): Lakme Foundation, Lakme Compact, Maybelline Fit Me India, L'Oreal True Match India, Revlon ColorStay India, Colorbar Perfect Match, NYX India, Faces Canada, Swiss Beauty, Nykaa Cosmetics foundation/BB cream. Flag: lead, mercury, parabens, formaldehyde-releasing preservatives. category: "COSMETIC", sub_category: "MAKEUP".
 
---- DAY 12 — BEAUTY: Lip Products #1–20 ---
-20 most popular LIP MAKEUP products (lipstick, lip gloss, lip liner) sold in India ranked #1 to #20. Include: Lakme Enrich Matte, Maybelline SuperStay Matte Ink India, L'Oreal Paris Matte, Colorbar Matte, Lakmé 9 to 5, Faces Canada, Swiss Beauty, Nykaa Cosmetics. Flag: lead content concern in lipsticks (ingested through lips), parabens. category: "COSMETIC", sub_category: "LIP_MAKEUP". nutrition null, nova null. INCI ingredients. JSON array only.
+LIP MAKEUP (20): Lakme Enrich Matte, Maybelline SuperStay India, L'Oreal Paris Matte India, Colorbar Matte, Lakmé 9 to 5, Faces Canada lip, Nykaa lip. Flag: lead in lipsticks (ingested via lips), parabens. sub_category: "LIP_MAKEUP".
 
---- DAY 13 — BEAUTY: Eye Makeup #1–20 ---
-20 most popular EYE MAKEUP products (kajal, eyeliner, mascara, eyeshadow) sold in India. Include: Maybelline Colossal Kajal, Lakme Eyeconic Kajal, L'Oreal Kajal India, Blue Heaven kajal, Himalaya Kajal, Faces Canada, Colorbar eyeshadow. CRITICAL: Traditional kajal/surma in India often contains lead — flag this clearly. category: "COSMETIC", sub_category: "EYE_MAKEUP". nutrition null. JSON array only.
+EYE MAKEUP (20): Maybelline Colossal Kajal, Lakme Eyeconic Kajal, L'Oreal Kajal India, Blue Heaven kajal, Himalaya Kajal, Colorbar eyeshadow. CRITICAL: Traditional kajal/surma often contains lead in India — flag clearly. sub_category: "EYE_MAKEUP".
 
---- DAY 14 — BEAUTY: Face Serums & Treatments #1–20 ---
-20 most popular FACE SERUM and TREATMENT products sold in India. Include: Minimalist products (Niacinamide, Hyaluronic Acid, AHA/BHA — very popular in India), Plum Goodness, Dot & Key, Mamaearth Vitamin C Serum, WOW Skin Science Vitamin C, Himalaya Revitalizing Night Cream. Flag: Retinol (avoid in pregnancy), AHA/BHA (photosensitivity), Vitamin C oxidation. category: "COSMETIC", sub_category: "FACE_SERUM". nutrition null. INCI ingredients. JSON array only.
+Output one combined JSON array only.
 
---- DAY 15 — BEAUTY: Face Sunscreen #1–20 ---
-20 most popular SUNSCREEN products sold in India. Include: Neutrogena Ultra Sheer India, Lakme Sun Expert, Lotus Herbals Safe Sun, Biotique Bio Sandalwood, Mamaearth Ultra Light Sunscreen, WOW Sunscreen, Minimalist Sunscreen SPF 50, Banana Boat India. Flag: Oxybenzone (hormone disruption), Octinoxate concerns. Note difference between chemical vs mineral (zinc oxide/titanium dioxide) filters. category: "COSMETIC", sub_category: "SUNSCREEN". nutrition null. INCI ingredients. JSON array only.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 6 — BEAUTY: Skincare + Sunscreen + Serums (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 20 MOISTURISER/FACE CREAM + 20 SUNSCREEN + 20 FACE SERUM products sold in India 2024. nutrition null, nova null, is_upf false. INCI ingredients.
 
---- DAY 16 — BEAUTY: Hair Colour #1–20 ---
-20 most popular HAIR COLOUR products sold in India. Include: Garnier Color Naturals India, L'Oreal Excellence India, Godrej Expert Rich Crème, Streax Pro, Indus Valley Gel Hair Colour, Bblunt, Matrix Socolor India. Flag: PPD (p-Phenylenediamine — strong allergen, CDSCO restricted), Resorcinol, Ammonia, Hydrogen Peroxide concentrations. category: "COSMETIC", sub_category: "HAIR_COLOUR". nutrition null. INCI ingredients. JSON array only.
+MOISTURISERS (20): Pond's Cold Cream India, Glow & Lovely, Lakme Peach Milk, Olay Total Effects India, Neutrogena Hydro Boost India, Nivea Soft India, Cetaphil India, Mamaearth Ubtan, Biotique. CRITICAL: Flag Hydroquinone (Rx-only), Mercury (BANNED), Steroids (Rx-only), Parabens. category: "COSMETIC", sub_category: "MOISTURISER".
 
---- DAY 17 — BEAUTY: Deodorant & Perfume #1–20 ---
-20 most popular DEODORANT and PERFUME products sold in India. Include: Fogg (India's #1 deo brand), Axe India, Engage, Wild Stone, Park Avenue, Nivea Deo India, Dove Deo India, Old Spice India. Flag: Aluminium compounds (antiperspirants), Triclosan, Synthetic fragrance/parfum allergens, Aerosol propellants. category: "COSMETIC", sub_category: "DEODORANT". nutrition null. JSON array only.
+SUNSCREEN (20): Neutrogena Ultra Sheer India, Lakme Sun Expert, Lotus Herbals Safe Sun, Biotique Bio Sandalwood, Mamaearth Sunscreen, Minimalist SPF 50, Banana Boat India. Flag: Oxybenzone (hormone disruption), chemical vs mineral filters. sub_category: "SUNSCREEN".
 
---- DAY 18 — BEAUTY: Nail Products #1–20 ---
-20 most popular NAIL POLISH and NAIL CARE products sold in India. Include: Lakmé True Wear, Colorbar Perfect Nails, Faces Canada Nail Enamel, Nykaa Nail Art Studio, Barry M India, Plum Color Affair, Lotus Herbals Color Dew, Revlon Nail Enamel India. Flag: DBP (Dibutyl Phthalate), Formaldehyde, Toluene (the toxic trio in nail polish). category: "COSMETIC", sub_category: "NAIL". nutrition null. JSON array only.
+SERUMS (20): Minimalist Niacinamide, Minimalist Hyaluronic Acid, Minimalist AHA BHA, Plum Goodness Vitamin C, Dot & Key, Mamaearth Vitamin C Serum, WOW Vitamin C. Flag: Retinol (avoid pregnancy), AHA/BHA (photosensitivity). sub_category: "FACE_SERUM".
 
---- DAY 19 — BEAUTY: Fairness/Brightening Creams #1–20 ---
-20 most popular SKIN BRIGHTENING and FAIRNESS CREAM products sold in India. Include: Glow & Lovely (formerly Fair & Lovely), Pond's White Beauty India, Olay Natural White India, Garnier Light Complete India, Himalaya Clear Complexion. CRITICAL: Flag any products containing Mercury compounds (BANNED), Hydroquinone (prescription-only in India), Corticosteroids without prescription. Note CDSCO 2023 ban on certain ingredients. category: "COSMETIC", sub_category: "SKINCARE". INCI ingredients. JSON array only.
+Output one combined JSON array only.
 
---- DAY 20 — BEAUTY: Baby & Kids Personal Care #1–20 ---
-20 most popular BABY and KIDS PERSONAL CARE products sold in India. Include: Johnson's Baby India, Himalaya Baby products, Sebamed Baby India, Mamaearth Baby products, Chicco Baby India, Pigeon India, Mee Mee. Flag: Johnson's Baby Powder (talc/asbestos concerns), Parabens in baby products, Fragrances (sensitisation in infants). category: "PERSONAL_CARE", sub_category: "BABY_CARE". nutrition null. JSON array only.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 7 — BEAUTY: Hair Colour + Nails + Baby Care + Fairness (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 15 HAIR COLOUR + 15 NAIL + 15 BABY CARE + 15 FAIRNESS CREAM products sold in India 2024. nutrition null, nova null, is_upf false. INCI ingredients.
 
-====================== CATEGORY 3: HOUSEHOLD ======================
+HAIR COLOUR (15): Garnier Color Naturals India, L'Oreal Excellence India, Godrej Expert Rich Creme, Streax Pro, Indus Valley Gel, Bblunt. Flag: PPD (strong allergen, CDSCO restricted), Ammonia, Hydrogen Peroxide. sub_category: "HAIR_COLOUR".
 
---- DAY 21 — HOUSEHOLD: Laundry Detergents #1–20 ---
-Generate data for the 20 most popular LAUNDRY DETERGENT products sold in India ranked #1 to #20 2024. Include: Surf Excel variants (Surf Excel Easy Wash, Matic, Quick Wash), Ariel India, Tide India, Rin, Wheel, Henko, Mr. White, Comfort Fabric Conditioner. List active cleaning ingredients. Flag: Phosphates (banned in EU, still used in India), Optical brighteners (can cause skin sensitisation), SLS/SLES concentration. category: "HOUSEHOLD", sub_category: "LAUNDRY". nutrition_per_100g: all null. nova_group: null. is_upf: false. JSON array only.
+NAIL (15): Lakme True Wear, Colorbar Perfect Nails, Faces Canada Nail Enamel, Nykaa Nail Art, Plum Color Affair, Lotus Herbals Color Dew. Flag: DBP, Formaldehyde, Toluene (toxic trio). sub_category: "NAIL".
 
---- DAY 22 — HOUSEHOLD: Dishwash #1–20 ---
-20 most popular DISHWASH products sold in India. Include: Vim Bar India, Vim Liquid, Pril India, Exo Flash, Fairy India, Cif India, Sunlight Dishwash India. Flag: Triclosan (antimicrobial, potential hormone disruption), Phosphates residue on dishes, SLS/SLES skin irritation. category: "HOUSEHOLD", sub_category: "DISHWASH". nutrition null. JSON array only.
+BABY CARE (15): Johnson's Baby India, Himalaya Baby, Sebamed Baby India, Mamaearth Baby, Chicco Baby India. Flag: Talc (asbestos concerns in Johnson's), Parabens, Fragrances in baby products. category: "PERSONAL_CARE", sub_category: "BABY_CARE".
 
---- DAY 23 — HOUSEHOLD: Floor & Surface Cleaners #1–20 ---
-20 most popular FLOOR CLEANER and SURFACE CLEANER products in India. Include: Harpic variants (Floor Cleaner, Bathroom), Lizol India variants (Neem, Pine, Floral, Citrus), Dettol Floor Cleaner India, Colin Glass Cleaner India, Domex India. Flag: Benzalkonium chloride, Pine oil, Phenols concentration, Chlorine-based cleaners ventilation requirements. category: "HOUSEHOLD", sub_category: "FLOOR_CLEANER". nutrition null. JSON array only.
+FAIRNESS CREAMS (15): Glow & Lovely, Pond's White Beauty India, Olay Natural White India, Garnier Light Complete India, Himalaya Clear Complexion. CRITICAL: Flag Mercury compounds (BANNED), Hydroquinone (Rx-only), Steroids. category: "COSMETIC", sub_category: "SKINCARE".
 
---- DAY 24 — HOUSEHOLD: Toilet Cleaners #1–20 ---
-20 most popular TOILET CLEANER products sold in India. Include: Harpic Power Plus variants, Domex Ultra Thick Bleach, Sanifresh Shine, Rin Toilet Cleaner. Flag: Hydrochloric Acid concentration (HCl — corrosive, ventilation critical), Bleach/Sodium Hypochlorite (never mix with acid cleaners), Quaternary Ammonium Compounds. category: "HOUSEHOLD", sub_category: "TOILET_CLEANER". nutrition null. JSON array only.
+Output one combined JSON array only.
 
---- DAY 25 — HOUSEHOLD: Air Fresheners #1–20 ---
-20 most popular AIR FRESHENER and ROOM FRESHENER products in India. Include: Ambi Pur India, Godrej Aer, Air Wick India, Odonil Zipper, Odonil Air, Lysol Disinfectant Spray India, Dettol Disinfectant Spray. Flag: Synthetic fragrance (phthalates as fixatives), VOCs (Volatile Organic Compounds — indoor air quality), Formaldehyde-releasing agents. category: "HOUSEHOLD", sub_category: "AIR_FRESHENER". nutrition null. JSON array only.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 8 — HOUSEHOLD: Laundry + Dishwash + Floor + Toilet (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 15 LAUNDRY + 15 DISHWASH + 15 FLOOR CLEANER + 15 TOILET CLEANER products sold in India 2024. nutrition null, nova null, is_upf false.
 
---- DAY 26 — HOUSEHOLD: Insect Repellents #1–20 ---
-20 most popular INSECT REPELLENT and MOSQUITO CONTROL products in India. Include: Good Knight variants (Fast Card, Activ Plus, Gold Flash), All Out variants, Mortein India, Hit India, Odomos cream/lotion, Goodnight patches. Flag: DEET concentration (safe limits for children), Pyrethroids (Permethrin, Allethrin — ventilation in rooms), Prallethrin (Good Knight liquid — inhaled exposure). category: "HOUSEHOLD", sub_category: "INSECT_REPELLENT". nutrition null. JSON array only.
+LAUNDRY (15): Surf Excel Easy Wash, Surf Excel Matic, Ariel India, Tide India, Rin, Wheel, Henko, Comfort Fabric Conditioner. Flag: Phosphates (banned EU, used India), Optical brighteners, SLS/SLES. category: "HOUSEHOLD", sub_category: "LAUNDRY".
 
---- DAY 27 — HOUSEHOLD: Kitchen & Multipurpose Cleaners #1–20 ---
-20 most popular KITCHEN CLEANER and MULTIPURPOSE CLEANER products in India. Include: Cif Cream Cleaner India, Mr. Muscle Kitchen India, Easy Off Bang, Vim Anti-Bacterial Spray, Dettol Kitchen India, Scotch-Brite cleaning products. Flag: Sodium Hydroxide (NaOH — caustic, skin burns), Surfactant residue on food surfaces, Anti-bacterial resistance concerns. category: "HOUSEHOLD", sub_category: "KITCHEN_CLEANER". nutrition null. JSON array only.
+DISHWASH (15): Vim Bar India, Vim Liquid, Pril India, Exo Flash, Fairy India, Cif India. Flag: Triclosan, Phosphates residue on dishes, SLS skin irritation. sub_category: "DISHWASH".
 
---- DAY 28 — HOUSEHOLD: Fabric Care #1–20 ---
-20 most popular FABRIC SOFTENER, STARCH, and FABRIC CARE products in India. Include: Comfort Fabric Conditioner variants (India), Rin Stiff & Shine, Robin Blue, Ezee Gentle Wash, Godrej Ezee, Surf Excel Sensitive. Flag: Quaternary ammonium compounds (fabric softener residue), Optical brighteners (UV fluorescence, skin sensitisation), Fragrance allergens. category: "HOUSEHOLD", sub_category: "FABRIC_CARE". nutrition null. JSON array only.
+FLOOR CLEANER (15): Lizol Pine, Lizol Neem, Lizol Floral, Harpic Floor Cleaner, Dettol Floor Cleaner India, Colin Glass Cleaner, Domex India. Flag: Benzalkonium chloride, Pine oil, Phenols, Chlorine ventilation. sub_category: "FLOOR_CLEANER".
 
---- DAY 29 — HOUSEHOLD: Personal Hygiene Household #1–20 ---
-20 most popular HAND SANITISER and DISINFECTANT products widely used in Indian households. Include: Dettol Sanitiser India, Lifebuoy Hand Sanitiser, Himalaya Hand Sanitiser, Purell India, Savlon Sanitiser, Dettol Disinfectant Liquid (original), Savlon Antiseptic. Flag: Ethanol concentration (WHO recommends 70%+), Triclosan (banned in hand wash in US, still used in India), Chlorhexidine gluconate concentration. category: "HOUSEHOLD", sub_category: "SANITISER". nutrition null. JSON array only.
+TOILET CLEANER (15): Harpic Power Plus, Domex Ultra Thick Bleach, Sanifresh Shine, Rin Toilet Cleaner. Flag: HCl concentration (corrosive), Sodium Hypochlorite (never mix with acid). sub_category: "TOILET_CLEANER".
 
---- DAY 30 — HOUSEHOLD: Specialty Cleaners #1–20 ---
-20 most popular SPECIALTY HOUSEHOLD CLEANER products in India: drain cleaners (Mr. Muscle Drain, Harpic Drain), oven cleaners, rust removers, shoe cleaners, car care products widely sold in India. Flag: Sulphuric Acid in drain cleaners (severe burn risk), Trichloroethylene in degreasers, P-Dichlorobenzene in mothballs (carcinogen, banned in EU). category: "HOUSEHOLD", sub_category: "SPECIALTY_CLEANER". nutrition null. JSON array only.
+Output one combined JSON array only.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 9 — HOUSEHOLD: Air Fresheners + Insect Repellents + Kitchen (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 20 AIR FRESHENER + 20 INSECT REPELLENT + 20 KITCHEN CLEANER products sold in India 2024. nutrition null, nova null, is_upf false.
+
+AIR FRESHENER (20): Ambi Pur India, Godrej Aer variants, Air Wick India, Odonil Zipper, Odonil Air, Lysol Disinfectant Spray India, Dettol Disinfectant Spray. Flag: Synthetic fragrance (phthalates), VOCs, Formaldehyde-releasing agents. sub_category: "AIR_FRESHENER".
+
+INSECT REPELLENT (20): Good Knight Fast Card, Good Knight Activ Plus, Good Knight Gold Flash, All Out Ultra, Mortein India, Hit India, Odomos cream, Odomos lotion, Goodnight patches. Flag: DEET (child safe limits), Pyrethroids (Allethrin, Prallethrin — inhaled exposure), ventilation requirements. sub_category: "INSECT_REPELLENT".
+
+KITCHEN CLEANER (20): Cif Cream Cleaner India, Mr. Muscle Kitchen India, Vim Anti-Bacterial Spray, Dettol Kitchen India, Easy Off Bang, Scotch-Brite products. Flag: NaOH (caustic), surfactant residue on food surfaces. sub_category: "KITCHEN_CLEANER".
+
+Output one combined JSON array only.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DAY 10 — HOUSEHOLD: Sanitisers + Fabric Care + Specialty (60 products)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate data for 20 SANITISER/DISINFECTANT + 20 FABRIC CARE + 20 SPECIALTY CLEANER products sold in India 2024. nutrition null, nova null, is_upf false.
+
+SANITISER (20): Dettol Hand Sanitiser India, Lifebuoy Hand Sanitiser, Himalaya Hand Sanitiser, Savlon Sanitiser, Dettol Disinfectant Liquid (original), Savlon Antiseptic Liquid, Purell India. Flag: Ethanol % (WHO recommends 70%+), Triclosan (banned in US hand wash), Chlorhexidine gluconate. sub_category: "SANITISER".
+
+FABRIC CARE (20): Comfort Fabric Conditioner India variants, Rin Stiff & Shine, Robin Blue, Godrej Ezee, Surf Excel Sensitive, Ezee Gentle Wash. Flag: Quaternary ammonium compounds, Optical brighteners, Fragrance allergens. sub_category: "FABRIC_CARE".
+
+SPECIALTY CLEANERS (20): Mr. Muscle Drain Cleaner, Harpic Drain Cleaner, rust removers, shoe cleaners, car care products (3M India, Turtle Wax India), oven cleaners. Flag: Sulphuric Acid in drain cleaners (severe burn), P-Dichlorobenzene in mothballs (carcinogen, banned EU). sub_category: "SPECIALTY_CLEANER".
+
+Output one combined JSON array only.
 
 ======================================================================
-WHEN ALL 30 DAYS ARE DONE:
-Reply: "RYL ChatGPT ingestion complete — Days 1–30 done."
-Save each day's output as: RYL_Day_[X]_[Category].txt
-Download all files at end of each week and share with Claude.
+WHEN ALL 10 DAYS ARE DONE:
+Reply: "RYL ChatGPT ingestion complete — all 10 days done."
+Each day is saved as: RYL_ChatGPT_Day_[X].txt
+Share all 10 files with Claude to update the database.
 ======================================================================
