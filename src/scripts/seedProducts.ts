@@ -1733,6 +1733,1438 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     ingredients: ["Sodium Cocoyl Isethionate", "Stearic Acid", "Sodium Tallowate", "Sodium Cocoate", "Water", "Sodium Stearate", "Glycerin", "Sodium Chloride", "PEG-20", "Sodium Isethionate", "Petrolatum", "Sodium Isostearoyl Lactylate", "Sucrose Cocoate", "Titanium Dioxide", "Pentasodium Pentetate", "Tetrasodium Etidronate"],
     nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
     front_claims: ["Sensitive Skin", "Fragrance-Free", "Dermatologist Recommended", "No Harsh Chemicals"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (ORAL CARE) ─────────────────────────────
+
+  {
+    product_name: "Dabur Red Paste",
+    brand: "Dabur",
+    category: "PERSONAL_CARE",
+    ingredients: ["Dicalcium Phosphate Dihydrate", "Sorbitol", "Lauroyl Sarcosinate", "Water", "Clove Oil (Syzygium Aromaticum)", "Pudina Satva (Mentha Piperita)", "Piper Nigrum (Black Pepper Extract)", "Ajwain Satva", "Sodium Saccharin", "Sodium Benzoate", "Flavour", "Carrageenan"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["No Fluoride", "Ayurvedic Herbs", "Clove + Pudina", "Strong Teeth & Gums"]
+  },
+  {
+    product_name: "Sensodyne Fresh Gel Toothpaste",
+    brand: "Haleon (GSK)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Potassium Nitrate (5%)", "Sodium Fluoride (0.221% w/w)", "Sorbitol", "Water", "Hydrated Silica", "Glycerin", "Cellulose Gum", "Sodium Lauryl Sulfate", "Flavor", "Sodium Saccharin", "CI 42090"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sensitivity Relief", "Clinically Proven", "Fresh Mint Gel", "Fluoride Protection"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (HAIR OILS) ─────────────────────────────
+
+  {
+    product_name: "Parachute 100% Pure Coconut Oil",
+    brand: "Marico",
+    category: "PERSONAL_CARE",
+    ingredients: ["100% Pure Coconut Oil (Cocos Nucifera)"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["100% Pure", "No Mineral Oil", "Cold Pressed", "Hair & Skin"]
+  },
+  {
+    product_name: "Bajaj Almond Drops Hair Oil",
+    brand: "Bajaj Consumer Care",
+    category: "PERSONAL_CARE",
+    ingredients: ["Liquid Paraffin", "Sweet Almond Oil (Prunus Amygdalus Dulcis) (1%)", "Perfume", "Vitamin E (Tocopheryl Acetate)"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Almond Oil", "Non-Sticky", "Vitamin E", "Shine & Nourishment"]
+  },
+  {
+    product_name: "Dabur Amla Hair Oil",
+    brand: "Dabur",
+    category: "PERSONAL_CARE",
+    ingredients: ["Liquid Paraffin", "Amla Extract (Phyllanthus Emblica)", "Perfume", "CI 19140"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Amla Enriched", "Strengthens Hair", "Reduces Breakage", "Traditional Formula"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (FACE WASH) ─────────────────────────────
+
+  {
+    product_name: "Mamaearth Tea Tree Face Wash",
+    brand: "Mamaearth",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cocamidopropyl Betaine", "Sodium Lauroyl Sarcosinate", "Glycerin", "Tea Tree Oil (Melaleuca Alternifolia)", "Neem Extract (Azadirachta Indica)", "Salicylic Acid", "Sodium Benzoate", "Potassium Sorbate", "Citric Acid", "IFRA Certified Allergen Free Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Tea Tree + Neem", "No SLS", "No Paraben", "Acne & Pimple Control"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (MAKEUP — FOUNDATIONS & COMPACT) ────────
+
+  {
+    product_name: "Lakme 9to5 Primer + Matte Perfect Cover Foundation",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Dimethicone", "Titanium Dioxide (CI 77891)", "Talc", "Glycerin", "PEG-10 Dimethicone", "Nylon-12", "Phenyl Trimethicone", "Magnesium Sulfate", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Fragrance", "Sodium Dehydroacetate", "Phenoxyethanol", "Dimethicone Crosspolymer"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["24HR Matte", "Primer + Foundation", "Full Coverage", "SPF 20"]
+  },
+  {
+    product_name: "Maybelline Fit Me Matte + Poreless Foundation",
+    brand: "L'Oreal India (Maybelline)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Titanium Dioxide (CI 77891)", "Talc", "PEG-10 Dimethicone", "Dimethicone", "Disteardimonium Hectorite", "Polymethylsilsesquioxane", "Magnesium Sulfate", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol", "Sodium Dehydroacetate", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Matte + Poreless", "Oil-Free", "Natural Finish", "Dermatologist Tested"]
+  },
+  {
+    product_name: "L'Oreal Paris True Match Super-Blendable Foundation",
+    brand: "L'Oreal India",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Glycerin", "Dimethicone", "PEG-10 Dimethicone", "Titanium Dioxide (CI 77891)", "Zinc Oxide", "Nylon-12", "Disteardimonium Hectorite", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["True Match", "SPF 17", "Vitamin C", "Natural Skin Tone Match"]
+  },
+  {
+    product_name: "Lakme Perfect Radiance Compact",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Zinc Stearate", "Magnesium Stearate", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone", "Caprylic/Capric Triglyceride", "Phenoxyethanol", "Tocopheryl Acetate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 24", "PA++", "Radiance Boost", "Vitamin B3"]
+  },
+  {
+    product_name: "Colorbar Perfect Match Foundation",
+    brand: "Colorbar Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Dimethicone", "Glycerin", "PEG-10 Dimethicone", "Titanium Dioxide (CI 77891)", "Talc", "Nylon-12", "Zinc Stearate", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol", "Fragrance", "Dimethicone Crosspolymer", "Sodium Chloride"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["24HR Wear", "Full Coverage", "SPF 20", "Sweat Proof"]
+  },
+  {
+    product_name: "Nykaa SKINgenius Skin Perfecting & Hydrating Foundation",
+    brand: "Nykaa Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Glycerin", "Dimethicone", "Titanium Dioxide (CI 77891)", "PEG-9 Polydimethylsiloxyethyl Dimethicone", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Hyaluronic Acid", "Tocopheryl Acetate", "Phenoxyethanol", "Ethylhexylglycerin", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid", "Skin Perfecting", "Hydrating", "Buildable Coverage"]
+  },
+  {
+    product_name: "Faces Canada BB Cream",
+    brand: "Faces Canada",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Glycerin", "Titanium Dioxide (CI 77891)", "Dimethicone", "PEG-10 Dimethicone", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Zinc Oxide", "Vitamin C (Ascorbic Acid)", "Hyaluronic Acid", "Phenoxyethanol", "Methylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 20", "5-in-1 BB Cream", "Vitamin C", "Hyaluronic Acid"]
+  },
+  {
+    product_name: "Revlon ColorStay Longwear Foundation",
+    brand: "Revlon",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Dimethicone", "Cyclopentasiloxane", "Titanium Dioxide (CI 77891)", "PEG-10 Dimethicone", "Glycerin", "Talc", "Disteardimonium Hectorite", "Caprylyl Methicone", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol", "Fragrance", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["24HR Longwear", "Transfer Resistant", "Oil-Free", "SPF 15"]
+  },
+  {
+    product_name: "Swiss Beauty Matte Foundation",
+    brand: "Swiss Beauty",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Dimethicone", "Titanium Dioxide (CI 77891)", "Talc", "Glycerin", "PEG-10 Dimethicone", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol", "Sodium Dehydroacetate", "Fragrance", "Dimethicone Crosspolymer"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Matte Finish", "Full Coverage", "Long-Lasting", "Cruelty Free"]
+  },
+  {
+    product_name: "Lakme CC Cream",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Dimethicone", "Titanium Dioxide (CI 77891)", "Zinc Oxide", "Nylon-12", "Ethylhexyl Methoxycinnamate", "PEG-10 Dimethicone", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Vitamin B3 (Niacinamide)", "Vitamin E (Tocopheryl Acetate)", "Phenoxyethanol", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 30", "PA++", "Vitamin B3 + E", "9-in-1 CC Cream"]
+  },
+  {
+    product_name: "Faces Canada Ultime Pro HD Foundation",
+    brand: "Faces Canada",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Dimethicone", "Glycerin", "Titanium Dioxide (CI 77891)", "Talc", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "PEG-10 Dimethicone", "Nylon-12", "Phenoxyethanol", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["HD Formula", "Full Coverage", "Transfer-Proof", "Long Stay"]
+  },
+  {
+    product_name: "NYX Professional Makeup Can't Stop Won't Stop Foundation",
+    brand: "NYX Professional Makeup",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Dimethicone", "Glycerin", "Titanium Dioxide (CI 77891)", "PEG-10 Dimethicone", "Nylon-12", "Cyclopentasiloxane", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Sodium Acrylate/Sodium Acryloyldimethyl Taurate Copolymer", "Phenoxyethanol", "Ethylhexylglycerin", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["24HR Full Coverage", "Matte Finish", "Oil-Control", "Vegan"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (MAKEUP — BLUSH & COMPACT POWDER) ───────
+
+  {
+    product_name: "Lakme Face It Sheer Blush",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Talc", "Mica", "Zinc Stearate", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492)", "Magnesium Stearate", "Dimethicone", "Caprylic/Capric Triglyceride", "Methylparaben", "Propylparaben", "Parfum", "CI 15850", "CI 45410"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sheer Blush", "Natural Flush", "Buildable Colour", "Long-Lasting"]
+  },
+  {
+    product_name: "Colorbar Everlasting Compact",
+    brand: "Colorbar Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Magnesium Stearate", "Zinc Stearate", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone", "Caprylic/Capric Triglyceride", "Tocopheryl Acetate", "Phenoxyethanol", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 20", "Matte Finish", "Oil-Control", "12HR Wear"]
+  },
+  {
+    product_name: "Maybelline Fit Me Matte + Poreless Compact",
+    brand: "L'Oreal India (Maybelline)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Dimethicone", "Zinc Stearate", "Magnesium Stearate", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Polymethylsilsesquioxane", "Phenoxyethanol", "Sodium Dehydroacetate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Matte + Poreless", "Oil-Free", "Lightweight", "Natural Finish"]
+  },
+  {
+    product_name: "L'Oreal Paris True Match Super-Blendable Compact",
+    brand: "L'Oreal India",
+    category: "PERSONAL_CARE",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Zinc Stearate", "Magnesium Stearate", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone", "Caprylic/Capric Triglyceride", "Tocopheryl Acetate", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["True Match", "Vitamin E", "SPF 32", "Natural Skin Tone"]
+  },
+  {
+    product_name: "Nykaa All Day Matte Compact",
+    brand: "Nykaa Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Zinc Stearate", "Magnesium Stearate", "Nylon-12", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone", "Silica", "Tocopheryl Acetate", "Phenoxyethanol", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["All Day Matte", "Oil Control", "SPF 15", "Lightweight"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (MAKEUP — LIPSTICK) ─────────────────────
+
+  {
+    product_name: "Maybelline Color Sensational SuperStay Matte Ink Lipstick",
+    brand: "L'Oreal India (Maybelline)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Isododecane", "Trimethylsiloxysilicate", "Dimethicone", "Alcohol Denat.", "Hydrogenated Polydecene", "Disteardimonium Hectorite", "Silica Dimethyl Silylate", "Propylene Carbonate", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "CI 15850", "CI 45410", "Tocopheryl Acetate", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["16HR Wear", "Transfer-Proof", "Intense Matte Colour", "No Touch-Ups Needed"]
+  },
+  {
+    product_name: "Lakme Enrich Matte Lipstick",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Triisostearyl Citrate", "Diisostearyl Malate", "Polyglyceryl-2 Triisostearate", "Ozokerite", "Microcrystalline Wax", "Candelilla Wax", "Castor Oil", "Mineral Oil", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "CI 15850", "CI 45410", "Tocopheryl Acetate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Enrich Matte", "Argan Oil", "Long-Lasting Colour", "Soft & Comfortable"]
+  },
+  {
+    product_name: "L'Oreal Paris Color Riche Moist Matte Lipstick",
+    brand: "L'Oreal India",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil", "Diisostearyl Malate", "Ozokerite", "Carnauba Wax", "Candelilla Wax", "Microcrystalline Wax", "Silica", "Tocopheryl Acetate", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "CI 15850", "CI 45410", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Moist Matte", "Argan Oil + Vitamin E", "12HR Colour", "Moisturising"]
+  },
+  {
+    product_name: "Faces Canada Ultime Pro Matte Lipstick",
+    brand: "Faces Canada",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil", "Diisostearyl Malate", "Triisostearyl Citrate", "Ozokerite", "Candelilla Wax", "Carnauba Wax", "Microcrystalline Wax", "Silica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "CI 15850", "Tocopheryl Acetate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["24HR Matte", "Intense Pigment", "Moisturising Formula", "Vitamin E"]
+  },
+  {
+    product_name: "Nykaa So Matte! Lipstick",
+    brand: "Nykaa Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil", "Diisostearyl Malate", "Ozokerite", "Candelilla Wax", "Microcrystalline Wax", "Silica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "CI 15850", "CI 45410", "Tocopheryl Acetate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Creamy Matte", "High Pigment", "Long-Lasting", "Vitamin E"]
+  },
+  {
+    product_name: "Colorbar Velvet Matte Lipstick",
+    brand: "Colorbar Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil", "Diisostearyl Malate", "Triisostearyl Citrate", "Ozokerite", "Carnauba Wax", "Candelilla Wax", "Silica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "CI 15850", "CI 45410", "Tocopheryl Acetate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Velvet Matte Finish", "Rich Pigment", "Non-Drying", "Vitamin E"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (MAKEUP — KAJAL / EYELINER) ─────────────
+
+  {
+    product_name: "Maybelline Colossal Kajal",
+    brand: "L'Oreal India (Maybelline)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cyclopentasiloxane", "Trimethylsiloxysilicate", "Carbon Black (CI 77266)", "Disteardimonium Hectorite", "Propylene Carbonate", "Caprylyl Methicone", "Isododecane", "Synthetic Beeswax", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["12HR Long Stay", "Smudge-Proof", "Intense Black", "Water-Resistant"]
+  },
+  {
+    product_name: "Lakme Eyeconic Kajal",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Hydrogenated Polydecene", "Ozokerite", "Microcrystalline Wax", "Carbon Black (CI 77266)", "Synthetic Beeswax", "Cyclopentasiloxane", "Dimethicone", "Caprylic/Capric Triglyceride", "Tocopheryl Acetate", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Eye-Defining Kajal", "Smudge-Free", "Deep Black", "Long-Lasting"]
+  },
+  {
+    product_name: "L'Oreal Paris Kajal Magique",
+    brand: "L'Oreal India",
+    category: "PERSONAL_CARE",
+    ingredients: ["Hydrogenated Polydecene", "Ozokerite", "Microcrystalline Wax", "Carbon Black (CI 77266)", "Synthetic Beeswax", "Cyclopentasiloxane", "Dimethicone", "Tocopheryl Acetate", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Magique Black", "Smudge-Proof", "Intense Colour", "12HR Stay"]
+  },
+  {
+    product_name: "Blue Heaven Kajal",
+    brand: "Blue Heaven Cosmetics",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil", "Carnauba Wax", "Candelilla Wax", "Ozokerite", "Carbon Black (CI 77266)", "Tocopheryl Acetate", "Phenoxyethanol", "BHT"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Long-Lasting Kajal", "Safe Formula", "Smudge-Proof", "Rich Black"]
+  },
+  {
+    product_name: "Himalaya Kajal",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil", "Carnauba Wax", "Candelilla Wax", "Ozokerite", "Carbon Black (CI 77266)", "Almond Oil (Prunus Amygdalus Dulcis)", "Tocopheryl Acetate", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Herbal Kajal", "Almond Oil", "Safe for Eyes", "Long Stay"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (MOISTURISERS) ──────────────────────────
+
+  {
+    product_name: "Pond's Cold Cream",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Mineral Oil", "Beeswax", "Glycerin", "Cetyl Alcohol", "Fragrance", "Sodium Tetraborate", "Triethanolamine", "Methylparaben", "Propylparaben", "CI 19140"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Deep Moisturising", "Softens Dry Skin", "Classic Formula", "Cleanses & Nourishes"]
+  },
+  {
+    product_name: "Lakme Peach Milk Moisturiser SPF 24",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Ethylhexyl Methoxycinnamate", "Glycerin", "Ethylhexyl Salicylate", "Dimethicone", "Stearic Acid", "Cetyl Alcohol", "Glyceryl Stearate", "Peach Extract", "Niacinamide", "Sodium Benzoate", "Methylparaben", "Propylparaben", "Parfum", "CI 15985"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 24 PA++", "Peach Milk", "Non-Oily", "UV Protection"]
+  },
+  {
+    product_name: "Olay Total Effects 7-in-1 Moisturiser",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Niacinamide", "Dimethicone", "Stearic Acid", "Glyceryl Stearate SE", "Cetyl Alcohol", "PEG-100 Stearate", "Tocopheryl Acetate", "Panthenol", "Sodium Hyaluronate", "Allantoin", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Methylparaben", "Ethylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["7-in-1 Benefits", "Niacinamide", "Anti-Ageing", "SPF 15"]
+  },
+  {
+    product_name: "Neutrogena Hydro Boost Water Gel",
+    brand: "Johnson & Johnson",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Dimethicone", "Glycerin", "Phenoxyethanol", "Carbomer", "Hyaluronic Acid", "Sodium Hyaluronate", "Cetearyl Alcohol", "Polysorbate 60", "Sodium Hydroxide", "Chlorphenesin", "Disodium EDTA", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid", "Oil-Free", "Non-Comedogenic", "48HR Hydration"]
+  },
+  {
+    product_name: "Nivea Soft Moisturising Cream",
+    brand: "Beiersdorf (Nivea)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Paraffinum Liquidum", "Hydrogenated Coco-Glycerides", "Glyceryl Stearate", "Ceteareth-20", "Cetyl Alcohol", "Jojoba Oil (Simmondsia Chinensis Seed Oil)", "Vitamin E (Tocopheryl Acetate)", "Carbomer", "Sodium Hydroxide", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Jojoba Oil + Vitamin E", "Refreshingly Light", "Quick Absorbing", "Non-Greasy"]
+  },
+  {
+    product_name: "Cetaphil Moisturising Cream",
+    brand: "Galderma",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Glycerin", "Petrolatum", "Dicaprylyl Ether", "Dimethicone", "Glyceryl Stearate", "Cetearyl Alcohol", "Ceteareth-20", "Macadamia Ternifolia Seed Oil", "Tocopheryl Acetate", "Sodium Hydroxide", "Carbomer", "Phenoxyethanol", "Methylparaben", "Propylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sensitive Skin", "Fragrance-Free", "Dermatologist Recommended", "24HR Moisture"]
+  },
+  {
+    product_name: "Mamaearth Ubtan Face Moisturizer",
+    brand: "Mamaearth",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Cetearyl Alcohol", "Glyceryl Stearate", "Turmeric Extract (Curcuma Longa)", "Saffron Extract (Crocus Sativus)", "Walnut Shell Powder", "Kojic Acid", "Vitamin C (Ascorbic Acid)", "Sodium Benzoate", "Potassium Sorbate", "Carbomer", "Sodium Hydroxide", "IFRA Certified Allergen Free Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Turmeric + Saffron", "No SLS/Paraben", "Skin Brightening", "SPF 25"]
+  },
+  {
+    product_name: "Biotique Morning Nectar Flawless Skin Lotion",
+    brand: "Biotique",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Honey Extract (Mel)", "Wheat Germ Oil (Triticum Vulgare)", "White Lily Extract", "Margosa (Neem) Extract", "Lodh Bark Extract", "Fenugreek Extract", "Glycerin", "Cetearyl Alcohol", "Stearic Acid", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Honey + Wheat Germ", "Ayurvedic Formula", "Softens & Glows", "SPF 29"]
+  },
+  {
+    product_name: "Dot & Key Barrier Repair Moisturiser Hydrating Gel",
+    brand: "Dot & Key",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Niacinamide", "Sodium Hyaluronate", "Betaine", "Allantoin", "Panthenol", "Centella Asiatica Extract", "Ceramide NP", "Cholesterol", "Fatty Acids", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Ceramide + Hyaluronic Acid", "Barrier Repair", "Oil-Free Gel", "Dermatologist Tested"]
+  },
+  {
+    product_name: "Vaseline Cocoa Glow Body Cream",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Petrolatum", "Glycerin", "Stearic Acid", "Glyceryl Stearate", "Cetearyl Alcohol", "Dimethicone", "Cocoa Butter (Theobroma Cacao Seed Butter)", "Shea Butter (Butyrospermum Parkii Butter)", "Tocopheryl Acetate", "Carbomer", "Sodium Hydroxide", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Cocoa Butter + Shea", "100% Natural Cocoa", "Glow & Nourishment", "48HR Moisture"]
+  },
+  {
+    product_name: "Venusia Max Intensive Moisturising Lotion",
+    brand: "Dr. Reddy's Laboratories",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Paraffinum Liquidum", "Glycerin", "Cetearyl Alcohol", "Glyceryl Stearate", "PEG-40 Stearate", "Dimethicone", "Urea (10%)", "Lactic Acid", "Allantoin", "Tocopheryl Acetate", "Sodium Hydroxide", "Carbomer", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["10% Urea", "Intensive Moisturising", "For Dry & Rough Skin", "Dermatologist Tested"]
+  },
+  {
+    product_name: "Himalaya Nourishing Skin Cream",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Paraffinum Liquidum", "Glycerin", "Stearic Acid", "Cetyl Alcohol", "Triethanolamine", "Aloe Vera (Aloe Barbadensis) Gel", "Winter Cherry (Ashwagandha) Extract", "Indian Pennywort (Centella Asiatica) Extract", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Ashwagandha + Aloe", "Non-Greasy", "Herbal Moisturiser", "All Skin Types"]
+  },
+  {
+    product_name: "Plum E-Luminance Deep Moisturising Lotion",
+    brand: "Plum Goodness",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Dimethicone", "Cetearyl Alcohol", "Glyceryl Stearate", "Tocopheryl Acetate (Vitamin E)", "Tocopherol", "Sunflower Oil (Helianthus Annuus Seed Oil)", "Sodium PCA", "Allantoin", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin E", "Vegan", "No Paraben/SLS", "Radiance Boost"]
+  },
+  {
+    product_name: "Minimalist Sepicalm 3% + PGA Moisturiser",
+    brand: "Minimalist",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Isononyl Isononanoate", "Cetearyl Alcohol", "Glyceryl Stearate", "Polyglutamic Acid (PGA)", "Acetoyl Dipeptide-1 Cetyl Ester (Sepicalm)", "Panthenol", "Allantoin", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Chlorphenesin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sepicalm 3%", "Polyglutamic Acid", "Soothing & Calming", "Sensitive Skin Safe"]
+  },
+  {
+    product_name: "The Derma Co 1% Ceramide Moisturiser",
+    brand: "The Derma Co",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Caprylic/Capric Triglyceride", "Cetearyl Alcohol", "Glyceryl Stearate", "Ceramide NP (1%)", "Ceramide AP", "Ceramide EOP", "Cholesterol", "Sodium PCA", "Hyaluronic Acid", "Allantoin", "Phenoxyethanol", "Carbomer", "Sodium Hydroxide", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["3 Ceramides", "Barrier Restore", "Hyaluronic Acid", "Dermatologist Tested"]
+  },
+  {
+    product_name: "Joy Pure Aloe Multi-Benefit Skin Cream",
+    brand: "RSH Global",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Aloe Vera (Aloe Barbadensis) Gel (85%)", "Glycerin", "Cetearyl Alcohol", "Glyceryl Stearate", "Carbomer", "Triethanolamine", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["85% Pure Aloe", "Soothing & Cooling", "No Parabens (except preservatives)", "Multi-Benefit"]
+  },
+  {
+    product_name: "VLCC Honey & Cream Moisturising Body Lotion",
+    brand: "VLCC Personal Care",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Paraffinum Liquidum", "Honey Extract (Mel)", "Sweet Almond Oil (Prunus Amygdalus Dulcis)", "Stearic Acid", "Cetearyl Alcohol", "Glyceryl Stearate", "Tocopheryl Acetate", "Carbomer", "Triethanolamine", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Honey + Cream", "Deep Nourishment", "Soft & Smooth Skin", "Non-Greasy"]
+  },
+  {
+    product_name: "Sebamed Moisturising Body Lotion",
+    brand: "Sebapharma",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Hydrogenated Polyisobutene", "Isopropyl Myristate", "Dimethicone", "Sodium PCA", "Allantoin", "Urea", "Panthenol", "Tocopheryl Acetate", "Sodium Lactate", "Lactic Acid", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Sorbic Acid"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["pH 5.5", "Dermatologist Tested", "Urea + Panthenol", "Sensitive Skin Safe"]
+  },
+  {
+    product_name: "Pampers Baby Lotion",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Dimethicone", "Cetearyl Alcohol", "Glyceryl Stearate", "PEG-40 Stearate", "Aloe Vera (Aloe Barbadensis) Leaf Juice", "Chamomile Extract (Anthemis Nobilis Flower Extract)", "Tocopheryl Acetate", "Allantoin", "Carbomer", "Sodium Hydroxide", "Methylparaben", "Propylparaben", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Aloe + Chamomile", "Dermatologically Tested", "Gentle on Baby Skin", "Paediatrician Tested"]
+  },
+
+  // ── PERSONAL CARE — DAY 2 GEMINI (MEN'S GROOMING) ───────────────────────
+
+  {
+    product_name: "Gillette Series Sensitive Shaving Foam",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Palmitic Acid", "Triethanolamine", "Isopentane", "Isobutane", "Stearic Acid", "Glycerin", "Sorbitol", "Polyethylene Glycol", "Allantoin", "Aloe Barbadensis Leaf Juice", "Sodium Benzoate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sensitive Skin", "Aloe Vera", "Moisturising", "Easy Rinse Formula"]
+  },
+  {
+    product_name: "Dettol Lather Shaving Cream",
+    brand: "Reckitt Benckiser",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Stearic Acid", "Potassium Hydroxide", "Glycerin", "Triethanolamine", "Coconut Fatty Acid", "Chloroxylenol (PCMX)", "Glycol Stearate", "Parfum", "Sodium Benzoate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Antiseptic Protection", "Chloroxylenol", "Rich Lather", "Smooth Shave"]
+  },
+  {
+    product_name: "Bombay Shaving Company Charcoal Shaving Foam",
+    brand: "Bombay Shaving Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Palmitic Acid", "Triethanolamine", "Isopentane", "Isobutane", "Stearic Acid", "Glycerin", "Activated Charcoal", "Witch Hazel Extract (Hamamelis Virginiana)", "Aloe Vera Extract", "Sodium Benzoate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Activated Charcoal", "Deep Cleanse", "Witch Hazel", "Smooth Glide Shave"]
+  },
+  {
+    product_name: "Beardo Beard Growth Oil",
+    brand: "Beardo",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sweet Almond Oil (Prunus Amygdalus Dulcis)", "Castor Oil (Ricinus Communis)", "Jojoba Oil (Simmondsia Chinensis Seed Oil)", "Argan Oil (Argania Spinosa Kernel Oil)", "Bhringraj Extract (Eclipta Prostrata)", "Amla Extract (Phyllanthus Emblica)", "Vitamin E (Tocopheryl Acetate)", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Bhringraj + Amla", "Promotes Beard Growth", "No Mineral Oil", "Argan + Castor Oil"]
+  },
+  {
+    product_name: "Ustraa Beard Growth Oil",
+    brand: "Happily Unmarried",
+    category: "PERSONAL_CARE",
+    ingredients: ["Castor Oil (Ricinus Communis)", "Sweet Almond Oil (Prunus Amygdalus Dulcis)", "Jojoba Oil (Simmondsia Chinensis Seed Oil)", "Mustard Oil (Brassica Juncea Seed Oil)", "Bhringraj Extract", "Brahmi Extract", "Vitamin E (Tocopheryl Acetate)", "Essential Oil Blend"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Bhringraj + Brahmi", "Castor + Mustard Oil", "Promotes Growth", "Conditions Beard"]
+  },
+  {
+    product_name: "Nivea Men Dark Spot Reduction Face Wash",
+    brand: "Beiersdorf (Nivea)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Stearic Acid", "Glycol Distearate", "Niacinamide", "Vitamin C (Ascorbic Acid)", "Licorice Extract (Glycyrrhiza Glabra)", "Carbomer", "Sodium Hydroxide", "Sodium Chloride", "Methylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide + Vitamin C", "Dark Spot Reduction", "Oil Control", "10x Brighter Skin"]
+  },
+  {
+    product_name: "Brylcreem Protein Hair Cream",
+    brand: "Coty (Brylcreem)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Mineral Oil (Paraffinum Liquidum)", "Petrolatum", "Glycerin", "Stearic Acid", "Triethanolamine", "Cetyl Alcohol", "Hydrolyzed Keratin", "Panthenol", "Methylparaben", "Propylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Keratin Protein", "Strengthens Hair", "Anti-Breakage", "Classic Hold"]
+  },
+  {
+    product_name: "Gillette Vector Plus Shaving Cream",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Stearic Acid", "Potassium Hydroxide", "Triethanolamine", "Glycerin", "Sorbitol", "Isopentane", "Isobutane", "Hydroxyethylcellulose", "Sodium Benzoate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Comfort Guard", "Rich Lather", "Moisturising", "Smooth Shave"]
+  },
+  {
+    product_name: "Park Avenue Beer Shampoo Shaving Cream",
+    brand: "JK Helene Curtis",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Stearic Acid", "Potassium Hydroxide", "Triethanolamine", "Glycerin", "Sorbitol", "Lauric Acid", "Sodium Benzoate", "Carbomer", "Allantoin", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Rich Lather", "Moisturising Formula", "Smooth Glide", "Classic Shave"]
+  },
+  {
+    product_name: "Old Spice Shave Foam Original",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Palmitic Acid", "Triethanolamine", "Isopentane", "Isobutane", "Stearic Acid", "Glycerin", "Sorbitol", "PEG-100 Stearate", "Allantoin", "Sodium Benzoate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Classic Fragrance", "Rich Creamy Lather", "Moisturising", "Easy Rinse"]
+  },
+  {
+    product_name: "Vi-John Shaving Cream Gold",
+    brand: "Vi-John Group",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Stearic Acid", "Potassium Hydroxide", "Triethanolamine", "Glycerin", "Sorbitol", "Lauric Acid", "Parfum", "Sodium Benzoate", "CI 19140"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Rich Lather", "Moisturising", "Anti-Irritation", "Smooth Shave"]
+  },
+  {
+    product_name: "The Man Company Beard Oil",
+    brand: "The Man Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Argan Oil (Argania Spinosa Kernel Oil)", "Jojoba Oil (Simmondsia Chinensis Seed Oil)", "Sweet Almond Oil (Prunus Amygdalus Dulcis)", "Castor Oil (Ricinus Communis)", "Vitamin E (Tocopheryl Acetate)", "Essential Oil Blend (Cedarwood, Eucalyptus, Tea Tree)"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Argan + Jojoba", "Softens Beard", "No Mineral Oil", "Premium Fragrance"]
+  },
+  {
+    product_name: "Denver Beer Shampoo for Men",
+    brand: "Denver",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Cocamide DEA", "Beer Extract (Hops Extract)", "Biotin", "Glycerin", "Sodium Chloride", "Citric Acid", "Sodium Benzoate", "Guar Hydroxypropyltrimonium Chloride", "Parfum", "CI 19140"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Beer Extract", "Biotin", "Anti-Hair Fall", "Volumising"]
+  },
+  {
+    product_name: "Yardley Gentleman Classic Aftershave Lotion",
+    brand: "Wipro Consumer Care",
+    category: "PERSONAL_CARE",
+    ingredients: ["Alcohol Denat.", "Aqua", "Glycerin", "Menthol", "Witch Hazel Extract (Hamamelis Virginiana Water)", "Allantoin", "Aloe Vera Extract (Aloe Barbadensis Leaf Juice)", "Tocopheryl Acetate", "Sodium Benzoate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Classic Gentleman", "Witch Hazel + Aloe", "Cooling Menthol", "Soothes After Shave"]
+  },
+  {
+    product_name: "Axe Signature Aftershave Lotion",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Alcohol Denat.", "Aqua", "Glycerin", "Allantoin", "Menthol", "Sodium Benzoate", "Citric Acid", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Refreshing", "Signature Fragrance", "Soothing Formula", "Long-Lasting Freshness"]
+  },
+  {
+    product_name: "Cinthol Active Shaving Cream",
+    brand: "Godrej Consumer Products",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Stearic Acid", "Potassium Hydroxide", "Triethanolamine", "Glycerin", "Sorbitol", "Lauric Acid", "Sodium Benzoate", "Menthol", "Allantoin", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Menthol Freshness", "Anti-Irritation", "Rich Lather", "Long Stay Freshness"]
+  },
+  {
+    product_name: "Set Wet Styling Hair Gel",
+    brand: "Revlon (Set Wet)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Carbomer", "Triethanolamine", "PVP (Polyvinylpyrrolidone)", "PEG-12 Dimethicone", "Glycerin", "Hydroxyethylcellulose", "Panthenol", "Sodium Benzoate", "Methylparaben", "Parfum", "CI 42090"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Strong Hold", "Anti-Stickiness", "Long-Lasting Style", "Non-Greasy"]
+  },
+  {
+    product_name: "Garnier Men Acno Fight Pimple Clearing Face Wash",
+    brand: "L'Oreal India (Garnier)",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Salicylic Acid", "Niacinamide", "Zinc PCA", "Lemon Extract (Citrus Limon)", "Carbomer", "Sodium Hydroxide", "Sodium Benzoate", "Methylparaben", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Salicylic Acid + Zinc", "Acno Fight", "Oil Control", "6-in-1 Action"]
+  },
+  {
+    product_name: "Ustraa Face Scrub for Men — Oily Skin",
+    brand: "Happily Unmarried",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Glycerin", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Walnut Shell Powder (Juglans Regia Shell Powder)", "Kaolin", "Salicylic Acid", "Tea Tree Oil (Melaleuca Alternifolia)", "Niacinamide", "Sodium Benzoate", "Potassium Sorbate", "Parfum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Walnut Scrub", "Tea Tree Oil", "Salicylic Acid", "Deep Pore Cleanse"]
+  },
+  {
+    product_name: "Wild Stone Edge Shaving Gel",
+    brand: "McNroe Consumer Products",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Glycerin", "Stearic Acid", "Triethanolamine", "PEG-12 Dimethicone", "Carbomer", "Allantoin", "Menthol", "Sodium Benzoate", "Parfum", "CI 42090"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Clear Gel Formula", "Menthol Cooling", "Anti-Irritation", "Smooth Glide"]
+  },
+
+  // ── PERSONAL CARE — DAY 4 GEMINI (FEMININE HYGIENE) ──────────────────────
+
+  {
+    product_name: "Whisper Ultra Clean Hygiene + Comfort XL+",
+    brand: "Whisper",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Sodium Polyacrylate (Odour Lock Gel)", "Polyethylene", "Polypropylene", "Adhesives", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Germ Lock Technology", "XL+ Size", "Odour Lock Gel", "Ultra Clean"]
+  },
+  {
+    product_name: "Stayfree Secure Cottony Soft with Wings XL",
+    brand: "Stayfree",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Polyethylene Backsheet", "Adhesive", "Odour Control System"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Cottony Soft Surface", "With Wings", "XL Size", "Odour Control"]
+  },
+  {
+    product_name: "Sofy AntiBacteria Sanitary Pads XL+",
+    brand: "Sofy",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Antibacterial Sheet", "Natural Herbs Extract", "Polyethylene", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["99.9% Bacteria Protection", "AntiBacteria Sheet", "Herbal Extract", "XL+"]
+  },
+  {
+    product_name: "Paree Super Ultra Sanitary Pads XL",
+    brand: "Paree",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Super Absorbent Polymer", "Polyethylene Top Sheet", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Super Absorbent", "Ultra Thin", "XL Size", "Rash-Free"]
+  },
+  {
+    product_name: "Niine Biodegradable Sanitary Napkins",
+    brand: "Niine",
+    category: "PERSONAL_CARE",
+    ingredients: ["Bamboo Fiber", "Corn Starch based PLA", "Organic Cotton", "Bio-Adhesive"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Plastic Free", "Biodegradable", "Bamboo + Organic Cotton", "Eco-Certified"]
+  },
+  {
+    product_name: "PeeSafe Natural Intimate Wash",
+    brand: "PeeSafe",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Lauryl Glucoside", "Cocamidopropyl Betaine", "Lactic Acid", "Tea Tree Oil", "Witch Hazel"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["pH 3.5 Balanced", "Tea Tree Oil", "No SLS", "Natural Formula"]
+  },
+  {
+    product_name: "Sirona Refreshing Intimate Wash",
+    brand: "Sirona",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Tasmanian Pepper Fruit Extract", "Lactic Acid", "Rhododendron Extract", "Coconut Derivatives"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["pH Balanced", "Refreshing", "No Chemicals", "Plant-Based"]
+  },
+  {
+    product_name: "Lactacyd Feminine Hygiene Wash",
+    brand: "Lactacyd",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Magnesium Laureth Sulfate", "Disodium Laureth Sulfosuccinate", "Lactic Acid", "Lactoserum"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Natural Lactic Acid", "Lactoserum", "Clinically Tested", "pH Balanced"]
+  },
+  {
+    product_name: "Carmesi Sensitive Sanitary Pads",
+    brand: "Carmesi",
+    category: "PERSONAL_CARE",
+    ingredients: ["Bamboo Fiber", "Corn Starch", "Biodegradable SAP", "Bio-Adhesive"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Plastic Free", "Biodegradable", "No Rash", "Sensitive Skin"]
+  },
+  {
+    product_name: "Sirona Reusable Menstrual Cup Medium",
+    brand: "Sirona",
+    category: "PERSONAL_CARE",
+    ingredients: ["Medical Grade Silicone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Medical Grade Silicone", "Reusable", "ISO 10993 Certified", "Zero Waste"]
+  },
+  {
+    product_name: "Everteen Natural Intimate Wash",
+    brand: "Everteen",
+    category: "PERSONAL_CARE",
+    ingredients: ["Ficus Glomerata", "Butea Frondosa", "Sphatika", "Aloe Vera", "Clarified Aqua"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Ayurvedic Formula", "Natural Herbs", "Ayush Licensed", "Chemical Free"]
+  },
+  {
+    product_name: "V-Wash Plus Expert Intimate Hygiene",
+    brand: "V-Wash",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Lactic Acid", "Sea Buckthorn Oil", "Tea Tree Oil"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["pH 3.5", "Sea Buckthorn Oil", "Tea Tree Oil", "Doctor Recommended"]
+  },
+  {
+    product_name: "Whisper Choice Ultra",
+    brand: "Whisper",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Adhesive", "Polyethylene Backsheet", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Ultra Dry", "Choice Range", "Wings", "Leak Lock"]
+  },
+  {
+    product_name: "Stayfree All Night Ultra-Dry XL",
+    brand: "Stayfree",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Super Absorbent Polymer", "Polyethylene", "Odour Control"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["All Night Protection", "Ultra-Dry", "XL Size", "Odour Control"]
+  },
+  {
+    product_name: "Sofy Cool Fresh XL",
+    brand: "Sofy",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Coolpad Technology", "Menthol Extract", "Polyethylene"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Cool Fresh", "Menthol Cooling", "Coolpad Technology", "XL Size"]
+  },
+  {
+    product_name: "PeeSafe Reusable Menstrual Cup",
+    brand: "PeeSafe",
+    category: "PERSONAL_CARE",
+    ingredients: ["Medical Grade Silicone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Medical Grade Silicone", "ISO 10993 Certified", "Reusable", "BPA Free"]
+  },
+  {
+    product_name: "Azah Organic Cotton Sanitary Pads",
+    brand: "Azah",
+    category: "PERSONAL_CARE",
+    ingredients: ["100% Organic Cotton Top Sheet", "Cellulose", "Biodegradable Backsheet"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Organic Cotton", "FDA Approved Top Sheet", "Rash Free", "No Chemicals"]
+  },
+  {
+    product_name: "Plush 100% Pure US Cotton Pads",
+    brand: "Plush",
+    category: "PERSONAL_CARE",
+    ingredients: ["US Cotton", "Cellulose", "FSC Certified Core"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Pure US Cotton", "FSC Certified", "PETA Vegan", "No Plastics"]
+  },
+  {
+    product_name: "Nua Ultra-Thin Sanitary Pads",
+    brand: "Nua",
+    category: "PERSONAL_CARE",
+    ingredients: ["Cellulose", "Polyethylene", "Non-Woven Fabric", "Adhesive"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Ultra-Thin", "Flexible Wings", "Leak-Lock", "No Fragrance Added"]
+  },
+  {
+    product_name: "Sirona Digital Tampons Premium",
+    brand: "Sirona",
+    category: "PERSONAL_CARE",
+    ingredients: ["Viscose", "Cotton Blend", "Polyethylene Cover"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Digital Tampon", "Cotton Blend", "FDA Approved Material", "Leak Guard"]
+  },
+
+  // ── COSMETIC — DAY 4 GEMINI (SUNSCREENS) ─────────────────────────────────
+
+  {
+    product_name: "Neutrogena Ultra Sheer Dry-Touch Sunblock SPF 50+",
+    brand: "Johnson & Johnson (Neutrogena)",
+    category: "COSMETIC",
+    ingredients: ["Water", "Homosalate", "Octocrylene", "Butyl Methoxydibenzoylmethane", "Ethylhexyl Salicylate", "Methylene Bis-Benzotriazolyl Tetramethylbutylphenol", "Ethylhexyl Triazone", "Glycerin", "Dimethicone", "PEG-7 Trimethylolpropane Coconut Ether", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Helioplex Technology", "SPF 50+", "Dry-Touch", "Non-Greasy"]
+  },
+  {
+    product_name: "Lakme Sun Expert Ultra Matte SPF 50 PA+++",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Water", "Cyclopentasiloxane", "Glycerin", "Ethylhexyl Methoxycinnamate", "Zinc Oxide", "Phenylbenzimidazole Sulfonic Acid", "Dimethicone", "Niacinamide", "Stearyl Alcohol", "Phenoxyethanol", "Methylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA+++", "Ultra Matte", "Zinc Oxide", "Niacinamide"]
+  },
+  {
+    product_name: "Lotus Herbals Safe Sun Invisible Matte Gel SPF 50",
+    brand: "Lotus Herbals",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Talc", "Octocrylene", "Titanium Dioxide", "Butyl Methoxydibenzoylmethane", "Benzophenone-3", "Horse Chestnut Extract", "Vanilla Extract", "Carbomer", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50", "Invisible Matte Gel", "Horse Chestnut", "Non-Oily"]
+  },
+  {
+    product_name: "Biotique Bio Sandalwood 50+ SPF Sunscreen",
+    brand: "Biotique",
+    category: "COSMETIC",
+    ingredients: ["Sandalwood Oil", "Ashwagandha", "Nagkesar", "Ankurit Gehun", "Madhu", "Arjun Bark", "Purified Water"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50+", "Sandalwood + Ashwagandha", "Ayurvedic Formula", "Chemical Free"]
+  },
+  {
+    product_name: "Mamaearth Ultra Light Indian Sunscreen SPF 50",
+    brand: "Mamaearth",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Titanium Dioxide", "Zinc Oxide", "Carrot Seed Oil", "Turmeric Extract", "Orange Oil", "Glycerin", "Sodium Benzoate", "Potassium Sorbate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA+++", "Mineral Based", "No Paraben/SLS", "Carrot Seed Oil"]
+  },
+  {
+    product_name: "Minimalist Sunscreen SPF 50 PA++++",
+    brand: "Minimalist",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Octocrylene", "Diethylamino Hydroxybenzoyl Hexyl Benzoate", "Ethylhexyl Salicylate", "Bis-Ethylhexyloxyphenol Methoxyphenyl Triazine", "Glycerin", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA++++", "Fragrance Free", "Chemical Filter", "Lightweight"]
+  },
+  {
+    product_name: "Banana Boat Ultra Defense Sunscreen SPF 50",
+    brand: "Banana Boat",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Octocrylene", "Benzophenone-3", "Butyl Methoxydibenzoylmethane", "Cetyl Alcohol", "Glycerin", "Stearic Acid", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50", "Water Resistant", "UVA + UVB", "Broad Spectrum"]
+  },
+  {
+    product_name: "Fixderma Shadow SPF 50+ Gel Sunscreen",
+    brand: "Fixderma",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Octinoxate", "Benzophenone-4", "Butyl Methoxydibenzoylmethane", "Zinc Oxide", "Glycerin", "Carbomer", "Triethanolamine", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50+", "Gel Formula", "Dermatologist Tested", "No White Cast"]
+  },
+  {
+    product_name: "The Derma Co 1% Hyaluronic Sunscreen Aqua Gel",
+    brand: "The Derma Co",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Octocrylene", "Ethylhexyl Methoxycinnamate", "Butyl Methoxydibenzoylmethane", "Hyaluronic Acid", "Glycerin", "Carbomer", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA++++", "Hyaluronic Acid", "Aqua Gel", "Hydrating Sunscreen"]
+  },
+  {
+    product_name: "Dr. Sheth's Ceramide & Vitamin C Sunscreen SPF 50",
+    brand: "Dr. Sheth's",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Titanium Dioxide", "Zinc Oxide", "Ceramide Complex", "Ethyl Ascorbic Acid", "Glycerin", "Phenoxyethanol", "Carbomer"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Ceramide + Vitamin C", "SPF 50", "Mineral Sunscreen", "Barrier Protect"]
+  },
+  {
+    product_name: "Plum 2% Niacinamide & Rice Water Sunscreen SPF 50",
+    brand: "Plum Goodness",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Ethylhexyl Methoxycinnamate", "Butyl Methoxydibenzoylmethane", "Rice Water Extract", "Niacinamide", "Glycerin", "Phenoxyethanol", "Carbomer"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide 2%", "Rice Water", "SPF 50 PA+++", "Vegan"]
+  },
+  {
+    product_name: "WishCare SPF 50 Niacinamide Sunscreen Fluid",
+    brand: "WishCare",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Tinosorb M", "Tinosorb S", "Niacinamide", "Centella Asiatica", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Tinosorb Filters", "Niacinamide", "Centella Asiatica", "SPF 50"]
+  },
+  {
+    product_name: "VLCC Matte Look Sunscreen Gel SPF 40",
+    brand: "VLCC Personal Care",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Octocrylene", "Carrot Seed Oil", "Sandalwood Oil", "Aloe Vera Extract", "Glycerin", "Carbomer", "Triethanolamine", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 40 PA+++", "Matte Gel", "Carrot Seed + Sandalwood", "Oil Control"]
+  },
+  {
+    product_name: "L'Oreal Paris UV Defender Serum Protector SPF 50",
+    brand: "L'Oreal India",
+    category: "COSMETIC",
+    ingredients: ["Water", "Ethylhexyl Methoxycinnamate", "Drometrizole Trisiloxane", "Glycerin", "Niacinamide", "Dimethicone", "Phenoxyethanol", "Methylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA++++", "Serum Texture", "Niacinamide", "UVA + UVB Shield"]
+  },
+  {
+    product_name: "Cetaphil Sun SPF 50+ Light Gel",
+    brand: "Galderma",
+    category: "COSMETIC",
+    ingredients: ["Water", "Ethylhexyl Methoxycinnamate", "Bis-Ethylhexyloxyphenol Methoxyphenyl Triazine", "Diethylamino Hydroxybenzoyl Hexyl Benzoate", "Glycerin", "Dimethicone", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50+", "Light Gel", "Sensitive Skin Safe", "Fragrance Free"]
+  },
+  {
+    product_name: "Earth Rhythm Hybrid Sunscreen SPF 50",
+    brand: "Earth Rhythm",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Octinoxate", "Zinc Oxide", "Titanium Dioxide", "Glycerin", "Caprylic/Capric Triglyceride", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hybrid Formula", "SPF 50 PA++++", "Mineral + Chemical", "Vegan"]
+  },
+  {
+    product_name: "Dot & Key Watermelon Cooling Sunscreen SPF 50",
+    brand: "Dot & Key",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Watermelon Extract", "Hyaluronic Acid", "Tinosorb S", "Tinosorb M", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Watermelon Extract", "Hyaluronic Acid", "SPF 50 PA++++", "Cooling Gel"]
+  },
+  {
+    product_name: "Quench Bravocado SPF 50 Sunscreen Gel",
+    brand: "Quench",
+    category: "COSMETIC",
+    ingredients: ["Water", "Avocado Oil", "Pomegranate Extract", "Ethylhexyl Methoxycinnamate", "Zinc Oxide", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Avocado Oil", "Pomegranate Extract", "SPF 50", "Hydrating"]
+  },
+  {
+    product_name: "Re'equil Ultra Matte Dry Touch Sunscreen SPF 50",
+    brand: "Re'equil",
+    category: "COSMETIC",
+    ingredients: ["Cyclopentasiloxane", "Zinc Oxide", "Titanium Dioxide", "C12-15 Alkyl Benzoate", "Silica", "Dimethicone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Physical Sunscreen", "Ultra Matte", "SPF 50 PA++++", "No White Cast"]
+  },
+  {
+    product_name: "La Shield Fisico Matte Sunscreen Gel SPF 50",
+    brand: "La Shield",
+    category: "COSMETIC",
+    ingredients: ["Zinc Oxide (25%)", "Cyclopentasiloxane", "Dimethicone Crosspolymer", "Caprylyl Methicone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["25% Zinc Oxide", "100% Mineral", "SPF 50 PA++++", "No Chemical Filters"]
+  },
+
+  // ── COSMETIC — DAY 4 GEMINI (FACE SERUMS) ────────────────────────────────
+
+  {
+    product_name: "Minimalist Niacinamide 10% + Zinc",
+    brand: "Minimalist",
+    category: "COSMETIC",
+    ingredients: ["Aloe Vera Juice", "Niacinamide", "Dimethyl Isosorbide", "Propanediol", "Ethoxydiglycol", "Zinc PCA", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide 10%", "Zinc PCA", "pH 5.5–6.5", "Pore Minimising"]
+  },
+  {
+    product_name: "Minimalist Hyaluronic Acid 2% + B5",
+    brand: "Minimalist",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Sodium Hyaluronate", "Panthenol", "Propanediol", "Pentylene Glycol", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid 2%", "Vitamin B5", "Deep Hydration", "Fragrance Free"]
+  },
+  {
+    product_name: "Minimalist AHA 25% + PHA 5% + BHA 2% Peeling Solution",
+    brand: "Minimalist",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Glycolic Acid", "Lactic Acid", "Gluconolactone", "Salicylic Acid", "Aloe Vera Juice", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["AHA + PHA + BHA", "Exfoliating Solution", "Rinse-Off", "Not for Beginners"]
+  },
+  {
+    product_name: "Plum 15% Vitamin C Face Serum",
+    brand: "Plum Goodness",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Ethyl Ascorbic Acid", "Propanediol", "Betaine", "Kakadu Plum Extract", "Mandarin Peel Extract", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C 15%", "Kakadu Plum", "Brightening", "Vegan Formula"]
+  },
+  {
+    product_name: "Dot & Key 10% Vitamin C + E & Hyaluronic Acid Serum",
+    brand: "Dot & Key",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Ethyl Ascorbic Acid", "Glycerin", "Kakadu Plum Fruit Extract", "Vitamin E Acetate", "Sodium Hyaluronate", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C + E", "Hyaluronic Acid", "Kakadu Plum", "Glow Serum"]
+  },
+  {
+    product_name: "Mamaearth Vitamin C Daily Glow Face Serum",
+    brand: "Mamaearth",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Ethoxydiglycol", "Magnesium Ascorbyl Phosphate", "Turmeric Extract", "Squalane", "Glycerin", "Phenoxyethanol", "Sodium Benzoate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C + Turmeric", "No SLS/Paraben", "Daily Glow", "Squalane"]
+  },
+  {
+    product_name: "WOW Skin Science Vitamin C Face Serum",
+    brand: "WOW Skin Science",
+    category: "COSMETIC",
+    ingredients: ["Purified Water", "Ascorbyl Methylsilanol Pectinate", "Ethyl Ascorbic Acid", "Witch Hazel Extract", "Hyaluronic Acid", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C", "Witch Hazel", "Hyaluronic Acid", "Brightening"]
+  },
+  {
+    product_name: "The Derma Co 2% Kojic Acid Face Serum",
+    brand: "The Derma Co",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Kojic Acid", "Niacinamide", "Alpha Arbutin", "Glycerin", "Turmeric Extract", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Kojic Acid 2%", "Alpha Arbutin", "Niacinamide", "Skin Brightening"]
+  },
+  {
+    product_name: "L'Oreal Paris Revitalift 1.5% Hyaluronic Acid Serum",
+    brand: "L'Oreal India",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Hydroxyethylpiperazine Ethane Sulfonic Acid", "Sodium Hyaluronate", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid 1.5%", "Revitalift", "Plumping", "Anti-Ageing"]
+  },
+  {
+    product_name: "Garnier Bright Complete 30X Vitamin C Booster Serum",
+    brand: "L'Oreal India (Garnier)",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Alcohol", "Dipropylene Glycol", "Niacinamide", "Vitamin C", "Yuzu Lemon Extract", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["30x Vitamin C", "Yuzu Lemon", "Niacinamide", "Bright Complete"]
+  },
+  {
+    product_name: "Pond's Bright Beauty 12% Gluta-Niacinamide Serum",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Water", "Niacinamide", "Glutathione", "Glycerin", "Phenoxyethanol", "Carbomer", "Sodium Hydroxide"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Glutathione + Niacinamide", "Brightening Serum", "Gluta-Bright", "Even Tone"]
+  },
+  {
+    product_name: "Biotique Bio Dandelion Ageless Lightening Serum",
+    brand: "Biotique",
+    category: "COSMETIC",
+    ingredients: ["Bihidana Seed", "Halon Seed", "Jaiphal Seed", "Badam Seed", "Surajmukhi Oil", "Dandelion Plant Extract", "Purified Water"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Dandelion Extract", "Ayurvedic Formula", "Lightening", "Ageless"]
+  },
+  {
+    product_name: "Dr. Sheth's Tea Tree & Lactic Acid Serum",
+    brand: "Dr. Sheth's",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Lactic Acid", "Tea Tree Oil", "Salicylic Acid", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Tea Tree + Lactic Acid", "BHA Exfoliation", "Acne-Prone Skin", "Dermatologist Formulated"]
+  },
+  {
+    product_name: "The Ordinary Niacinamide 10% + Zinc 1%",
+    brand: "The Ordinary",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Niacinamide", "Pentylene Glycol", "Zinc PCA", "Dimethyl Isosorbide", "Xanthan Gum", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide 10%", "Zinc 1%", "Oil Balancing", "Pore Minimising"]
+  },
+  {
+    product_name: "Quench Cherry Brightening Face Serum",
+    brand: "Quench",
+    category: "COSMETIC",
+    ingredients: ["Water", "Cherry Blossom Extract", "Grapefruit Extract", "Pearl Extract", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Cherry Blossom", "Pearl Extract", "Brightening", "Glow Serum"]
+  },
+  {
+    product_name: "WishCare Multi-Retinol Anti-Aging Night Serum",
+    brand: "WishCare",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Retinol (2.5%)", "Bakuchi Oil", "Pomegranate Extract", "Hyaluronic Acid", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Retinol 2.5%", "Bakuchi Oil", "Anti-Ageing", "Night Serum"]
+  },
+  {
+    product_name: "Chemist At Play 10% Vitamin C Brightening Serum",
+    brand: "Chemist At Play",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Ethyl Ascorbic Acid", "Ceramides", "Hyaluronic Acid", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C 10%", "Ceramides", "Hyaluronic Acid", "Brightening"]
+  },
+  {
+    product_name: "Plum 10% Niacinamide Serum with Rice Water",
+    brand: "Plum Goodness",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Niacinamide", "Rice Water", "Propanediol", "Olive Oil PEG-7 Esters", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide 10%", "Rice Water", "Pore Refining", "Vegan"]
+  },
+  {
+    product_name: "The Derma Co 0.1% Retinol Serum",
+    brand: "The Derma Co",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Retinol", "Ceramides", "Vitamin C", "Glycerin", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Retinol 0.1%", "Ceramides", "Anti-Ageing", "Dermatologist Tested"]
+  },
+  {
+    product_name: "Earth Rhythm 10% Vitamin C Face Serum",
+    brand: "Earth Rhythm",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Ethyl Ascorbic Acid", "Hyaluronic Acid", "Glycerin", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C 10%", "Hyaluronic Acid", "Vegan", "Cruelty Free"]
+  },
+
+  // ── COSMETIC — CHATGPT DAY 4 (MAKEUP — COMPACTS, LIP & EYE) ─────────────
+
+  {
+    product_name: "Lakme 9 to 5 Primer + Matte Compact",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Talc", "Mica", "Dimethicone", "Zinc Stearate", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Methylparaben", "Propylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Primer + Compact", "Matte Finish", "SPF 20", "12HR Stay"]
+  },
+  {
+    product_name: "Maybelline Clear Glow BB Cream",
+    brand: "L'Oreal India (Maybelline)",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Cyclopentasiloxane", "Dimethicone", "Glycerin", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 26 PA+++", "Clear Glow", "6-in-1 BB Cream", "Vitamin B3"]
+  },
+  {
+    product_name: "Revlon Touch & Glow Compact",
+    brand: "Revlon",
+    category: "COSMETIC",
+    ingredients: ["Talc", "Mica", "Zinc Stearate", "Dimethicone", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Touch & Glow", "Natural Finish", "Lightweight", "Buildable Cover"]
+  },
+  {
+    product_name: "Swiss Beauty Compact Powder",
+    brand: "Swiss Beauty",
+    category: "COSMETIC",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Smooth Finish", "Lightweight", "Cruelty Free", "Long-Lasting"]
+  },
+  {
+    product_name: "Nykaa SKINgenius BB Cream",
+    brand: "Nykaa Cosmetics",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Glycerin", "Dimethicone", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 30", "BB Cream", "Skin Perfecting", "Buildable Coverage"]
+  },
+  {
+    product_name: "Faces Canada Compact Powder",
+    brand: "Faces Canada",
+    category: "COSMETIC",
+    ingredients: ["Talc", "Mica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Matte Finish", "Oil Control", "Natural Look", "Lightweight"]
+  },
+  {
+    product_name: "Maybelline Baby Lips Lip Balm",
+    brand: "L'Oreal India (Maybelline)",
+    category: "COSMETIC",
+    ingredients: ["Petrolatum", "Paraffin", "Beeswax", "Flavor", "Titanium Dioxide (CI 77891)", "Fragrance", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 20", "Baby Lips", "Moisturising", "Tinted Balm"]
+  },
+  {
+    product_name: "Lakme Absolute Lip Gloss",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Polybutene", "Mineral Oil (Paraffinum Liquidum)", "Silica", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Fragrance", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["High Shine", "Non-Sticky", "Plumping Effect", "Rich Pigment"]
+  },
+  {
+    product_name: "Nykaa Lip Balm",
+    brand: "Nykaa Cosmetics",
+    category: "COSMETIC",
+    ingredients: ["Shea Butter", "Beeswax", "Castor Oil (Ricinus Communis)", "Flavor", "Titanium Dioxide (CI 77891)", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Shea Butter", "Vitamin E", "Moisturising", "Tinted Balm"]
+  },
+  {
+    product_name: "Faces Canada Lip Gloss",
+    brand: "Faces Canada",
+    category: "COSMETIC",
+    ingredients: ["Polybutene", "Mineral Oil (Paraffinum Liquidum)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Titanium Dioxide (CI 77891)", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["High Gloss Shine", "Moisturising", "Vitamin E", "Non-Sticky"]
+  },
+  {
+    product_name: "Colorbar Lip Gloss",
+    brand: "Colorbar Cosmetics",
+    category: "COSMETIC",
+    ingredients: ["Polybutene", "Silica", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Fragrance", "Tocopheryl Acetate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Mirror Gloss", "Long-Lasting Shine", "Vitamin E", "Rich Pigment"]
+  },
+  {
+    product_name: "Maybelline Hyper Glossy Eyeliner",
+    brand: "L'Oreal India (Maybelline)",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Carbon Black (CI 77266)", "Acrylates Copolymer", "Phenoxyethanol", "Glycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyper Gloss", "Smudge-Proof", "Intense Black", "Quick-Dry"]
+  },
+  {
+    product_name: "Lakme Insta Eye Liner",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Carbon Black (CI 77266)", "Shellac", "Glycerin", "Phenoxyethanol", "Methylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Precision Liner", "Smudge-Proof", "Water Resistant", "Deep Black"]
+  },
+  {
+    product_name: "Colorbar Eyeshadow Palette",
+    brand: "Colorbar Cosmetics",
+    category: "COSMETIC",
+    ingredients: ["Mica", "Talc", "Silica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Rich Pigment", "Blendable", "Long-Lasting", "Multi-Shade Palette"]
+  },
+  {
+    product_name: "Nykaa Eyeshadow Palette",
+    brand: "Nykaa Cosmetics",
+    category: "COSMETIC",
+    ingredients: ["Mica", "Talc", "Silica", "Titanium Dioxide (CI 77891)", "Iron Oxides (CI 77491, CI 77492, CI 77499)", "Dimethicone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Highly Pigmented", "Blendable Shades", "Cruelty Free", "Long-Lasting"]
+  },
+  {
+    product_name: "Maybelline Colossal Mascara",
+    brand: "L'Oreal India (Maybelline)",
+    category: "COSMETIC",
+    ingredients: ["Aqua", "Paraffin", "Beeswax", "Carbon Black (CI 77266)", "Phenoxyethanol", "Glycerin", "Methylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Colossal Volume", "8x Volume", "Smudge-Proof", "Vitamin E"]
+  },
+
+  // ── COSMETIC — CHATGPT (MOISTURISERS — NEW ADDITIONS) ────────────────────
+
+  {
+    product_name: "Pond's Super Light Gel",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Niacinamide", "Dimethicone", "Sodium Hyaluronate", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Super Light Gel", "Niacinamide", "Hyaluronic Acid", "Oil-Free"]
+  },
+  {
+    product_name: "WOW Skin Science Vitamin C Face Cream",
+    brand: "WOW Skin Science",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Vitamin C (Ascorbic Acid)", "Shea Butter (Butyrospermum Parkii Butter)", "Cocoa Butter (Theobroma Cacao Seed Butter)", "Cetearyl Alcohol", "Glyceryl Stearate", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C", "Shea + Cocoa Butter", "Brightening", "Deep Nourishment"]
+  },
+  {
+    product_name: "Plum Green Tea Oil-Free Moisturiser",
+    brand: "Plum Goodness",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Green Tea Extract (Camellia Sinensis Leaf Extract)", "Glycolic Acid", "Niacinamide", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Oil-Free", "Green Tea Extract", "AHA Exfoliation", "Vegan Formula"]
+  },
+  {
+    product_name: "Lotus Herbals Nourishing Cream",
+    brand: "Lotus Herbals",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Sweet Almond Oil (Prunus Amygdalus Dulcis)", "Jojoba Oil (Simmondsia Chinensis Seed Oil)", "Stearic Acid", "Cetearyl Alcohol", "Glyceryl Stearate", "Tocopheryl Acetate", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Almond + Jojoba Oil", "Deep Nourishment", "Soft Skin", "Vitamin E"]
+  },
+  {
+    product_name: "Dot & Key Hydrating Moisturiser",
+    brand: "Dot & Key",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Hyaluronic Acid", "Vitamin E (Tocopheryl Acetate)", "Cetearyl Alcohol", "Glyceryl Stearate", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid", "Vitamin E", "24HR Hydration", "Lightweight"]
+  },
+  {
+    product_name: "Vaseline Intensive Care Body Lotion",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Paraffinum Liquidum", "Stearic Acid", "Cetearyl Alcohol", "Glyceryl Stearate", "Dimethicone", "Carbomer", "Sodium Hydroxide", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Intensive Care", "24HR Moisture", "Heals Dry Skin", "Clinically Proven"]
+  },
+  {
+    product_name: "Joy Honey & Almond Cream",
+    brand: "RSH Global",
+    category: "COSMETIC",
+    ingredients: ["Water", "Honey Extract (Mel)", "Sweet Almond Oil (Prunus Amygdalus Dulcis)", "Glycerin", "Stearic Acid", "Cetyl Alcohol", "Glyceryl Stearate", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Honey + Almond", "Deep Nourishment", "Soft Skin", "Value Range"]
+  },
+  {
+    product_name: "Pond's Bright Beauty Cream",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Water", "Glycerin", "Niacinamide", "Dimethicone", "Stearic Acid", "Cetearyl Alcohol", "Glyceryl Stearate", "Tocopheryl Acetate", "Carbomer", "Sodium Hydroxide", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide", "Vitamin B3 + E", "Bright Skin", "SPF 15"]
+  },
+
+  // ── COSMETIC — CHATGPT (SUNSCREENS — NEW ADDITIONS) ──────────────────────
+
+  {
+    product_name: "Neutrogena Ultra Sheer SPF 30 Sunblock",
+    brand: "Johnson & Johnson (Neutrogena)",
+    category: "COSMETIC",
+    ingredients: ["Water", "Homosalate", "Octocrylene", "Butyl Methoxydibenzoylmethane", "Glycerin", "Dimethicone", "Silica", "PEG-7 Trimethylolpropane Coconut Ether", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 30", "Helioplex Technology", "Dry-Touch", "Lightweight"]
+  },
+  {
+    product_name: "Lotus Herbals Safe Sun UV Screen SPF 30 Cream",
+    brand: "Lotus Herbals",
+    category: "COSMETIC",
+    ingredients: ["Water", "Titanium Dioxide", "Zinc Oxide", "Glycerin", "Cetearyl Alcohol", "Glyceryl Stearate", "Herbal Extracts", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 30 PA++", "Mineral Filters", "Non-Greasy", "Daily Use"]
+  },
+  {
+    product_name: "Aqualogica Glow+ Sunscreen SPF 50",
+    brand: "Aqualogica",
+    category: "COSMETIC",
+    ingredients: ["Water", "Niacinamide", "Uvinul A Plus (Diethylamino Hydroxybenzoyl Hexyl Benzoate)", "Tinosorb S (Bis-Ethylhexyloxyphenol Methoxyphenyl Triazine)", "Glycerin", "Dimethicone", "Phenoxyethanol", "Carbomer"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA++++", "Niacinamide", "Glow+", "No White Cast"]
+  },
+  {
+    product_name: "Plum Green Tea Day-Light Sunscreen SPF 50",
+    brand: "Plum Goodness",
+    category: "COSMETIC",
+    ingredients: ["Water", "Green Tea Extract (Camellia Sinensis Leaf Extract)", "Uvinul A Plus", "Octocrylene", "Glycerin", "Dimethicone", "Carbomer", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA++++", "Green Tea Antioxidants", "Vegan", "Lightweight Gel"]
+  },
+  {
+    product_name: "WOW Skin Science Sunscreen SPF 50",
+    brand: "WOW Skin Science",
+    category: "COSMETIC",
+    ingredients: ["Water", "Zinc Oxide", "Titanium Dioxide", "Aloe Vera (Aloe Barbadensis) Leaf Extract", "Glycerin", "Caprylic/Capric Triglyceride", "Cetearyl Alcohol", "Phenoxyethanol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Mineral Sunscreen", "SPF 50", "Aloe Vera", "No Harmful Chemicals"]
+  },
+  {
+    product_name: "Himalaya Protective Sunscreen Lotion SPF 15",
+    brand: "Himalaya Drug Company",
+    category: "COSMETIC",
+    ingredients: ["Water", "Aloe Vera (Aloe Barbadensis) Gel", "Titanium Dioxide", "Zinc Oxide", "Glycerin", "Stearic Acid", "Cetearyl Alcohol", "Glyceryl Stearate", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 15", "Aloe Vera + Mineral Filters", "Herbal Formula", "Daily Protection"]
+  },
+  {
+    product_name: "L'Oreal Paris UV Perfect Sunscreen SPF 50",
+    brand: "L'Oreal India",
+    category: "COSMETIC",
+    ingredients: ["Water", "Mexoryl SX (Terephthalylidene Dicamphor Sulfonic Acid)", "Mexoryl XL (Drometrizole Trisiloxane)", "Glycerin", "Dimethicone", "Titanium Dioxide", "Stearyl Alcohol", "Phenoxyethanol", "Methylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["SPF 50 PA++++", "Mexoryl Technology", "Anti-UVA + UVB", "Matte Finish"]
+  },
+
+  // ── COSMETIC — CHATGPT (FACE SERUMS — NEW ADDITIONS) ─────────────────────
+
+  {
+    product_name: "Neutrogena Hydro Boost Hyaluronic Acid Serum",
+    brand: "Johnson & Johnson (Neutrogena)",
+    category: "COSMETIC",
+    ingredients: ["Water", "Sodium Hyaluronate", "Glycerin", "Dimethicone", "Phenoxyethanol", "Carbomer", "Sodium Hydroxide", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid", "Oil-Free Serum", "48HR Hydration", "Non-Comedogenic"]
+  },
+  {
+    product_name: "The Derma Co Niacinamide 10% Serum",
+    brand: "The Derma Co",
+    category: "COSMETIC",
+    ingredients: ["Water", "Niacinamide", "Zinc PCA", "Glycerin", "Propanediol", "Phenoxyethanol", "Ethylhexylglycerin", "Carbomer", "Sodium Hydroxide"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide 10%", "Zinc PCA", "Pore Minimising", "Oil Control"]
+  },
+  {
+    product_name: "Aqualogica Glow+ Face Serum",
+    brand: "Aqualogica",
+    category: "COSMETIC",
+    ingredients: ["Water", "Niacinamide", "Hyaluronic Acid", "Glycerin", "Tranexamic Acid", "Phenoxyethanol", "Carbomer", "Sodium Hydroxide"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide + HA", "Tranexamic Acid", "Glow Booster", "Brightening"]
+  },
+  {
+    product_name: "Plum Retinol Face Serum",
+    brand: "Plum Goodness",
+    category: "COSMETIC",
+    ingredients: ["Water", "Retinol", "Squalane", "Glycerin", "Tocopheryl Acetate", "Phenoxyethanol", "Carbomer", "Sodium Hydroxide", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Retinol", "Squalane", "Anti-Ageing", "Vegan Formula"]
+  },
+  {
+    product_name: "Dot & Key Hyaluronic Acid Serum",
+    brand: "Dot & Key",
+    category: "COSMETIC",
+    ingredients: ["Water", "Sodium Hyaluronate", "Glycerin", "Vitamin E (Tocopheryl Acetate)", "Phenoxyethanol", "Carbomer", "Sodium Hydroxide", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hyaluronic Acid", "Vitamin E", "Deep Hydration", "Plumping Serum"]
+  },
+  {
+    product_name: "Khadi Natural Vitamin C Serum",
+    brand: "Khadi Natural",
+    category: "COSMETIC",
+    ingredients: ["Water", "Vitamin C (Ascorbic Acid)", "Aloe Vera (Aloe Barbadensis) Leaf Gel", "Glycerin", "Allantoin", "Carbomer", "Triethanolamine", "Phenoxyethanol", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C", "Aloe Vera", "Brightening", "Herbal Formula"]
+  },
+  {
+    product_name: "Biotique Vitamin C Brightening Serum",
+    brand: "Biotique",
+    category: "COSMETIC",
+    ingredients: ["Water", "Vitamin C (Ascorbic Acid)", "Honey Extract (Mel)", "Glycerin", "Glyceryl Stearate", "Stearic Acid", "Methylparaben", "Propylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C + Honey", "Ayurvedic Formula", "Brightening", "Natural Glow"]
+  },
+  {
+    product_name: "Himalaya Vitamin C Brightening Serum",
+    brand: "Himalaya Drug Company",
+    category: "COSMETIC",
+    ingredients: ["Water", "Vitamin C (Ascorbic Acid)", "Aloe Vera (Aloe Barbadensis) Leaf Extract", "Turmeric Extract (Curcuma Longa)", "Glycerin", "Carbomer", "Triethanolamine", "Methylparaben", "Propylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C + Turmeric", "Aloe Vera", "Brightening", "Herbal Actives"]
+  },
+  {
+    product_name: "Vaseline Skin Brightening Serum",
+    brand: "Hindustan Unilever",
+    category: "COSMETIC",
+    ingredients: ["Water", "Niacinamide", "Glycerin", "Petrolatum", "Dimethicone", "Stearic Acid", "Carbomer", "Sodium Hydroxide", "Phenoxyethanol", "Methylparaben", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Niacinamide", "Petrolatum", "Skin Brightening", "Even Tone"]
   }
 
 ];
