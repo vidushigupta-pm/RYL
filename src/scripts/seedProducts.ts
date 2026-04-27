@@ -1292,6 +1292,447 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     ingredients: ["Flattened Rice (Poha)", "Edible Vegetable Oil (Palm Oil)", "Cashew Nuts", "Raisins", "Peanuts", "Coconut (Dry)", "Sugar", "Iodised Salt", "Spices (Turmeric, Red Chilli, Mustard Seeds, Curry Leaves)", "Citric Acid"],
     nutrition: { energy_kcal: 497, sugar_g: 8, sodium_mg: 390, protein_g: 10, fat_g: 24, saturated_fat_g: 10, trans_fat_g: 0, fibre_g: 3.5 },
     front_claims: ["Traditional Chivda", "Premium Dry Fruits"]
+  },
+
+  // ── PERSONAL CARE — DAY 1 GEMINI REVISED (SHAMPOOS) ─────────────────────────
+
+  {
+    product_name: "Dove Hair Fall Rescue Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Chloride", "Cocamidopropyl Betaine", "Dimethiconol", "Perfume", "Glycerin", "Sodium Benzoate", "Glycol Distearate", "Carbomer", "TEA-Dodecylbenzenesulfonate", "Guar Hydroxypropyltrimonium Chloride", "TEA-Sulfate", "Mica", "Disodium EDTA", "PEG-45M", "Cyclotetrasiloxane", "Phenoxyethanol", "Lysine HCl", "Zinc Gluconate", "Iodopropynyl Butylcarbamate", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Linalool", "Benzyl Salicylate", "Citronellol", "Alpha-Isomethyl Ionone", "Hexyl Cinnamal", "CI 77891"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Zinc Actives", "Hair Fall Rescue", "Strengthens Hair"]
+  },
+  {
+    product_name: "Head & Shoulders Anti-Dandruff Shampoo Cool Menthol",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Xylenesulfonate", "Glycol Distearate", "Sodium Lauryl Sulfate", "Zinc Carbonate", "Zinc Pyrithione", "Cocamidopropyl Betaine", "Cocamide MEA", "Fragrance", "Menthol", "Sodium Chloride", "Guar Hydroxypropyltrimonium Chloride", "Sodium Benzoate", "Magnesium Carbonate Hydroxide", "Stearyl Alcohol", "Cetyl Alcohol", "Polyquaternium-76", "Methylchloroisothiazolinone", "Methylisothiazolinone", "CI 42090", "CI 17200"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Cool Menthol", "Zinc Active Formula", "Anti-Dandruff", "100% Flake-Free"]
+  },
+  {
+    product_name: "Pantene Advanced Hair Fall Solution Total Damage Care Shampoo",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Citrate", "Sodium Xylenesulfonate", "Sodium Lauryl Sulfate", "Sodium Chloride", "Cocamidopropyl Betaine", "Fragrance", "Cocos Nucifera (Coconut) Oil", "Glycerin", "Stearyl Alcohol", "Citric Acid", "Sodium Benzoate", "Cetyl Alcohol", "Guar Hydroxypropyltrimonium Chloride", "Tetrasodium EDTA", "Polyquaternium-6", "Panthenol", "Panthenyl Ethyl Ether", "Histidine", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Pro-Vitamin Formula", "10x Stronger Hair", "Hair Fall Solution"]
+  },
+  {
+    product_name: "Sunsilk Stunning Black Shine Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Chloride", "Cocamidopropyl Betaine", "Dimethiconol", "Perfume", "Sodium Benzoate", "Carbomer", "TEA-Dodecylbenzenesulfonate", "Guar Hydroxypropyltrimonium Chloride", "TEA-Sulfate", "Citric Acid", "Mica", "Sodium Hydroxide", "Disodium EDTA", "Cyclotetrasiloxane", "Phenoxyethanol", "Lysine HCl", "Ethylhexyl Methoxycinnamate", "Phyllanthus Emblica (Amla) Fruit Extract", "Iodopropynyl Butylcarbamate", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Linalool", "Benzyl Salicylate", "Limonene", "CI 77891", "CI 77266"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Amla Extract", "Stunning Black Shine", "Smooth Hair"]
+  },
+  {
+    product_name: "TRESemmé Keratin Smooth Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Chloride", "Cocamidopropyl Betaine", "Dimethiconol", "Perfume", "Sodium Benzoate", "Carbomer", "TEA-Dodecylbenzenesulfonate", "Guar Hydroxypropyltrimonium Chloride", "TEA-Sulfate", "Amodimethicone", "Disodium EDTA", "PEG-45M", "Phenoxyethanol", "Ethylhexyl Methoxycinnamate", "Hydrolyzed Keratin", "Argania Spinosa (Argan) Kernel Oil", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Linalool", "Benzyl Salicylate", "Citronellol", "Alpha-Isomethyl Ionone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Keratin Smooth", "Argan Oil", "Frizz-Free Shine"]
+  },
+  {
+    product_name: "Himalaya Anti-Hair Fall Shampoo",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Dimethiconol", "TEA-Dodecylbenzenesulfonate", "Trideceth-10", "Glycol Distearate", "Perfume", "Glycerin", "Sodium Chloride", "Sodium Benzoate", "Carbomer", "Guar Hydroxypropyltrimonium Chloride", "Salicylic Acid", "Eclipta Prostrata (Bhringaraja) Extract", "Butea Monosperma (Palasha) Flower Extract", "Sodium Hydroxide", "Disodium EDTA", "Hydroxypropyl Methylcellulose"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Bhringraj + Palasha", "Reduces Hair Fall", "Herbal Shampoo"]
+  },
+  {
+    product_name: "Biotique Bio Kelp Protein Shampoo",
+    brand: "Biotique",
+    category: "PERSONAL_CARE",
+    ingredients: ["Neem Bark", "Teshu Flower", "Daruhaldi Root", "Sajikshar", "Kelp (Seaweed) Marine Algae", "Ritha Fruit", "Purified Water Q.S."],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Marine Kelp", "No SLS", "Ayurvedic Herbs", "Fresh Healthy Hair"]
+  },
+  {
+    product_name: "WOW Skin Science Apple Cider Vinegar Shampoo",
+    brand: "WOW Skin Science",
+    category: "PERSONAL_CARE",
+    ingredients: ["Purified Water", "Caprylyl/Capryl Glucoside", "Sodium Methyl Cocoyl Taurate", "Sodium Lauroyl Sarcosinate", "Decyl Glucoside", "Cocamidopropyl Betaine", "Disodium Cocoamphodiacetate", "Polyquaternium-10", "Polyquaternium-73", "D-Panthenol", "Raw Apple Cider Vinegar", "Nettle Leaf Extract", "Saw Palmetto Extract", "Almond Oil", "Argan Oil", "Sodium Benzoate", "Potassium Sorbate", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["No Sulphate", "No Paraben", "Apple Cider Vinegar", "Scalp Cleanse"]
+  },
+  {
+    product_name: "Indulekha Bringha Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Bringharaj", "Amla", "Tulsi", "Neem", "Madhyantika", "Shikakai", "Rosemary", "Water", "Sodium Laureth Sulfate", "Fragrance", "Preservatives"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Bhringraj + Amla", "Reduces Hair Fall", "Ayurvedic Formula"]
+  },
+  {
+    product_name: "L'Oreal Paris Total Repair 5 Shampoo",
+    brand: "L'Oreal Paris",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Dimethicone", "Sodium Chloride", "Fragrance", "CI 77891", "Guar Hydroxypropyltrimonium Chloride", "Mica", "Coco-Betaine", "Sodium Benzoate", "Sodium Hydroxide", "Phenoxyethanol", "Steareth-6", "Acetic Acid", "PEG-100 Stearate", "Trideceth-10", "Salicylic Acid", "Limonene", "Fumaric Acid", "Linalool", "Benzyl Salicylate", "Benzyl Alcohol", "Amodimethicone", "Carbomer", "Citric Acid", "Citronellol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["5 Damage Repair", "Pro-Keratin + Ceramide", "Stronger Hair"]
+  },
+  {
+    product_name: "Garnier Fructis Long & Strong Shampoo",
+    brand: "Garnier",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Sodium Lauryl Sulfate", "Glycol Distearate", "Sodium Chloride", "Amodimethicone", "PPG-5-Ceteth-20", "Sodium Benzoate", "Fragrance", "Salicylic Acid", "Guar Hydroxypropyltrimonium Chloride", "Trideceth-6", "Carbomer", "Niacinamide", "Pyridoxine HCl", "Citric Acid", "Cetrimonium Chloride", "Sugar Cane Extract", "Lemon Peel Extract", "Camellia Sinensis Leaf Extract", "Apple Fruit Extract"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Activ Fruit Concentrate", "Long & Strong", "No Fall"]
+  },
+  {
+    product_name: "Dove Daily Shine Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Chloride", "Cocamidopropyl Betaine", "Dimethiconol", "Perfume", "Sodium Benzoate", "Glycol Distearate", "Glycerin", "Carbomer", "TEA-Dodecylbenzenesulfonate", "Guar Hydroxypropyltrimonium Chloride", "TEA-Sulfate", "Mica", "Disodium EDTA", "PEG-45M", "Phenoxyethanol", "Arginine", "Iodopropynyl Butylcarbamate", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Linalool", "Benzyl Salicylate", "Citronellol", "Hexyl Cinnamal", "CI 77891"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Daily Shine", "Arginine Actives", "Light & Nourishing"]
+  },
+  {
+    product_name: "Himalaya Herbals Gentle Daily Care Protein Shampoo",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Sodium Cocoyl Glycinate", "Glycol Distearate", "Perfume", "Cicer Arietinum (Chickpea) Seed Extract", "Terminalia Chebula Fruit Extract", "Glycyrrhiza Glabra (Licorice) Root Extract", "Sodium Chloride", "Sodium Benzoate", "Guar Hydroxypropyltrimonium Chloride", "Salicylic Acid", "Sodium Hydroxide", "Disodium EDTA"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Chickpea Protein", "Gentle Daily Use", "Herbal Shampoo"]
+  },
+  {
+    product_name: "Khadi Natural Amla & Bhringraj Hair Cleanser",
+    brand: "Khadi Natural",
+    category: "PERSONAL_CARE",
+    ingredients: ["Purified Water", "Amla (Emblica Officinalis)", "Reetha (Sapindus Mukurossi)", "Aloe Vera Extract (Aloe Barbadensis)", "Bhringraj Extract (Eclipta Alba)", "Rosemary Oil (Rosmarinus Officinalis)", "Lavender Oil (Lavandula Angustifolia)"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["No SLS", "No Paraben", "Herbal", "Amla + Bhringraj"]
+  },
+  {
+    product_name: "Love Beauty & Planet Murumuru Butter & Rose Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Sodium Chloride", "Perfume", "Sodium Benzoate", "Glycol Distearate", "Citric Acid", "Polyquaternium-10", "Cocamide MEA", "PPG-9", "Disodium EDTA", "Glycerin", "Cocos Nucifera (Coconut) Oil", "Astrocaryum Murumuru Seed Butter", "Rosa Damascena Flower Oil", "Sodium Hydroxide", "Benzyl Alcohol", "Benzyl Salicylate", "Citronellol", "Coumarin", "Geraniol", "Linalool"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Murumuru Butter", "Rose Oil", "Silicone-Free", "Smooth & Shiny"]
+  },
+  {
+    product_name: "Patanjali Kesh Kanti Natural Hair Cleanser",
+    brand: "Patanjali",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sapindus Trifoliatus (Reetha)", "Aegle Marmelos (Bael)", "Ocimum Sanctum (Tulsi)", "Aloe Barbadensis (Aloe Vera)", "Phyllanthus Emblica (Amla)", "Acacia Concinna (Shikakai)", "Eclipta Alba (Bhringraj)", "Lawsonia Inermis (Mehandi)", "Aqua", "Surfactant Base", "Fragrance", "Diazolidinyl Urea", "IPBC"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["8 Herbs", "Natural Hair Cleanser", "Ayurvedic"]
+  },
+  {
+    product_name: "OGX Thick & Full Biotin & Collagen Shampoo",
+    brand: "OGX",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium C14-16 Olefin Sulfonate", "Cocamidopropyl Betaine", "Sodium Chloride", "Fragrance", "Biotin", "Hydrolyzed Collagen", "Hydrolyzed Wheat Protein", "Polyquaternium-10", "Glycol Distearate", "PEG-120 Methyl Glucose Dioleate", "Cocamidopropyl Hydroxysultaine", "Laureth-4", "Citric Acid", "Diazolidinyl Urea", "Iodopropynyl Butylcarbamate", "Sodium Sulfate", "CI 60730", "CI 17200", "CI 19140"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Biotin & Collagen", "Thick & Full", "Volumizing"]
+  },
+  {
+    product_name: "TRESemmé Hair Fall Defense Shampoo",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Laureth Sulfate", "Sodium Chloride", "Cocamidopropyl Betaine", "Dimethiconol", "Perfume", "Sodium Benzoate", "Glycol Distearate", "Carbomer", "TEA-Dodecylbenzenesulfonate", "Guar Hydroxypropyltrimonium Chloride", "TEA-Sulfate", "Disodium EDTA", "PEG-45M", "Phenoxyethanol", "Lysine HCl", "Hydrolyzed Keratin", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Linalool", "Benzyl Salicylate", "Citronellol", "Hexyl Cinnamal"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_calls: ["Keratin Actives", "Hair Fall Defense", "Strengthens Hair"]
+  },
+
+  // ── PERSONAL CARE — DAY 1 GEMINI REVISED (CONDITIONERS) ─────────────────────
+
+  {
+    product_name: "Dove Intense Repair Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Behentrimonium Chloride", "Perfume", "Glycerin", "Dipropylene Glycol", "Lactic Acid", "Sodium Chloride", "Amodimethicone", "Disodium EDTA", "Gluconolactone", "Trehalose", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Magnesium Nitrate", "Sodium Sulfate", "Sodium Hydroxide", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Alpha-Isomethyl Ionone", "Benzyl Salicylate", "Citronellol", "Hexyl Cinnamal", "Linalool"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Keratin Actives", "Intense Repair", "Damage Repair Conditioner"]
+  },
+  {
+    product_name: "Pantene Advanced Smooth & Silky Conditioner",
+    brand: "Procter & Gamble",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Silicone Quaternium-26", "Stearyl Alcohol", "Behentrimonium Methosulfate", "Cetyl Alcohol", "Fragrance", "Isopropyl Alcohol", "Benzyl Alcohol", "Disodium EDTA", "Polysorbate 20", "Panthenyl Ethyl Ether", "Panthenol", "Histidine", "Citric Acid", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Pro-Vitamin Formula", "Silky Smooth", "Frizz Control"]
+  },
+  {
+    product_name: "Himalaya Gentle Daily Care Protein Conditioner",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Behentrimonium Methosulfate", "Cetyl Alcohol", "Perfume", "Cicer Arietinum Seed Extract", "Aloe Barbadensis Leaf Juice", "Glyceryl Stearate SE", "Terminalia Bellerica Fruit Extract", "Methylparaben", "Propylparaben", "Disodium EDTA"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Chickpea Protein", "Aloe Vera", "Gentle Daily Conditioner"]
+  },
+  {
+    product_name: "Mamaearth Onion Conditioner for Hair Fall Control",
+    brand: "Mamaearth",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cetearyl Alcohol", "Caprylic/Capric Triglyceride", "Emulsifying Wax", "Coconut Oil", "Sweet Almond Oil", "Onion Seed Extract", "Cetrimonium Chloride", "Polyquaternium-10", "Plant Keratin", "Sodium Benzoate", "Potassium Sorbate", "IFRA Certified Allergen Free Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["No Sulphate", "No Paraben", "Onion Extract", "Reduces Hair Fall"]
+  },
+  {
+    product_name: "WOW Skin Science Coconut Milk Hair Mask",
+    brand: "WOW Skin Science",
+    category: "PERSONAL_CARE",
+    ingredients: ["Purified Water", "Cetyl Alcohol", "Cococaprylate", "Brassicamidopropyl Dimethylamine", "Coconut Milk Extract", "Extra Virgin Coconut Oil", "Hydrolyzed Wheat Protein", "Panthenol (Vitamin B5)", "Tocopheryl Acetate (Vitamin E)", "Sodium PCA", "Fragrance", "Sodium Benzoate", "Potassium Sorbate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Coconut Milk", "Deep Conditioning", "No Sulphate", "Vitamin E"]
+  },
+  {
+    product_name: "Garnier Fructis Long & Strong Conditioner",
+    brand: "Garnier",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Behentrimonium Chloride", "Cetyl Esters", "Niacinamide", "Saccharum Officinarum Extract", "Isopropyl Alcohol", "Trideceth-6", "Chlorhexidine Digluconate", "Limonene", "Camellia Sinensis Leaf Extract", "Linalool", "Benzyl Salicylate", "Benzyl Alcohol", "Amodimethicone", "Apple Fruit Extract", "Pyridoxine HCl", "Citric Acid", "Cetrimonium Chloride", "Lemon Peel Extract"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Activ Fruit Concentrate", "Long & Strong", "Detangling"]
+  },
+  {
+    product_name: "L'Oreal Paris Extraordinary Oil Smooth Conditioner",
+    brand: "L'Oreal Paris",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Amodimethicone", "Behentrimonium Chloride", "Cetyl Esters", "Fragrance", "Isopropyl Alcohol", "Trideceth-6", "Phenoxyethanol", "Argania Spinosa Kernel Oil", "Helianthus Annuus Seed Oil", "Lotus Corniculatus Flower Extract", "Cocos Nucifera Oil", "Cetrimonium Chloride", "Linalool", "Caramel"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Extraordinary Oil", "Argan + Lotus + Coconut Oils", "Smooth Shiny Hair"]
+  },
+  {
+    product_name: "Biotique Bio Thyme Volume Conditioner",
+    brand: "Biotique",
+    category: "PERSONAL_CARE",
+    ingredients: ["Thyme", "Ajwain", "Daruhaldi", "Surajmukhi Oil", "Jaitun Oil", "Purified Water Q.S."],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["No SLS", "Thyme & Olive Oil", "Volume & Bounce", "Ayurvedic"]
+  },
+  {
+    product_name: "Dove Hair Fall Rescue Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Behentrimonium Chloride", "Perfume", "Glycerin", "Lactic Acid", "Sodium Chloride", "Amodimethicone", "Disodium EDTA", "Gluconolactone", "Trehalose", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Lysine HCl", "Magnesium Nitrate", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Zinc Actives", "Reduces Hair Fall", "Strengthening Conditioner"]
+  },
+  {
+    product_name: "OGX Nourishing Coconut Milk Conditioner",
+    brand: "OGX",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Cetyl Alcohol", "Behentrimonium Chloride", "Glycerin", "Cocos Nucifera Oil", "Cocos Nucifera Fruit Extract", "Albumen", "Carthamus Tinctorius Seed Oil", "Panthenol", "Isopropyl Alcohol", "Dimethicone", "Cyclotetrasiloxane", "Propylene Glycol", "Magnesium Nitrate", "Methylchloroisothiazolinone", "Methylisothiazolinone", "Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Coconut Milk", "Egg White Protein", "Nourishing", "Soft & Smooth"]
+  },
+  {
+    product_name: "Matrix Biolage Smoothproof Conditioner",
+    brand: "Matrix",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Elaeis Guineensis Oil", "Behentrimonium Chloride", "Glycerin", "Fragrance", "Isopropyl Alcohol", "Methylparaben", "Stearamidopropyl Dimethylamine", "Camellia Oleifera Seed Oil", "Citric Acid", "Chlorhexidine Dihydrochloride", "Limonene"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Smoothproof", "Camellia Oil", "Frizz Control", "Salon Formula"]
+  },
+  {
+    product_name: "L'Oreal Paris Dream Lengths Detangling Conditioner",
+    brand: "L'Oreal Paris",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dicetyldimonium Chloride", "Cetrimonium Chloride", "Niacinamide", "Ricinus Communis Seed Oil", "Sodium Benzoate", "Hydroxycitronellal", "Hydroxypropyltrimonium Hydrolyzed Wheat Protein", "Hydrolyzed Corn Protein", "Hydrolyzed Soy Protein", "Hydrolyzed Wheat Protein", "Phenoxyethanol", "Steareth-6", "Acetic Acid", "PEG-100 Stearate", "Trideceth-10", "Chlorhexidine Digluconate", "Limonene", "Panthenol", "Benzyl Salicylate", "Linalool", "Benzyl Alcohol", "Isopropyl Alcohol", "Amodimethicone", "Alpha-Isomethyl Ionone", "Geraniol", "Citric Acid", "Citronellol", "Hexyl Cinnamal"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Dream Lengths", "Castor Oil", "Detangling", "Long Hair Care"]
+  },
+  {
+    product_name: "Plum Olive & Macadamia Rich Nourish Conditioner",
+    brand: "Plum",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cetearyl Alcohol", "Behentrimonium Chloride", "Helianthus Annuus Seed Oil", "Olive Oil PEG-7 Esters", "Macadamia Ternifolia Seed Oil", "Olive Oil", "Butyrospermum Parkii Butter", "Pro-Vitamin B5", "Fragrance", "Phenoxyethanol", "Ethylhexylglycerin"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Olive + Macadamia Oil", "No Paraben", "No SLS", "Rich Nourishment"]
+  },
+  {
+    product_name: "Sunsilk Soft & Smooth Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Perfume", "Behentrimonium Chloride", "Glycerin", "Lactic Acid", "Dipropylene Glycol", "Amodimethicone", "Sodium Chloride", "Disodium EDTA", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Lysine HCl", "Argania Spinosa Kernel Oil", "Cocos Nucifera Oil", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Argan Oil", "Coconut Oil", "Soft & Smooth"]
+  },
+  {
+    product_name: "Love Beauty & Planet Onion Black Seed & Patchouli Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Behentrimonium Chloride", "Cocos Nucifera Oil", "Perfume", "Dipropylene Glycol", "1,2-Hexanediol", "Benzyl Alcohol", "Disodium EDTA", "Acrylates/Beheneth-25 Methacrylate Copolymer", "Sodium Hydroxide", "Allium Cepa Bulb Extract", "Nigella Sativa Seed Oil", "Patchouli Oil"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Onion Oil", "Black Seed Oil", "Silicone-Free", "Hair Fall Control"]
+  },
+  {
+    product_name: "Schwarzkopf Professional Spa Essence Enriching Conditioner",
+    brand: "Schwarzkopf",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Quaternium-87", "Propylene Glycol", "Hydrolyzed Keratin", "Glycerin", "Distearoylethyl Hydroxyethylmonium Methosulfate", "Isopropyl Myristate", "Fragrance", "Citric Acid", "Phenoxyethanol", "Sodium Methylparaben"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hydrolyzed Keratin", "Professional Formula", "Enriching Conditioner"]
+  },
+  {
+    product_name: "TRESemmé Hair Fall Defense Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Behentrimonium Chloride", "Perfume", "Dipropylene Glycol", "Lactic Acid", "Sodium Chloride", "Amodimethicone", "Disodium EDTA", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Phenoxyethanol", "Lysine HCl", "Magnesium Nitrate", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Hair Fall Defense", "Keratin Fortified", "Strengthens Hair"]
+  },
+  {
+    product_name: "Dove Daily Shine Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Behentrimonium Chloride", "Perfume", "Glycerin", "Lactic Acid", "Sodium Chloride", "Amodimethicone", "Disodium EDTA", "Gluconolactone", "Trehalose", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Lysine HCl", "Magnesium Nitrate", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Daily Shine", "Moisturising Conditioner", "Soft & Manageable"]
+  },
+  {
+    product_name: "Clinic Plus Soft & Smooth Conditioner",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Cetearyl Alcohol", "Dimethicone", "Stearamidopropyl Dimethylamine", "Behentrimonium Chloride", "Perfume", "Glycerin", "Lactic Acid", "Sodium Chloride", "Amodimethicone", "Disodium EDTA", "Milk Protein", "Lysine HCl", "Cetrimonium Chloride", "PEG-7 Propylheptyl Ether", "Methylchloroisothiazolinone", "Methylisothiazolinone"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Milk Protein", "Soft & Smooth", "Strong & Long Hair"]
+  },
+
+  // ── PERSONAL CARE — DAY 1 GEMINI REVISED (SOAPS & BODY WASH) ─────────────────
+
+  {
+    product_name: "Lux Bright Glow Soap with Vitamin C & E",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Water", "Glycerin", "Perfume", "Sodium Chloride", "Titanium Dioxide", "Tetrasodium Etidronate", "Tetrasodium EDTA", "Sodium Ascorbyl Phosphate (Vitamin C)", "Tocopheryl Acetate (Vitamin E)", "Alpha-Isomethyl Ionone", "Benzyl Salicylate", "Linalool", "CI 12490"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Vitamin C & E", "Bright Glow", "Moisturising"]
+  },
+  {
+    product_name: "Dove Sensitive Skin Beauty Bar",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Lauroyl Isethionate", "Stearic Acid", "Sodium Palmitate", "Lauric Acid", "Water", "Sodium Isethionate", "Sodium Stearate", "Cocamidopropyl Betaine", "Sodium Palm Kernelate", "Glycerin", "Sodium Chloride", "Zinc Oxide", "Tetrasodium EDTA", "Tetrasodium Etidronate", "Titanium Dioxide"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Fragrance-Free", "Sensitive Skin", "Hypoallergenic", "No Paraben"]
+  },
+  {
+    product_name: "Santoor Sandal & Turmeric Soap",
+    brand: "Wipro Consumer Care",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Aqua", "Hydrated Magnesium Silicate", "Sandalwood Extract", "Turmeric Extract", "Glycerin", "Perfume", "Sodium Carbonate", "Etidronic Acid", "Tetrasodium EDTA", "CI 45100", "CI 11680"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sandalwood + Turmeric", "Younger Looking Skin", "Dermatologically Tested"]
+  },
+  {
+    product_name: "Himalaya Neem & Turmeric Soap",
+    brand: "Himalaya Drug Company",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Water", "Fragrance", "Glycerin", "Melia Azadirachta Seed Oil (Neem)", "Curcuma Longa Root Oil (Turmeric)", "Tetrasodium EDTA", "Tetrasodium Etidronate", "Tocopheryl Acetate", "CI 77288"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Neem + Turmeric", "Anti-Bacterial", "Herbal Protection"]
+  },
+  {
+    product_name: "Nivea Creme Soft Bathing Bar",
+    brand: "Beiersdorf",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Aqua", "Glycerin", "Perfume", "Prunus Amygdalus Dulcis (Sweet Almond) Oil", "Sodium Chloride", "Tetrasodium Etidronate", "Tetrasodium EDTA", "Titanium Dioxide", "Linalool", "Limonene", "Benzyl Alcohol"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sweet Almond Oil", "Moisturising", "Soft Skin"]
+  },
+  {
+    product_name: "Fiama Lemongrass & Jojoba Shower Gel",
+    brand: "ITC",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Acrylates Copolymer", "Glycerin", "PEG-40 Hydrogenated Castor Oil", "Fragrance", "Lemongrass Extract", "Jojoba Beads", "Sodium Hydroxide", "Sodium Chloride", "Benzophenone-4", "Tetrasodium EDTA", "CI 47005", "CI 42090"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Lemongrass + Jojoba", "Skin Conditioners", "Refreshing"]
+  },
+  {
+    product_name: "Margo Original Neem Soap",
+    brand: "Henkel India",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Neem Seed Oil", "Water", "Talc", "Fragrance", "Sodium Chloride", "Glycerin", "Petroleum Jelly", "Tetrasodium EDTA", "Etidronic Acid", "Vitamin E Acetate", "CI 12740", "CI 61565"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["100% Original Neem", "Anti-Bacterial", "Pure Neem Goodness"]
+  },
+  {
+    product_name: "Godrej No. 1 Sandal & Turmeric Soap",
+    brand: "Godrej Consumer Products",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Water", "Fragrance", "Sodium Chloride", "Glycerin", "Sandalwood Extract", "Turmeric Extract", "Titanium Dioxide", "Tetrasodium EDTA", "BHT", "CI 12740", "CI 12150"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sandal + Turmeric", "Moisturising", "Trusted Brand"]
+  },
+  {
+    product_name: "Dove Purely Pampering Shea Butter Body Wash",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Water", "Sodium Lauroyl Glycinate", "Cocamidopropyl Betaine", "Sodium Lauroyl Isethionate", "Sodium Chloride", "Lauric Acid", "Glycerin", "Perfume", "Shea Butter", "Carbomer", "PEG-150 Pentaerythrityl Tetrastearate", "Sodium Hydroxide", "DMDM Hydantoin", "Tetrasodium EDTA", "Iodopropynyl Butylcarbamate", "Benzyl Alcohol", "Coumarin", "Hexyl Cinnamal", "Limonene", "Linalool"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Shea Butter", "Purely Pampering", "Moisturising Body Wash"]
+  },
+  {
+    product_name: "Savlon Moisture Shield Germ Protection Soap",
+    brand: "ITC",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Aqua", "Talc", "Perfume", "Glycerin", "Sodium Chloride", "Titanium Dioxide", "Tetrasodium EDTA", "Etidronic Acid", "Silver Nano", "BHT", "Alpha-Isomethyl Ionone", "Hexyl Cinnamal"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Silver Shield Technology", "Germ Protection", "Moisture Lock"]
+  },
+  {
+    product_name: "Cinthol Original Deodorant Soap",
+    brand: "Godrej Consumer Products",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Water", "Perfume", "Triclocarban", "Sodium Chloride", "Glycerin", "Titanium Dioxide", "Tetrasodium EDTA", "BHT", "Citric Acid", "CI 47000", "CI 61565"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Deodorant Soap", "Germ Protection", "Fresh Feel"]
+  },
+  {
+    product_name: "Vivel Aloe Vera Bathing Bar",
+    brand: "ITC",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Aqua", "Talc", "Fragrance", "Glycerin", "Aloe Barbadensis Leaf Extract", "Vitamin E Acetate", "Sodium Chloride", "Tetrasodium EDTA", "Etidronic Acid", "BHT", "CI 74260", "CI 11680"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Aloe Vera + Vitamin E", "Moisturising", "Gentle Cleansing"]
+  },
+  {
+    product_name: "Biotique Bio Almond Oil Nourishing Body Soap",
+    brand: "Biotique",
+    category: "PERSONAL_CARE",
+    ingredients: ["Nariyal Tail (Coconut Oil)", "Arand Tail (Castor Oil)", "Neem Tail", "Badam Tail (Almond Oil)", "Banhaldi", "Imli", "Ritha", "Purified Water Q.S."],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Almond Oil", "No SLS", "Ayurvedic", "Nourishing"]
+  },
+  {
+    product_name: "Medimix Ayurvedic 18-Herb Soap",
+    brand: "Cholayil",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Sodium Cocoate", "18 Herb Extracts (Chitraka, Vanardraka, Sariba & others)", "Fragrance", "Magnesium Silicate", "Sodium Chloride", "CI 61565", "CI 47000"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["18 Ayurvedic Herbs", "Anti-Bacterial", "Dermatologically Tested"]
+  },
+  {
+    product_name: "Mamaearth Ubtan Body Wash with Turmeric & Saffron",
+    brand: "Mamaearth",
+    category: "PERSONAL_CARE",
+    ingredients: ["Aqua", "Cocamidopropyl Betaine", "Sodium Lauroyl Sarcosinate", "Glycerin", "Turmeric Extract", "Saffron Extract", "Walnut Shell Powder", "Sodium Benzoate", "Potassium Sorbate", "IFRA Certified Allergen Free Fragrance"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Turmeric + Saffron", "No SLS", "No Paraben", "Ubtan Formula"]
+  },
+  {
+    product_name: "Hamam Neem Tulsi & Aloe Vera Soap",
+    brand: "Hindustan Unilever",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Palmate", "Sodium Palm Kernelate", "Water", "Fragrance", "Sodium Chloride", "Glycerin", "Neem Extract", "Tulsi Extract", "Aloe Vera Extract", "Tetrasodium EDTA", "Tetrasodium Etidronate", "CI 77288", "CI 11680"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Neem + Tulsi + Aloe", "Naturally Safe", "Germ Protection"]
+  },
+  {
+    product_name: "Cetaphil Gentle Cleansing Bar",
+    brand: "Galderma",
+    category: "PERSONAL_CARE",
+    ingredients: ["Sodium Cocoyl Isethionate", "Stearic Acid", "Sodium Tallowate", "Sodium Cocoate", "Water", "Sodium Stearate", "Glycerin", "Sodium Chloride", "PEG-20", "Sodium Isethionate", "Petrolatum", "Sodium Isostearoyl Lactylate", "Sucrose Cocoate", "Titanium Dioxide", "Pentasodium Pentetate", "Tetrasodium Etidronate"],
+    nutrition: { energy_kcal: 0, sugar_g: 0, sodium_mg: 0, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Sensitive Skin", "Fragrance-Free", "Dermatologist Recommended", "No Harsh Chemicals"]
   }
 
 ];
