@@ -119,6 +119,33 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     nutrition: { energy_kcal: 481, sugar_g: 38, sodium_mg: 340, protein_g: 5, fat_g: 20, saturated_fat_g: 9.5, trans_fat_g: 0, fibre_g: 2.2 }
   },
 
+  // ── BISCUITS — DAY 2 CHATGPT ADDITIONS ───────────────────────────────────
+
+  {
+    product_name: "Britannia Good Day Butter Cookies",
+    brand: "Britannia",
+    category: "FOOD",
+    ingredients: ["Refined Wheat Flour", "Sugar", "Edible Vegetable Oil (Palm Oil)", "Butter (2%)", "Invert Sugar Syrup", "Milk Solids", "Raising Agents (INS 500, INS 503)", "Iodised Salt", "Emulsifier (INS 322)"],
+    nutrition: { energy_kcal: 520, sugar_g: 24, sodium_mg: 300, protein_g: 6, fat_g: 26, saturated_fat_g: 14, trans_fat_g: 0, fibre_g: 2 },
+    front_claims: ["Real Butter", "Crunchy Cookies"]
+  },
+  {
+    product_name: "Britannia Little Hearts Biscuits",
+    brand: "Britannia",
+    category: "FOOD",
+    ingredients: ["Refined Wheat Flour", "Sugar", "Edible Vegetable Oil (Palm Oil)", "Invert Sugar Syrup", "Raising Agents (INS 500, INS 503)", "Iodised Salt", "Emulsifier (INS 322)"],
+    nutrition: { energy_kcal: 510, sugar_g: 30, sodium_mg: 280, protein_g: 6, fat_g: 24, saturated_fat_g: 11, trans_fat_g: 0, fibre_g: 2 },
+    front_claims: ["Heart Shaped", "Light & Crispy"]
+  },
+  {
+    product_name: "Dukes Wafer Rolls Chocolate",
+    brand: "Dukes",
+    category: "FOOD",
+    ingredients: ["Refined Wheat Flour", "Sugar", "Edible Vegetable Oil (Palm Oil)", "Cocoa Solids (3%)", "Milk Solids", "Emulsifier (INS 322)", "Raising Agent (INS 500)", "Artificial Flavour (Chocolate)"],
+    nutrition: { energy_kcal: 540, sugar_g: 32, sodium_mg: 200, protein_g: 5, fat_g: 30, saturated_fat_g: 15, trans_fat_g: 0, fibre_g: 2 },
+    front_claims: ["Crispy Wafer Rolls", "Chocolate Filled"]
+  },
+
   // ── CHIPS & NAMKEEN ───────────────────────────────────────────────────────
 
   {
@@ -352,6 +379,64 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     nutrition: { energy_kcal: 40, sugar_g: 10, sodium_mg: 25, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 }
   },
 
+  // ── BEVERAGES — DAY 3 CHATGPT ADDITIONS ──────────────────────────────────
+
+  {
+    product_name: "Sprite Lemon-Lime Flavoured Drink",
+    brand: "Coca-Cola India",
+    category: "FOOD",
+    ingredients: ["Carbonated Water", "Sugar", "Acidity Regulators (INS 330, INS 331)", "Natural Lemon-Lime Flavour"],
+    nutrition: { energy_kcal: 40, sugar_g: 10, sodium_mg: 8, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 }
+  },
+  {
+    product_name: "Fanta Orange Flavoured Drink",
+    brand: "Coca-Cola India",
+    category: "FOOD",
+    ingredients: ["Carbonated Water", "Sugar", "Acidity Regulator (INS 330)", "Colour (INS 110)", "Natural Orange Flavour"],
+    nutrition: { energy_kcal: 45, sugar_g: 11.2, sodium_mg: 7, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Orange Flavoured", "No Added Preservatives"]
+  },
+  {
+    product_name: "Real Mixed Fruit Juice",
+    brand: "Dabur",
+    category: "FOOD",
+    ingredients: ["Water", "Mixed Fruit Pulp (Mango, Guava, Pineapple, Papaya)", "Sugar", "Acidity Regulator (INS 330)", "Antioxidant (INS 300)", "Preservative (INS 202)"],
+    nutrition: { energy_kcal: 55, sugar_g: 12, sodium_mg: 6, protein_g: 0.3, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0.5 },
+    front_claims: ["Mixed Fruit", "Vitamin C"]
+  },
+  {
+    product_name: "Red Bull Energy Drink",
+    brand: "Red Bull India",
+    category: "FOOD",
+    ingredients: ["Carbonated Water", "Sucrose", "Glucose", "Citric Acid (INS 330)", "Sodium Citrate (INS 331)", "Taurine (400 mg/250ml)", "Caffeine (80 mg/250ml)", "Niacinamide", "Pantothenic Acid", "Vitamin B6", "Vitamin B12", "Natural & Artificial Flavours", "Colour (INS 150c)"],
+    nutrition: { energy_kcal: 45, sugar_g: 11, sodium_mg: 40, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Caffeine 80mg", "Taurine", "B-Vitamins", "Vitalises Body & Mind"]
+  },
+  {
+    product_name: "Sting Energy Drink",
+    brand: "PepsiCo",
+    category: "FOOD",
+    ingredients: ["Carbonated Water", "Sugar", "Citric Acid (INS 330)", "Taurine (300 mg/250ml)", "Caffeine (79 mg/250ml)", "Inositol", "Vitamins (B3, B6, B12)", "Colour (INS 110)", "Artificial Flavour (Strawberry)"],
+    nutrition: { energy_kcal: 47, sugar_g: 11.5, sodium_mg: 35, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Power Packed", "Caffeine + Taurine"]
+  },
+  {
+    product_name: "Bru Gold Instant Coffee",
+    brand: "Hindustan Unilever",
+    category: "FOOD",
+    ingredients: ["Coffee (100%)"],
+    nutrition: { energy_kcal: 2, sugar_g: 0, sodium_mg: 5, protein_g: 0.3, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Gold Roast", "100% Pure Coffee"]
+  },
+  {
+    product_name: "Rasna Instant Drink Mix Orange",
+    brand: "Rasna",
+    category: "FOOD",
+    ingredients: ["Sugar", "Acidity Regulator (INS 330)", "Artificial Orange Flavour", "Colour (INS 110)", "Anticaking Agent (INS 551)"],
+    nutrition: { energy_kcal: 380, sugar_g: 90, sodium_mg: 20, protein_g: 0, fat_g: 0, saturated_fat_g: 0, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Makes 32 Glasses", "Instant Mix"]
+  },
+
   // ── DAIRY & CONFECTIONERY ─────────────────────────────────────────────────
 
   {
@@ -416,6 +501,65 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     category: "FOOD",
     ingredients: ["Sugar", "Glucose Syrup", "Edible Vegetable Fat (Palm Oil)", "Cocoa Powder", "Skim Milk Powder", "Emulsifier (INS 322)", "Artificial Flavour"],
     nutrition: { energy_kcal: 441, sugar_g: 55, sodium_mg: 70, protein_g: 1.5, fat_g: 16, saturated_fat_g: 10, trans_fat_g: 0.3, fibre_g: 0.3 }
+  },
+
+  // ── CHOCOLATES — DAY 2 CHATGPT ADDITIONS ─────────────────────────────────
+
+  {
+    product_name: "Cadbury Dairy Milk Chocolate",
+    brand: "Cadbury",
+    category: "FOOD",
+    ingredients: ["Sugar", "Milk Solids (25%)", "Cocoa Butter", "Cocoa Solids", "Edible Vegetable Fat (Palm Oil)", "Emulsifiers (INS 442, INS 476)", "Artificial Flavour (Vanilla)"],
+    nutrition: { energy_kcal: 534, sugar_g: 56, sodium_mg: 80, protein_g: 7, fat_g: 30, saturated_fat_g: 18, trans_fat_g: 0.1, fibre_g: 2 },
+    front_claims: ["Real Dairy Milk", "Classic Taste"]
+  },
+  {
+    product_name: "Cadbury Perk Chocolate",
+    brand: "Cadbury",
+    category: "FOOD",
+    ingredients: ["Sugar", "Refined Wheat Flour", "Edible Vegetable Fat (Palm Oil)", "Cocoa Solids", "Milk Solids", "Glucose Syrup", "Invert Syrup", "Emulsifier (INS 322)", "Raising Agent (INS 500)", "Artificial Flavour (Vanilla)"],
+    nutrition: { energy_kcal: 510, sugar_g: 52, sodium_mg: 95, protein_g: 5, fat_g: 25, saturated_fat_g: 14, trans_fat_g: 0.2, fibre_g: 2 },
+    front_claims: ["Light Chocolate Wafer"]
+  },
+  {
+    product_name: "Amul Dark Chocolate 55%",
+    brand: "Amul",
+    category: "FOOD",
+    ingredients: ["Cocoa Solids (55%)", "Sugar", "Cocoa Butter", "Emulsifier (INS 322)", "Vanilla Flavour"],
+    nutrition: { energy_kcal: 520, sugar_g: 45, sodium_mg: 20, protein_g: 6, fat_g: 32, saturated_fat_g: 20, trans_fat_g: 0, fibre_g: 5 },
+    front_claims: ["55% Cocoa", "Dark Chocolate", "Rich Taste"]
+  },
+  {
+    product_name: "Cadbury Bournville Dark Chocolate",
+    brand: "Cadbury",
+    category: "FOOD",
+    ingredients: ["Cocoa Solids (50%)", "Sugar", "Cocoa Butter", "Emulsifier (INS 322)", "Vanilla Flavour"],
+    nutrition: { energy_kcal: 525, sugar_g: 48, sodium_mg: 25, protein_g: 5, fat_g: 33, saturated_fat_g: 19, trans_fat_g: 0, fibre_g: 6 },
+    front_claims: ["50% Cocoa", "Rich Dark Chocolate", "Not Too Sweet"]
+  },
+  {
+    product_name: "Snickers Chocolate Bar",
+    brand: "Mars India",
+    category: "FOOD",
+    ingredients: ["Sugar", "Peanuts (15%)", "Glucose Syrup", "Skim Milk Powder", "Cocoa Butter", "Cocoa Mass", "Milk Fat", "Lactose", "Peanut Oil", "Emulsifier (INS 322)", "Salt", "Artificial Flavour (Vanilla)"],
+    nutrition: { energy_kcal: 500, sugar_g: 50, sodium_mg: 200, protein_g: 8, fat_g: 24, saturated_fat_g: 10, trans_fat_g: 0.3, fibre_g: 3 },
+    front_claims: ["Peanuts", "Caramel", "Nougat", "Hunger Satisfied"]
+  },
+  {
+    product_name: "Alpenliebe Caramel Candy",
+    brand: "Perfetti Van Melle",
+    category: "FOOD",
+    ingredients: ["Sugar", "Glucose Syrup", "Milk Solids (5%)", "Edible Vegetable Fat (Palm Oil)", "Emulsifier (INS 322)", "Artificial Caramel Flavour", "Colour (INS 150c)"],
+    nutrition: { energy_kcal: 400, sugar_g: 80, sodium_mg: 50, protein_g: 0, fat_g: 8, saturated_fat_g: 5, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Caramel Flavour", "Smooth & Creamy"]
+  },
+  {
+    product_name: "Mentos Mint Candy",
+    brand: "Perfetti Van Melle",
+    category: "FOOD",
+    ingredients: ["Sugar", "Glucose Syrup", "Hydrogenated Coconut Oil", "Rice Starch", "Natural Peppermint Flavour", "Gum Arabic (INS 414)", "Carnauba Wax (INS 903)"],
+    nutrition: { energy_kcal: 390, sugar_g: 92, sodium_mg: 30, protein_g: 0, fat_g: 2, saturated_fat_g: 1, trans_fat_g: 0, fibre_g: 0 },
+    front_claims: ["Freshness", "The Freshmaker"]
   },
 
   // ── HEALTH SUPPLEMENTS / MALT DRINKS ──────────────────────────────────────
